@@ -27,7 +27,17 @@ public class Log {
 		 	this.pile.push(message);
 	 }
 	 
-	 public void showLog(){
+	 public void showAllLogs(){
+		 String temp;
+		 if(this.pile.size()>0){
+	     temp=this.pile.pop();
+	     this.showAllLogs();
+		 System.out.println(temp);
+		 Button.waitForAnyPress();
+		 }
+	 }
+	 
+	 public void showDescLogs(){
 		 int i;
 		 String temp;
 		 for(i=0;i<this.pile.size();i++){
@@ -35,5 +45,12 @@ public class Log {
 		 System.out.println(temp);
 		 Button.waitForAnyPress();
 		 }
+	 }
+	 
+	 public void showLastLog(){
+		 String temp;
+		 temp=this.pile.peek();
+		 System.out.println(temp);
+		 Button.waitForAnyPress();
 	 }
 }
