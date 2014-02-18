@@ -11,12 +11,15 @@ public class Log {
 	/** ATTRIBUTS **/
 	/***************/
 	private Stack<String> pile;
+	private int size;
 	
 	
 	 /******************/
 	 /** CONSTRUCTEUR **/
 	 /******************/
-	 public Log(){
+	 public Log(int MaxSize){
+		 this.pile=new Stack<String>();
+		 this.size=MaxSize;
 	 }
 	 
 	 /**************/
@@ -24,6 +27,9 @@ public class Log {
 	 /**************/
 	 
 	 public void addLog(String message){
+		 if(this.pile.empty())
+			this.pile.push(message);
+		 else if(this.pile.size()<this.size)
 		 	this.pile.push(message);
 	 }
 	 
