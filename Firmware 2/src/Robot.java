@@ -23,6 +23,8 @@ public class Robot {
 	 public static final int TURNR    = 3;
 	 public static final int TURNB    = 4;	 
 	 public static final int BACKWARD = 5;
+	 
+	// public static Log historique;
 	
 	 	 
 	 /***************/
@@ -41,7 +43,7 @@ public class Robot {
 	 /** CONSTRUCTEUR **/
 	 /******************/	 
 	 public Robot() {
-		this.mov        = new Movement(DIAMROUE, DISTROUE, Motor.A, Motor.B, false);
+		this.mov        = new Movement(DIAMROUE, DISTROUE, Motor.A, Motor.B, false, this);
 		this.compass    = new Compass(SensorPort.S4);
 		this.frontSonar = new Sonar(SensorPort.S2);
 		this.rightSonar = new Sonar(SensorPort.S1);
@@ -108,7 +110,7 @@ public class Robot {
 		 else{
 			 this.order=TURNL;
 		 }
-		 Sound.beep();
+		 
 	 }
 	 	 	 
 	 //Execute l'ordre
@@ -157,6 +159,7 @@ public class Robot {
 	 
 	 public static void main(String[] args) {
 		Sound.beep();
+		System.out.println("Demarrage");	
 		Robot bob = new Robot();
 		Button.waitForAnyPress();
 		Sound.beep();

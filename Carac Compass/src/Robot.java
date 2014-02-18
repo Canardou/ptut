@@ -10,7 +10,7 @@ public class Robot {
 	 /* CONSTRUCTEUR */
 	 public Robot() {
 		System.out.println("Create compass");	
-		this.compass = new CompassHTSensor(SensorPort.S1);
+		this.compass = new CompassHTSensor(SensorPort.S4);
 		System.out.println("Compass created");
 	 }
 	
@@ -19,10 +19,10 @@ public class Robot {
 		System.out.println("Demarrage");	
 		Robot derp = new Robot();
 		while(!Button.ESCAPE.isDown()) {
-			if(Button.ENTER.isDown()) {
-				System.out.println("Deg:" + derp.compass.getDegrees());
+			//if(Button.ENTER.isDown()) {
+				//System.out.println("Deg:" + derp.compass.getDegrees());
 				System.out.println("Cart:" + derp.compass.getDegreesCartesian());
-			}
+			//}
 		}
 	}
 	
