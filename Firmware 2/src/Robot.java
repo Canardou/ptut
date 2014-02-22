@@ -3,6 +3,7 @@ import lejos.nxt.Motor;
 import lejos.nxt.SensorPort;
 import lejos.nxt.Sound;
 
+
 public class Robot {	
 		
 	
@@ -13,8 +14,8 @@ public class Robot {
 	 //Caractéristiques du robot
   	 public static final double DIAMROUE     = 5.6;  //Diamètre des roues
   	 public static final double DISTROUE     = 11.5; //Distance entre les roues
-  	 public static final double LIMFRONTWALL = 16;   //Limite en dessous de laquelle on considère qu'il y a un mur juste devant
-  	 public static final double LIMRIGHTWALL = 16;   //Limite en dessous de laquelle on considère qu'il y a un mur juste à droite
+  	 public static final double LIMFRONTWALL = 15;   //Limite en dessous de laquelle on considère qu'il y a un mur juste devant
+  	 public static final double LIMRIGHTWALL = 22;   //Limite en dessous de laquelle on considère qu'il y a un mur juste à droite
   	 
   	 //Ordres
 	 public static final int STOP     = 0;
@@ -37,6 +38,7 @@ public class Robot {
 	 protected int       order;
 	 protected boolean   frontWallDetected;
 	 protected boolean   rightWallDetected;
+	 //private   Clock     horloge;
 	
 	 	 
 	 /******************/
@@ -48,6 +50,8 @@ public class Robot {
 		this.frontSonar = new Sonar(SensorPort.S2);
 		this.rightSonar = new Sonar(SensorPort.S1);
 		this.order      = STOP ;
+	
+		//try {this.horloge.setTime(0,0,0);} catch (IOException e) {}
 	 }
 		 
 		 
@@ -63,6 +67,8 @@ public class Robot {
 			 this.refreshCompass();
 		 }		 
 	 } 
+	 
+
 	 
 	 //Mise à jour des données issues des capteurs
 	 public void refreshFrontSonar(){

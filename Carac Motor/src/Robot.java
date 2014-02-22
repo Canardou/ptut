@@ -1,6 +1,8 @@
 import lejos.nxt.Button;
 import lejos.nxt.Motor;
 import lejos.robotics.navigation.DifferentialPilot;
+import java.lang.System;
+
 
 public class Robot {	
 		
@@ -14,18 +16,28 @@ public class Robot {
 		System.out.println("Motor created");
 	 }
 	
+	 public void pauseTime(int ms) {
+		 long initTime = System.currentTimeMillis();
+		 while((System.currentTimeMillis()-initTime)<ms);
+	 }
+	 
+	 
 	/* MAIN */
 	public static void main(String[] args) {
 		System.out.println("Demarrage");	
 		Robot derp = new Robot();
 		Button.waitForAnyPress();
-		derp.motor.travel(100);
-		derp.motor.rotate(90);
-		derp.motor.travel(50);
-		derp.motor.rotate(90);
-		derp.motor.travel(100);
-		derp.motor.rotate(90);
-		derp.motor.travel(50);
+		derp.pauseTime(1000);
+		derp.motor.reset();
+		derp.motor.forward();
+		while(true) {		
+			System.out.print(derp.motor.getMovement().getDistanceTraveled()+"\n");
+			derp.pauseTime(500);
+			if(Button.ENTER.isDown()) {
+				derp.motor.setTravelSpeed(4);
+			}
+			
+		}
 	}
 	
 }
