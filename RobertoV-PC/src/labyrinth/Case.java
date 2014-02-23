@@ -52,4 +52,12 @@ public class Case {
 	public Case get(int index){
 		return this.voisines.get(index);
 	}
+	
+	public int [] coord(){
+		int [] retour;
+		retour = new int[2];
+		retour[1]=this.x;
+		retour[2]=this.y;
+		return retour;
+	}
 }

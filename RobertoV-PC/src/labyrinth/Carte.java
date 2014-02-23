@@ -165,10 +165,10 @@ public class Carte {
 		check.add(this.map[dx][dy]);
 		while(recherche.size()>0 && recherche.get(0).current()!=this.map[ax][ay]){
 			for(int k=0;k<recherche.get(0).current().boundSize();k++){
-				if(!check.contains(this.map[dx][dy].get(k))){
-					recherche.add(new ListeCase(this.map[dx][dy].get(k),recherche.get(0).getCout()+1,recherche.get(0)));
-					recherche.get(0).setDistance(this.distance(dx, dy, ax, ay));
-					check.add(this.map[dx][dy].get(k));
+				if(!check.contains(recherche.get(0).current().get(k))){
+					recherche.add(new ListeCase(recherche.get(0).current().get(k),recherche.get(0).getCout()+1,recherche.get(0)));
+					recherche.get(0).setDistance(this.distance(recherche.get(0).current().coord()[0], recherche.get(0).current().coord()[1], ax, ay));
+					check.add(recherche.get(0).current().get(k));
 				}
 			}
 			closed.add(recherche.get(0));
