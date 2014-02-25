@@ -33,6 +33,7 @@ public class Simulator extends JFrame {
 	public void go() {
 		
 		//board.grille();
+		
 		Carte laby = new Carte(4);
 		laby.close(0, 0, 1, 0);
 		laby.close(0, 1, 1, 1);

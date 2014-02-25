@@ -80,6 +80,8 @@ public class SimBoard {
     public Sprite addSprite(String imgName, int x, int y) {
 	return panel.addSprite(imgName, x, y) ;
     }
+
+    
 }
 
 
