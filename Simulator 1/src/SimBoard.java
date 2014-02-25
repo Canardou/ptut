@@ -68,6 +68,13 @@ public class SimBoard {
     	this.repaint();
     	this.setColor (Color.black) ;
     }
+    
+    public void Line(int x, int y, int width, int heigth) {
+		this.setColor (new Color(235, 235, 235)) ;
+    	this.gr.drawLine(x,y,x+width,y+heigth);
+    	this.repaint();
+    	this.setColor (Color.black) ;
+    }
         
     // Cree un nouveau sprite a partir du fichier image indique
     public Sprite addSprite(String imgName, int x, int y) {

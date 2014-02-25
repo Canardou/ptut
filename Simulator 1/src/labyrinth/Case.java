@@ -17,7 +17,7 @@ public class Case {
 	 * Constructeurs
 	 */
 	
-	Case(int x, int y){
+	public Case(int x, int y){
 		this.marque=-1;
 		this.occupe=false;
 		this.decouverte=false;
@@ -31,7 +31,8 @@ public class Case {
 	 */
 	
 	public void bound(Case voisine){
-		this.voisines.add(voisine);
+		if(!this.voisines.contains(voisine))
+			this.voisines.add(voisine);
 	}
 	
 	public void close(Case voisine){

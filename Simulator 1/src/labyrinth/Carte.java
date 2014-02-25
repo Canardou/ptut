@@ -22,7 +22,7 @@ public class Carte {
 	 * Constructeurs
 	 */
 	
-	Carte(int width, int heigth){
+	public Carte(int width, int heigth){
 		this.heigth = heigth;
 		this.width = width;
 		this.map = new Case[width][heigth];
@@ -31,19 +31,22 @@ public class Carte {
 				this.map[i][j]=new Case(i,j);
 			}
 		}
-		for(int i=1;i<this.width-1;i++){
-			for(int j=1;j<this.heigth-1;j++){
-				for(int k=-1;k<1;k+=2){
-					for(int l=-1;l<1;l+=2){
-						this.map[i][j].bound(this.map[i+k][j+l]);;
+		for(int i=0;i<this.width;i++){
+			for(int j=0;j<this.heigth;j++){
+				for(int k=-1;k<=1;k++){
+					for(int l=-1;l<=1;l++){
+						if(i+k>=0 && j+l>=0 && i+k<this.width && j+l<this.heigth){
+							this.bound(i,j,i+k,j+l);
+						}
 					}
 				}
 			}
 		}
 	}
 	
-	Carte(int side){
+	public Carte(int side){
 		this(side,side);
+		this.exit=null;
 	}
 	
 	/*
@@ -154,9 +157,15 @@ public class Carte {
 		return this.map[x][y];
 	}
 	
-	public boolean path(int dx, int dy, int ax, int ay){
-		if((ax<0 || ax>this.width || ay<0 || ay>this.heigth)
-				&& !(this.exit.coord()[1]==ax && this.exit.coord()[2]==ay)) {
+	public boolean isPath(int dx, int dy, int ax, int ay){
+		if(this.exit != null){
+			if(this.exit.coord()[1]==ax && this.exit.coord()[2]==ay)
+				return true;
+		}
+		if(ax<0 || ax>=this.width || ay<0 || ay>=this.heigth) {
+			return false;
+		}
+		else if(dx<0 || dx>=this.width || dy<0 || dy>=this.heigth) {
 			return false;
 		}
 		else if((dx-ax==-1 && dy-ay==0) || (dx-ax==1 && dy-ay==0) || (dx-ax==0 && dy-ay==-1) || (dx-ax==0 && dy-ay==1)){
