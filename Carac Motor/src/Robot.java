@@ -18,7 +18,9 @@ public class Robot {
 	
 	 public void pauseTime(int ms) {
 		 long initTime = System.currentTimeMillis();
-		 while((System.currentTimeMillis()-initTime)<ms);
+		 while((System.currentTimeMillis()-initTime)<ms) {
+			 System.out.print(this.motor.getMovement().getDistanceTraveled()+"\n");
+		 }
 	 }
 	 
 	 
@@ -29,15 +31,14 @@ public class Robot {
 		Button.waitForAnyPress();
 		derp.pauseTime(1000);
 		derp.motor.reset();
+		derp.motor.setTravelSpeed(15);
+		derp.motor.arcForward(5);
+		derp.pauseTime(4000);
 		derp.motor.forward();
-		while(true) {		
-			System.out.print(derp.motor.getMovement().getDistanceTraveled()+"\n");
-			derp.pauseTime(500);
-			if(Button.ENTER.isDown()) {
-				derp.motor.setTravelSpeed(4);
-			}
-			
-		}
+		derp.pauseTime(4000);
+		derp.motor.setTravelSpeed(35);
+		derp.motor.forward();
+		derp.pauseTime(4000);
 	}
 	
 }
