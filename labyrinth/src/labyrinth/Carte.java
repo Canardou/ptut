@@ -152,7 +152,7 @@ public class Carte {
 	 */
 	
 	private int distance(int a, int b, int c, int d){
-		return a-c+b-d;
+		return Math.abs(a-c)+Math.abs(b-d);
 	}
 	
 	public Chemin createPath(int dx, int dy, int ax, int ay){
@@ -163,7 +163,7 @@ public class Carte {
 		recherche.add(new ListeCase(this.map[dx][dy],0,null));
 		recherche.get(0).setDistance(this.distance(dx, dy, ax, ay));
 		check.add(this.map[dx][dy]);
-		while(recherche.size()>0 && recherche.get(0).current()!=this.map[ax][ay]){
+		while(recherche.get(0).current()!=this.map[ax][ay]){
 			for(int k=0;k<recherche.get(0).current().boundSize();k++){
 				if(!check.contains(recherche.get(0).current().get(k))){
 					recherche.add(new ListeCase(recherche.get(0).current().get(k),recherche.get(0).getCout()+1,recherche.get(0)));
@@ -173,7 +173,10 @@ public class Carte {
 			}
 			closed.add(recherche.get(0));
 			recherche.remove(0);
-			Collections.sort(recherche);
+			if(recherche.size()>0)
+				Collections.sort(recherche);
+			else
+				break;
 		}
 		ListeCase temp = recherche.get(0);
 		while(temp.current()!=this.map[dx][dy]){
