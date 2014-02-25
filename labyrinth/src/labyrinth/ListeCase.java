@@ -1,7 +1,7 @@
 package labyrinth;
 import java.lang.Comparable;
 
-class ListeCase implements java.lang.Comparable {
+public class ListeCase implements java.lang.Comparable {
 	/*
 	 * Attributs
 	 */

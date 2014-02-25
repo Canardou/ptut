@@ -1,7 +1,7 @@
 package labyrinth;
 import java.util.ArrayList;
 
-class Case {
+public class Case {
 	/*
 	 * Attributs
 	 */

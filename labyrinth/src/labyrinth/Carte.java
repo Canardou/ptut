@@ -26,13 +26,13 @@ public class Carte {
 		this.heigth = heigth;
 		this.width = width;
 		this.map = new Case[width][heigth];
-		for(int i=0;i<this.heigth;i++){
-			for(int j=0;j<this.width;j++){
+		for(int i=0;i<this.width;i++){
+			for(int j=0;j<this.heigth;j++){
 				this.map[i][j]=new Case(i,j);
 			}
 		}
-		for(int i=1;i<this.heigth-1;i++){
-			for(int j=1;j<this.width-1;j++){
+		for(int i=1;i<this.width-1;i++){
+			for(int j=1;j<this.heigth-1;j++){
 				for(int k=-1;k<1;k+=2){
 					for(int l=-1;l<1;l+=2){
 						this.map[i][j].bound(this.map[i+k][j+l]);;
@@ -62,14 +62,18 @@ public class Carte {
 	 */
 	
 	public void bound(int dx, int dy, int ax, int ay){
-		if((dx-ax==-1 && dy-ay==0) || (dx-ax==1 && dy-ay==0) || (dx-ax==0 && dy-ay==-1) || (dx-ax==0 && dy-ay==1)){
+		if(ax<0 || ax>this.width || ay<0 || ay>this.heigth){
+			this.map[dx][dy].bound(this.exit = new Case(ax,ay));
+			this.exit.bound(this.map[dx][dy]);
+		}
+		else if((dx-ax==-1 && dy-ay==0) || (dx-ax==1 && dy-ay==0) || (dx-ax==0 && dy-ay==-1) || (dx-ax==0 && dy-ay==1)){
 			this.map[dx][dy].bound(this.map[ax][ay]);
 			this.map[ax][ay].bound(this.map[dx][dy]);
 		}
 	}
 	
 	public void close(int dx, int dy, int ax, int ay){
-		if((dx-ax==-1 && dy-ay==0) || (dx-ax==1 && dy-ay==0) || (dx-ax==0 && dy-ay==-1) || (dx-ax==0 && dy-ay==1)){
+		if(!(ax<0 || ax>this.width || ay<0 || ay>this.heigth) && (dx-ax==-1 && dy-ay==0) || (dx-ax==1 && dy-ay==0) || (dx-ax==0 && dy-ay==-1) || (dx-ax==0 && dy-ay==1)){
 			this.map[dx][dy].close(this.map[ax][ay]);
 			this.map[ax][ay].close(this.map[dx][dy]);
 		}
