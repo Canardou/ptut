@@ -6,7 +6,7 @@ class Case {
 	 * Attributs
 	 */
 	
-	private Object robot;
+	private boolean occupe;
 	private int marque;
 	private boolean decouverte;
 	private ArrayList<Case> voisines;
@@ -19,7 +19,7 @@ class Case {
 	
 	Case(int x, int y){
 		this.marque=-1;
-		this.robot=null;
+		this.occupe=false;
 		this.decouverte=false;
 		this.x=x;
 		this.y=y;
@@ -32,6 +32,10 @@ class Case {
 	
 	public void bound(Case voisine){
 		this.voisines.add(voisine);
+	}
+	
+	public void close(Case voisine){
+		this.voisines.remove(voisine);
 	}
 	
 	public int boundSize(){

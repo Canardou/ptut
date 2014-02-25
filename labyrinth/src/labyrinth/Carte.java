@@ -31,6 +31,15 @@ public class Carte {
 				this.map[i][j]=new Case(i,j);
 			}
 		}
+		for(int i=1;i<this.heigth-1;i++){
+			for(int j=1;j<this.width-1;j++){
+				for(int k=-1;k<1;k+=2){
+					for(int l=-1;l<1;l+=2){
+						this.map[i][j].bound(this.map[i+k][j+l]);;
+					}
+				}
+			}
+		}
 	}
 	
 	Carte(int side){
@@ -40,58 +49,6 @@ public class Carte {
 	/*
 	 * Méthodes
 	 */
-
-	/**
-	 * 
-	 * @method closeUp
-	 * @method closeDown
-	 * @method closeLeft
-	 * @method closeRight
-	 * @desc Respectivement déclarer impraticable un chemin depuis la case
-	 * 
-	 */
-	
-	public void boundUp(int x, int y){
-		if(y>0){
-			this.map[x][y].bound(this.map[x][y-1]);
-		}
-		else{
-			this.boundExit(x,y);
-		}
-			
-	}
-	
-	public void boundDown(int x, int y){
-		if(y<this.heigth-1){
-			this.map[x][y].bound(this.map[x][y+1]);
-		}
-		else{
-			this.boundExit(x,y);
-		}
-	}
-	
-	public void boundLeft(int x, int y){
-		if(x>0){
-			this.map[x][y].bound(this.map[x-1][y]);
-		}
-		else{
-			this.boundExit(x,y);
-		}
-	}
-
-	public void boundRight(int x, int y){
-		if(x<this.width-1){
-			this.map[x][y].bound(this.map[x+1][y]);
-		}
-		else{
-			this.boundExit(x,y);
-		}
-	}
-	
-	public void boundExit(int x, int y){
-		this.exit=new Case(x,y);
-		this.map[x][y].bound(this.exit);
-	}
 	
 	/**
 	 * 
@@ -105,14 +62,17 @@ public class Carte {
 	 */
 	
 	public void bound(int dx, int dy, int ax, int ay){
-		if(dx-ax==-1 && dy-ay==0)
-			this.boundRight(dx,dy);
-		if(dx-ax==1 && dy-ay==0)
-			this.boundLeft(dx,dy);
-		if(dx-ax==0 && dy-ay==-1)
-			this.boundDown(dx,dy);
-		if(dx-ax==0 && dy-ay==1)
-			this.boundUp(dx,dy);
+		if((dx-ax==-1 && dy-ay==0) || (dx-ax==1 && dy-ay==0) || (dx-ax==0 && dy-ay==-1) || (dx-ax==0 && dy-ay==1)){
+			this.map[dx][dy].bound(this.map[ax][ay]);
+			this.map[ax][ay].bound(this.map[dx][dy]);
+		}
+	}
+	
+	public void close(int dx, int dy, int ax, int ay){
+		if((dx-ax==-1 && dy-ay==0) || (dx-ax==1 && dy-ay==0) || (dx-ax==0 && dy-ay==-1) || (dx-ax==0 && dy-ay==1)){
+			this.map[dx][dy].close(this.map[ax][ay]);
+			this.map[ax][ay].close(this.map[dx][dy]);
+		}
 	}
 	
 	/**
