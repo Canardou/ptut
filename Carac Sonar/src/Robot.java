@@ -18,9 +18,8 @@ public class Robot {
 	public static void main(String[] args) {
 		System.out.println("Demarrage");	
 		Robot derp = new Robot();
-		while(!Button.ESCAPE.isDown()) {
-				System.out.println(derp.sonar.getDistance()-3+"\n" + derp.sonar.getUnits()+"\n");
-				//System.out.println(derp.sonar.getRange()-2+"\n" + derp.sonar.getUnits()+"\n");
+		while(!Button.ENTER.isDown()) {
+				System.out.println(derp.sonar.getDistance()-4+"\n");
 		}
 	}
 	
