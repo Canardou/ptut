@@ -3,12 +3,21 @@ import java.util.ArrayList;
 
 public class Case {
 	/*
+	 * Constantes
+	 */
+	
+	public static final int UP=0;
+	public static final int LEFT=1;
+	public static final int DOWN=2;
+	public static final int RIGHT=3;
+	
+	/*
 	 * Attributs
 	 */
 	
-	private int marque;
+	private boolean marque;
 	private boolean decouverte;
-	private ArrayList<Case> voisines;
+	private boolean [] murs;
 	//Possibilitée d'utiliser un mask
 	private int x;
 	private int y;
@@ -18,68 +27,87 @@ public class Case {
 	 */
 	
 	public Case(int x, int y){
-		this.marque=-1;
+		this.marque=false;
 		this.decouverte=false;
 		this.x=x;
 		this.y=y;
-		this.voisines=new ArrayList<Case>();
+		this.murs=new boolean[4];
 	}
 	
 	/*
 	 * Méthodes
 	 */
 	
-	public boolean bound(Case voisine){
-		if(!this.voisines.contains(voisine)){
-			return this.voisines.add(voisine);
+	//Gestion des arcs accessibles
+	private boolean changeState(int direction, boolean state){
+		if(direction>=0 && direction<4){
+			this.murs[direction]=state;
+			return true;
+		}
+		else
+			return false;
+		
+	}
+	
+	public boolean close(int direction){
+		return changeState(direction,true);
+	}
+	
+	public boolean bound(int direction){
+		return changeState(direction,false);
+	}
+	
+	public boolean isCrossable(int direction){
+		if(direction>=0 && direction<4){
+			return !this.murs[direction];
 		}
 		else
 			return false;
 	}
 	
-	public boolean close(Case voisine){
-		return this.voisines.remove(voisine);
-	}
-	
-	public int boundSize(){
-		return this.voisines.size();
-	}
-	
-	public void visite(){
+	public void setReveal(){
 		this.decouverte=true;
 	}
 	
-	public boolean isVisited(){
+	public boolean isRevealed(){
 		return this.decouverte;
 	}
 	
-	public void setMarqueur(boolean marque){
-		if(marque=true)
-			this.marque=1;
-		else
-			this.marque=0;
+	public void isObjective(){
+		this.marque=true;
 	}
 	
-	public int getMarqueur(){
+	public boolean getMarqueur(){
 		return this.marque;
-	}
-	
-	public Case get(int index){
-		if(index>=0 && index<this.voisines.size())
-			return this.voisines.get(index);
-		else
-			return null;
-	}
-	
-	public boolean linked(Case test){
-		return voisines.contains(test);
 	}
 	
 	public int getX(){
 		return this.x;
 	}
 	
+	public int getX(int direction){
+		if(direction==Case.LEFT)
+			return this.x-1;
+		else if(direction==Case.RIGHT)
+			return this.x+1;
+		else
+			return this.x;
+	}
+	
 	public int getY(){
 		return this.y;
+	}
+	
+	public int getY(int direction){
+		if(direction==Case.UP)
+			return this.y-1;
+		else if(direction==Case.DOWN)
+			return this.y+1;
+		else
+			return this.y;
+	}
+	
+	public String toString(){
+		return "Case ["+this.getX()+"]["+this.getY()+"] ^"+this.murs[0]+" <"+this.murs[1]+" v"+this.murs[2]+" >"+this.murs[3];
 	}
 }

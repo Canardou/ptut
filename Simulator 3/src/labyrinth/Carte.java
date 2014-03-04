@@ -16,7 +16,6 @@ public class Carte {
 	private int heigth;
 	private int width;
 	private Case[][] map;
-	private Case exit;
 	
 	/*
 	 * Constructeurs
@@ -25,7 +24,6 @@ public class Carte {
 	public Carte(int width, int heigth){
 		this.heigth = heigth;
 		this.width = width;
-		this.exit=null;
 		this.map = new Case[width][heigth];
 		for(int i=0;i<this.width;i++){
 			for(int j=0;j<this.heigth;j++){
@@ -33,15 +31,12 @@ public class Carte {
 			}
 		}
 		for(int i=0;i<this.width;i++){
-			for(int j=0;j<this.heigth;j++){
-				for(int k=-1;k<=1;k++){
-					for(int l=-1;l<=1;l++){
-						if(i+k>=0 && j+l>=0 && i+k<this.width && j+l<this.heigth){
-							this.bound(i,j,k,l);
-						}
-					}
-				}
-			}
+			this.map[i][0].close(Case.UP);
+			this.map[i][this.heigth-1].close(Case.DOWN);
+		}
+		for(int i=0;i<this.heigth;i++){
+			this.map[0][i].close(Case.LEFT);
+			this.map[this.width-1][i].close(Case.RIGHT);
 		}
 	}
 	
@@ -52,6 +47,10 @@ public class Carte {
 	/*
 	 * Méthodes
 	 */
+	
+	private boolean checkCoord(int x, int y){
+		return !(x<0 || x>=this.width || y<0 || y>=this.heigth);
+	}
 	
 	/**
 	 * 
@@ -65,42 +64,50 @@ public class Carte {
 	 */
 	
 	public boolean boundUp(int x, int y){
-		return this.bound(x, y, 0, -1);
+		return this.bound(x, y, Case.UP);
 	}
 	
 	public boolean boundDown(int x, int y){
-		return this.bound(x, y, 0, 1);
+		return this.bound(x, y, Case.DOWN);
 	}
 	
 	public boolean boundLeft(int x, int y){
-		return this.bound(x, y, -1, 0);
+		return this.bound(x, y, Case.LEFT);
 	}
 	
 	public boolean boundRight(int x, int y){
-		return this.bound(x, y, 1, 0);
+		return this.bound(x, y, Case.RIGHT);
 	}
 	
-	public boolean bound(int x, int y, int w, int h){
-		int ax=x+w;
-		int ay=y+h;
-		if(ax<0 || ax>=this.width || ay<0 || ay>=this.heigth){
-			this.map[x][y].bound(this.exit = new Case(ax,ay));
-			return this.exit.bound(this.map[x][y]);
-		}
-		else if((w==-1 && h==0) || (w==1 && h==0) || (w==0 && h==-1) || (w==0 && h==1)){
-			this.map[x][y].bound(this.map[ax][ay]);
-			return this.map[ax][ay].bound(this.map[x][y]);
+	public boolean bound(int x, int y, int dir){
+		if(checkCoord(x,y)){
+			return this.map[x][y].bound(dir);
 		}
 		else
 			return false;
+			
 	}
 	
-	public boolean close(int x, int y, int w, int h){
-		int ax=x+w;
-		int ay=y+h;
-		if(!(ax<0 || ax>=this.width || ay<0 || ay>=this.heigth) && (w==-1 && h==0) || (w==1 && h==0) || (w==0 && h==-1) || (w==0 && h==1)){
-			this.map[x][y].close(this.map[ax][ay]);
-			return this.map[ax][ay].close(this.map[x][y]);
+	
+	public boolean closeUp(int x, int y){
+		return this.close(x, y, Case.UP);
+	}
+	
+	public boolean closeDown(int x, int y){
+		return this.close(x, y, Case.DOWN);
+	}
+	
+	public boolean closeLeft(int x, int y){
+		return this.close(x, y, Case.LEFT);
+	}
+	
+	public boolean closeRight(int x, int y){
+		return this.close(x, y, Case.RIGHT);
+	}
+	
+	public boolean close(int x, int y, int dir){
+		if(checkCoord(x,y)){
+			return this.map[x][y].close(dir);
 		}
 		else
 			return false;
@@ -114,8 +121,9 @@ public class Carte {
 	 * @desc déclare une case déjà visitée
 	 * 
 	 */	
-	public void visite(int x, int y){
-		this.map[x][y].visite();
+	public void reveal(int x, int y){
+		if(checkCoord(x,y))
+			this.map[x][y].setReveal();
 	}
 
 	/**
@@ -127,8 +135,9 @@ public class Carte {
 	 * @desc mettre true si le marqueur est sur la case, false sinon
 	 * 
 	 */
-	public void setMarqueur(int x, int y, boolean marque){
-		this.map[x][y].setMarqueur(marque);
+	public void mark(int x, int y){
+		if(checkCoord(x,y))
+			this.map[x][y].isObjective();
 	}
 	
 	/**
@@ -147,7 +156,10 @@ public class Carte {
 	}
 	
 	public Chemin createPath(int dx, int dy, int ax, int ay){
-		return createPath(this.map[dx][dy],this.map[ax][ay]);
+		if(checkCoord(dx,dy) && checkCoord(ax,ay))
+			return createPath(this.map[dx][dy],this.map[ax][ay]);
+		else
+			return null;
 	}
 	
 	public Chemin createPath(Case depart, Case arrivee){
@@ -159,11 +171,15 @@ public class Carte {
 		recherche.get(0).setDistance(this.distance(depart.getX(), depart.getY(), arrivee.getX(), arrivee.getY()));
 		check.add(depart);
 		while(recherche.get(0).current()!=arrivee){
-			for(int k=0;k<recherche.get(0).current().boundSize();k++){
-				if(!check.contains(recherche.get(0).current().get(k))){
-					recherche.add(new ListeCase(recherche.get(0).current().get(k),recherche.get(0).getCout()+1,recherche.get(0)));
-					recherche.get(0).setDistance(this.distance(recherche.get(0).current().getX(), recherche.get(0).current().getY(), arrivee.getX(), arrivee.getY()));
-					check.add(recherche.get(0).current().get(k));
+			for(int k=0;k<4;k++){
+				Case temp=recherche.get(0).current();
+				if(temp.isCrossable(k) && checkCoord(temp.getX(k),temp.getY(k))){
+					Case test=this.map[temp.getX(k)][temp.getY(k)];
+					if(!check.contains(test)){
+						recherche.add(new ListeCase(test,recherche.get(0).getCout()+1,recherche.get(0)));
+						recherche.get(0).setDistance(this.distance(test.getX(), test.getY(), arrivee.getX(), arrivee.getY()));
+						check.add(test);
+					}
 				}
 			}
 			closed.add(recherche.get(0));
@@ -182,32 +198,29 @@ public class Carte {
 		return path;
 	}
 	
-	public Chemin toExitPath(int x, int y){
-		if(this.exit!=null){
-			return createPath(this.map[x][y],this.exit);
-		}
-		else
-			return null;
-	}
-	
 	public Case getCase(int x, int y){
 		return this.map[x][y];
 	}
 	
-	public boolean isCrossable(int dx, int dy, int ax, int ay){
-		if(this.exit != null){
-			if(this.exit.getX()==ax && this.exit.getY()==ay)
-				return true;
-		}
-		if(ax<0 || ax>=this.width || ay<0 || ay>=this.heigth) {
-			return false;
-		}
-		else if(dx<0 || dx>=this.width || dy<0 || dy>=this.heigth) {
-			return false;
-		}
-		else if((dx-ax==-1 && dy-ay==0) || (dx-ax==1 && dy-ay==0) || (dx-ax==0 && dy-ay==-1) || (dx-ax==0 && dy-ay==1)){
-			return this.map[dx][dy].linked(this.map[ax][ay]);
-		}
+	public boolean isCrossableUp(int x, int y){
+		return isCrossable(x,y,Case.UP);
+	}
+	
+	public boolean isCrossableDown(int x, int y){
+		return isCrossable(x,y,Case.DOWN);
+	}
+	
+	public boolean isCrossableLeft(int x, int y){
+		return isCrossable(x,y,Case.LEFT);
+	}
+	
+	public boolean isCrossableRight(int x, int y){
+		return isCrossable(x,y,Case.RIGHT);
+	}
+	
+	public boolean isCrossable(int x, int y, int direction){
+		if(checkCoord(x,y))
+			return this.map[x][y].isCrossable(direction);
 		else
 			return false;
 	}

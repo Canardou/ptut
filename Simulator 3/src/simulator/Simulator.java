@@ -36,33 +36,34 @@ public class Simulator extends JFrame {
 		//board.grille();
 		
 		Carte laby = new Carte(4);
-		laby.bound(3,3,0,1);
-		laby.close(0, 0, 1, 0);
-		laby.close(0, 1, 1, 0);
-		laby.close(1, 0, 0, 1);
-		laby.close(0, 2, 0, 1);
-		laby.close(2, 0, 1, 0);
-		laby.close(2, 1, 1, 0);
-		laby.close(2, 1, 0, 1);
-		laby.close(2, 2, -1, 0);
-		laby.close(2, 3, 1, 0);
+		laby.boundDown(3,3);
+		laby.closeRight(0, 0);
+		laby.closeRight(0, 1);
+		laby.closeDown(1, 0);
+		laby.closeDown(0, 2);
+		laby.closeRight(2, 0);
+		laby.closeRight(2, 1);
+		laby.closeDown(2, 1);
+		laby.closeLeft(2, 2);
+		laby.closeRight(2, 3);
 		
 		for(int i=0;i<4;i++){
 			for(int j=0;j<4;j++){
 				//gauche
-				if(!laby.isCrossable(i, j, i-1, j))
+				if(!laby.isCrossableLeft(i, j))
 					board.Line((i+1)*25,(j+1)*25,0,25);
 				//droite
-				if(!laby.isCrossable(i, j, i+1, j))
+				if(!laby.isCrossableRight(i, j))
 					board.Line((i+2)*25,(j+1)*25,0,25);
 				//haut
-				if(!laby.isCrossable(i, j, i, j-1))
+				if(!laby.isCrossableUp(i, j))
 					board.Line((i+1)*25,(j+1)*25,25,0);
 				//bas
-				if(!laby.isCrossable(i, j, i, j+1))
+				if(!laby.isCrossableDown(i, j))
 					board.Line((i+1)*25,(j+2)*25,25,0);
 			}
 		}
+		
 		
 		
 		while(true) {
