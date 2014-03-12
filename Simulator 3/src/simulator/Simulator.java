@@ -64,6 +64,34 @@ public class Simulator extends JFrame {
 			}
 		}
 		
+		Chemin test = new Chemin();
+		
+		test = laby.pathToExit(0, 0);
+		
+		Case current = test.get(0);
+		
+		Case temp;
+		int i=0;
+		while((temp=test.get(i))!=null){
+			i++;
+			System.out.println(current);
+			System.out.println(temp+"\n");
+			switch(current.getDir(temp)){
+			case Case.UP:
+				board.Line((current.getX()+1)*25+13,(current.getY()+1)*25+12,0,25);
+				break;
+			case Case.DOWN:
+				board.Line((current.getX()+1)*25+13,(current.getY()+1)*25+12,0,-25);
+				break;
+			case Case.LEFT:
+				board.Line((current.getX()+1)*25+13,(current.getY()+1)*25+12,-25,0);
+				break;
+			case Case.RIGHT:
+				board.Line((current.getX()+1)*25+13,(current.getY()+1)*25+12,25,0);
+				break;
+			}
+			current=temp;
+		}
 		
 		
 		while(true) {

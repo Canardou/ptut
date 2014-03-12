@@ -34,6 +34,10 @@ public class Case {
 		this.murs=new boolean[4];
 	}
 	
+	public Case(){
+		this(0,0);
+	}
+	
 	/*
 	 * Méthodes
 	 */
@@ -105,6 +109,23 @@ public class Case {
 			return this.y+1;
 		else
 			return this.y;
+	}
+	
+	public int getDir(int x, int y){
+		if(this.x-x==1 && this.y-y==0)
+			return Case.LEFT;
+		else if(this.x-x==-1 && this.y-y==0)
+			return Case.RIGHT;
+		else if(this.y-y==1 && this.x-x==0)
+			return Case.DOWN;
+		else if(this.y-y==-1 && this.x-x==0)
+			return Case.UP;
+		else
+			return -1;
+	}
+	
+	public int getDir(Case autre){
+		return this.getDir(autre.getX(),autre.getY());
 	}
 	
 	public String toString(){
