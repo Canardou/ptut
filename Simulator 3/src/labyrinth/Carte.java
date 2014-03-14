@@ -13,7 +13,7 @@ public class Carte {
 	 * Attributs
 	 */
 	
-	private int heigth;
+	private int height;
 	private int width;
 	private Case[][] map;
 	private Case marque;
@@ -23,22 +23,22 @@ public class Carte {
 	 * Constructeurs
 	 */
 	
-	public Carte(int width, int heigth){
+	public Carte(int width, int height){
 		this.marque=null;
 		this.exit=null;
-		this.heigth = heigth;
+		this.height = height;
 		this.width = width;
-		this.map = new Case[width][heigth];
+		this.map = new Case[width][height];
 		for(int i=0;i<this.width;i++){
-			for(int j=0;j<this.heigth;j++){
+			for(int j=0;j<this.height;j++){
 				this.map[i][j]=new Case(i,j);
 			}
 		}
 		for(int i=0;i<this.width;i++){
 			this.map[i][0].close(Case.UP);
-			this.map[i][this.heigth-1].close(Case.DOWN);
+			this.map[i][this.height-1].close(Case.DOWN);
 		}
-		for(int i=0;i<this.heigth;i++){
+		for(int i=0;i<this.height;i++){
 			this.map[0][i].close(Case.LEFT);
 			this.map[this.width-1][i].close(Case.RIGHT);
 		}
@@ -53,7 +53,7 @@ public class Carte {
 	 */
 	
 	private boolean checkCoord(int x, int y){
-		return !(x<0 || x>=this.width || y<0 || y>=this.heigth);
+		return !(x<0 || x>=this.width || y<0 || y>=this.height);
 	}
 	
 	/**
@@ -184,10 +184,10 @@ public class Carte {
 			for(int i=0;i<this.width;i++){
 				if(this.map[i][0].isCrossable(Case.UP))
 					this.exit= new Case(i,-1);
-				else if(this.map[i][this.heigth-1].isCrossable(Case.DOWN))
-					this.exit= new Case(i,this.heigth);
+				else if(this.map[i][this.height-1].isCrossable(Case.DOWN))
+					this.exit= new Case(i,this.height);
 			}
-			for(int i=0;i<this.heigth;i++){
+			for(int i=0;i<this.height;i++){
 				if(this.map[0][i].isCrossable(Case.LEFT))
 					this.exit= new Case(-1,i);
 				if(this.map[this.width-1][i].isCrossable(Case.RIGHT))
@@ -201,6 +201,15 @@ public class Carte {
 		if(checkCoord(dx,dy)){
 			if(setExit()!=null){
 				return createPath(this.map[dx][dy],this.exit);
+			}
+		}
+		return null;
+	}
+	
+	public Chemin pathToMarque(int dx, int dy){
+		if(checkCoord(dx,dy)){
+			if(this.marque!=null){
+				return createPath(this.map[dx][dy],this.marque);
 			}
 		}
 		return null;
@@ -295,5 +304,13 @@ public class Carte {
 			return this.map[x][y].isCrossable(direction);
 		else
 			return false;
+	}
+	
+	public int getWidth(){
+		return this.width;
+	}
+	
+	public int getHeight(){
+		return this.height;
 	}
 }

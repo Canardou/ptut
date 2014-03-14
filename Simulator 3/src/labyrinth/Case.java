@@ -1,5 +1,4 @@
 package labyrinth;
-import java.util.ArrayList;
 
 public class Case {
 	/*
