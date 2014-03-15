@@ -31,11 +31,7 @@ public class Chemin {
 	 */
 	
 	public void push(Case nouvelle){
-		this.route.push(nouvelle);
-	}
-	
-	public void add(Case nouvelle){
-		this.route.add(0, nouvelle);
+		this.route.add(0,nouvelle);
 	}
 	
 	public int direction(int k){
@@ -67,6 +63,14 @@ public class Chemin {
 			return null;
 	}
 	
+	public void removeTop(){
+		this.route.remove(0);
+	}
+	
+	public int size(){
+		return this.route.size();
+	}
+	
 	/**
 	 * Compare deux chemins pour savoir s'ils se croisent. Dans le cas d'un croisement la fonction retourne vrai.
 	 * @param autre
@@ -82,11 +86,11 @@ public class Chemin {
 		return retour;
 	}
 	
-	/**
+	/*/**
 	 * Retourne le chemin resultant de l'intersection de deux chemins
 	 * @param autre
 	 * @return
-	 */
+	 
 	
 	public Chemin intersection(Chemin autre){
 		Chemin retour=new Chemin();
@@ -99,7 +103,7 @@ public class Chemin {
 		else
 			retour=null;
 		return retour;
-	}
+	}*/
 	
 	/**
 	 * Retourne vrai si le chemin ne dispose pas de possibilité de croisement
@@ -146,5 +150,13 @@ public class Chemin {
 		else
 			retour=false;
 		return retour;
+	}
+	
+	public String toString(){
+		String temp="";
+		for(Case item : this.route){
+			temp+=item+"\n";
+		}
+		return temp;
 	}
 }

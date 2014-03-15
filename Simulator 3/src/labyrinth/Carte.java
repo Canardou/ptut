@@ -1,5 +1,6 @@
 package labyrinth;
 import java.util.ArrayList;
+import java.util.Stack;
 import java.util.Collections;
 
 /**
@@ -136,6 +137,13 @@ public class Carte {
 			this.map[x][y].setReveal();
 	}
 
+	public boolean isRevealed(int x, int y){
+		if(checkCoord(x,y))
+			return this.map[x][y].isRevealed();
+		else
+			return false;
+	}
+	
 	/**
 	 * 
 	 * @method mark
@@ -312,5 +320,65 @@ public class Carte {
 	
 	public int getHeight(){
 		return this.height;
+	}
+	
+	/**
+	 * Permet de générer un labyrinthe aléatoire, disposant d'une sortie, à des fins de tests
+	 */
+	
+	public void randomMaze(){
+		Stack<Case> stack = new Stack<Case>();
+		ArrayList<Case> recherche=new ArrayList<Case>();
+		for(int i=0;i<this.width;i++){
+			for(int j=0;j<this.height;j++){
+				this.map[i][j].close(Case.UP);
+				this.map[i][j].close(Case.DOWN);
+				this.map[i][j].close(Case.LEFT);
+				this.map[i][j].close(Case.RIGHT);
+				recherche.add(this.map[i][j]);
+				this.map[i][j].setReveal();
+			}
+		}
+		Case temp = recherche.get((int)(Math.random()*recherche.size()));
+		while(recherche.size()>0){
+			ArrayList<Case> random = new ArrayList<Case>();
+			if(Math.random()>0.2)
+				recherche.remove(temp);
+			for(int k=0;k<4;k++){
+				if(checkCoord(temp.getX(k),temp.getY(k))){
+					Case test=this.map[temp.getX(k)][temp.getY(k)];
+					if(recherche.contains(test)){
+						random.add(test);
+					}
+				}
+			}
+			if(!random.isEmpty()){
+				Case select = random.get((int)(Math.random()*random.size()));
+				select.bound(select.getDir(temp));
+				temp.bound(temp.getDir(select));
+				stack.push(temp);
+				temp=select;
+			}
+			else if(!stack.isEmpty()){
+				temp=stack.pop();
+			}
+			else
+				temp=recherche.get((int)(Math.random()*recherche.size()));
+		}
+		if(Math.random()>0.5){
+			if(Math.random()>0.5){
+				this.boundLeft(0,(int)(Math.random()*this.height));
+			}
+			else
+				this.boundRight(this.width-1,(int)(Math.random()*this.height));
+		}
+		else{
+			if(Math.random()>0.5){
+				this.boundUp((int)(Math.random()*this.width),0);
+			}
+			else
+				this.boundDown((int)(Math.random()*this.width),this.height-1);
+		}
+		this.mark((int)(Math.random()*this.width), (int)(Math.random()*this.height));
 	}
 }

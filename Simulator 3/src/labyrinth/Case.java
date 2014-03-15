@@ -116,9 +116,9 @@ public class Case {
 		else if(this.x-x==-1 && this.y-y==0)
 			return Case.RIGHT;
 		else if(this.y-y==1 && this.x-x==0)
-			return Case.DOWN;
-		else if(this.y-y==-1 && this.x-x==0)
 			return Case.UP;
+		else if(this.y-y==-1 && this.x-x==0)
+			return Case.DOWN;
 		else
 			return -1;
 	}

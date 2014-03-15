@@ -26,6 +26,7 @@ public class DessinCarte extends JPanel {
 	private int y;
 	private int width;
 	private int height;
+	private boolean mark;
 	private BufferedImage img ;
 	private Graphics2D gr ;
 	private boolean dogeMode;
@@ -37,6 +38,7 @@ public class DessinCarte extends JPanel {
 	public DessinCarte(Carte carte){
 		super();
 		this.carte=carte;
+		this.mark=true;
 		this.x=carte.getWidth();
 		this.y=carte.getHeight();
 		this.width=(x+1)*DessinCarte.largeur;
@@ -60,17 +62,36 @@ public class DessinCarte extends JPanel {
 			this.dogeMode=true;
 	}
 	
+	public void addRobot(int x, int y, int direction, int type){
+		this.robots.add(new VirtualRobots(x,y,direction,type));
+	}
+	
+	public VirtualRobots getRobot(int k){
+		return this.robots.get(k);
+	}
+	
 	//@override
 	protected void paintComponent(Graphics g) {
         super.paintComponent(g);
         g.drawImage(img, 0, 0, null);
     }
 	
+	protected void drawImageAt(BufferedImage image, int x, int y) {
+		this.gr.drawImage(image, (x+1)*DessinCarte.largeur+(-image.getWidth())/2, (y+1)*DessinCarte.hauteur+(-image.getHeight())/2, this) ;
+    }
+	
+	protected void drawImageAt(BufferedImage image, double x, double y) {
+		this.gr.drawImage(image, (int)((x+1)*DessinCarte.largeur+(-image.getWidth())/2), (int)((y+1)*DessinCarte.hauteur+(-image.getHeight())/2), this) ;
+    }
+	
 	public void update(){
 		if(this.dogeMode==true){
 			for(int i=0;i<=this.x+1;i++){
 				for(int j=0;j<=this.y+1;j++){
-					this.gr.drawImage(grass.getImage(), i*DessinCarte.largeur-grass.getWidth()/2, j*DessinCarte.largeur-grass.getHeight()/2, this) ;
+					if((i>0 && i<=this.x || j>0 && j<=this.y) && this.carte.isRevealed(i-1, j-1))
+						this.gr.drawImage(grass.getImage(), i*DessinCarte.largeur-grass.getWidth()/2, j*DessinCarte.largeur-grass.getHeight()/2, this) ;
+					else
+						this.gr.drawImage(gray.getImage(), i*DessinCarte.largeur-grass.getWidth()/2, j*DessinCarte.largeur-grass.getHeight()/2, this) ;
 				}
 			}
 			for(int i=0;i<this.x;i++){
@@ -93,8 +114,18 @@ public class DessinCarte extends JPanel {
 					}
 				}
 			}
+			if(this.mark)
+				this.drawImageAt(ball.getImage(),this.carte.getMark().getX(),this.carte.getMark().getY());
 		}
+		for(VirtualRobots robot : robots){
+			robot.update();
+			this.drawImageAt(robot.draw(),robot.getdX(),robot.getdY());
+			}
 		this.repaint();
 		
+	}
+	
+	public void removeMark(){
+		this.mark=false;
 	}
 }
