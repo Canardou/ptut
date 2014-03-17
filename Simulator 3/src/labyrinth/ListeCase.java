@@ -10,16 +10,18 @@ public class ListeCase implements java.lang.Comparable {
 	private Case current;
 	private int cout;
 	private int distance;
+	private int dir;
 	
 	/*
 	 * Constructeurs
 	 */
 	
-	public ListeCase(Case current,int cout,ListeCase previous){
+	public ListeCase(Case current,int cout,ListeCase previous, int dir, int distance){
 		this.current=current;
 		this.cout=cout;
 		this.previous=previous;
-		this.distance=0;
+		this.distance=distance;
+		this.dir=dir;
 	}
 	
 	/*
@@ -34,12 +36,12 @@ public class ListeCase implements java.lang.Comparable {
 		return this.cout;
 	}
 	
-	public void setCout(int cout){
-		this.cout=cout;
+	public int getDir(){
+		return this.dir;
 	}
 	
-	public void setDistance(int distance){
-		this.distance=distance;
+	public void setCout(int cout){
+		this.cout=cout;
 	}
 	
 	public ListeCase previous(){

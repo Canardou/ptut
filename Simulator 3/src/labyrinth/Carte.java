@@ -235,24 +235,28 @@ public class Carte {
 		ArrayList<ListeCase> recherche=new ArrayList<ListeCase>();
 		ArrayList<ListeCase> closed=new ArrayList<ListeCase>();
 		ArrayList<Case> check=new ArrayList<Case>();
-		recherche.add(new ListeCase(depart,0,null));
-		recherche.get(0).setDistance(this.distance(depart.getX(), depart.getY(), arrivee.getX(), arrivee.getY()));
+		recherche.add(new ListeCase(depart,0,null,-1,this.distance(depart.getX(), depart.getY(), arrivee.getX(), arrivee.getY())));
 		check.add(depart);
 		while(recherche.get(0).current()!=arrivee){
 			for(int k=0;k<4;k++){
 				Case temp=recherche.get(0).current();
 				if(temp.isCrossable(k) && checkCoord(temp.getX(k),temp.getY(k))){
 					Case test=this.map[temp.getX(k)][temp.getY(k)];
+					test.setReveal();
 					if(!check.contains(test)){
-						recherche.add(new ListeCase(test,recherche.get(0).getCout()+1,recherche.get(0)));
-						recherche.get(0).setDistance(this.distance(test.getX(), test.getY(), arrivee.getX(), arrivee.getY()));
+						int cout=1;
+						if(temp.getDir(test)!=recherche.get(0).getDir() && recherche.get(0).getDir()!=-1)
+							cout=2;
+						recherche.add(new ListeCase(test,recherche.get(0).getCout()+cout,recherche.get(0),temp.getDir(test),this.distance(test.getX(), test.getY(), arrivee.getX(), arrivee.getY())));
 						check.add(test);
 					}
 				}
 				else if(this.exit!=null){
 					if (this.exit.getX()==temp.getX(k) && this.exit.getY()==temp.getY(k)){
-						recherche.add(new ListeCase(this.exit,recherche.get(0).getCout()+1,recherche.get(0)));
-						recherche.get(0).setDistance(0);
+						int cout=1;
+						if(temp.getDir(this.exit)!=recherche.get(0).getDir() && recherche.get(0).getDir()!=-1)
+							cout=2;
+						recherche.add(new ListeCase(this.exit,recherche.get(0).getCout()+cout,recherche.get(0),temp.getDir(this.exit),0));
 						check.add(this.exit);
 					}
 				}
@@ -326,7 +330,7 @@ public class Carte {
 	 * Permet de générer un labyrinthe aléatoire, disposant d'une sortie, à des fins de tests
 	 */
 	
-	public void randomMaze(){
+	public void randomMaze(double wall){
 		Stack<Case> stack = new Stack<Case>();
 		ArrayList<Case> recherche=new ArrayList<Case>();
 		for(int i=0;i<this.width;i++){
@@ -336,13 +340,12 @@ public class Carte {
 				this.map[i][j].close(Case.LEFT);
 				this.map[i][j].close(Case.RIGHT);
 				recherche.add(this.map[i][j]);
-				this.map[i][j].setReveal();
 			}
 		}
 		Case temp = recherche.get((int)(Math.random()*recherche.size()));
 		while(recherche.size()>0){
 			ArrayList<Case> random = new ArrayList<Case>();
-			if(Math.random()>0.2)
+			if(Math.random()>wall)
 				recherche.remove(temp);
 			for(int k=0;k<4;k++){
 				if(checkCoord(temp.getX(k),temp.getY(k))){

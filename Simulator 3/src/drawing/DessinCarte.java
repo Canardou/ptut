@@ -88,10 +88,11 @@ public class DessinCarte extends JPanel {
 		if(this.dogeMode==true){
 			for(int i=0;i<=this.x+1;i++){
 				for(int j=0;j<=this.y+1;j++){
-					if((i>0 && i<=this.x || j>0 && j<=this.y) && this.carte.isRevealed(i-1, j-1))
+					if((i>0 && i<=this.x || j>0 && j<=this.y) && this.carte.isRevealed(i-1, j-1)){
 						this.gr.drawImage(grass.getImage(), i*DessinCarte.largeur-grass.getWidth()/2, j*DessinCarte.largeur-grass.getHeight()/2, this) ;
-					else
+					}else{
 						this.gr.drawImage(gray.getImage(), i*DessinCarte.largeur-grass.getWidth()/2, j*DessinCarte.largeur-grass.getHeight()/2, this) ;
+					}
 				}
 			}
 			for(int i=0;i<this.x;i++){

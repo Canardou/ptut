@@ -12,6 +12,7 @@ public class main implements ActionListener {
 	private JFrame application;
 	private DessinCarte test;
 	private Timer timer= new Timer(20,this);
+	private int attente;
 	
 	public static void main(String [] args){
 		new main();
@@ -21,10 +22,9 @@ public class main implements ActionListener {
 		laby = new Carte(10);
 		application = new JFrame();
 		test = new DessinCarte(laby);
-		laby.randomMaze(); 
+		laby.randomMaze(0.35); 
 		test.addRobot((int)(Math.random()*10),(int)(Math.random()*10),0,0);
-		Chemin yolo = new Chemin(laby.pathToMarque((int)this.test.getRobot(0).getX(), (int)this.test.getRobot(0).getY()));
-		test.getRobot(0).walkPath(yolo);
+		attente=100;
 		application.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		application.add(test); 
 		application.pack();
@@ -34,13 +34,20 @@ public class main implements ActionListener {
 	}
 	
 	public void update(){
-		
+		if(attente>1)
+			attente--;
+		else if(attente==1){
+			Chemin yolo = new Chemin(laby.pathToMarque((int)this.test.getRobot(0).getX(), (int)this.test.getRobot(0).getY()));
+			test.getRobot(0).walkPath(yolo);
+			attente--;
+		}
 		test.update();
-		if(test.getRobot(0).getX()==laby.getMark().getX() && test.getRobot(0).getY()==laby.getMark().getY()){
+		if(attente==0 && test.getRobot(0).getX()==laby.getMark().getX() && test.getRobot(0).getY()==laby.getMark().getY()){
 			test.getRobot(0).changeType(3);
 			test.removeMark();
 			Chemin yolo = new Chemin(laby.pathToExit((int)this.test.getRobot(0).getX(), (int)this.test.getRobot(0).getY()));
 			test.getRobot(0).walkPath(yolo);
+			attente--;
 		}
 	}
 	

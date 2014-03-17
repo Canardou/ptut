@@ -82,40 +82,49 @@ public class VirtualRobots {
 	}
 	
 	public void update(){
-		if(exposition<3){
+		if(exposition<5){
 			this.exposition++;
 		}
 		else{
 			this.sheet.nextImage();
 			this.exposition=0;
 		}
-		if(this.path.size()>1){
-			if((int)(this.dx*10)!=this.path.getX(1)*10 || (int)(this.dy*10)!=this.path.getY(1)*10){
-				switch(this.path.direction(0)){
-				case Case.UP:
-					this.sheet.setSequence("up");
-					this.dy-=0.05;
-					break;
-				case Case.DOWN:
-					this.sheet.setSequence("down");
-					this.dy+=0.05;
-					break;
-				case Case.LEFT:
-					this.sheet.setSequence("left");
-					this.dx-=0.05;
-					break;
-				case Case.RIGHT:
-					this.sheet.setSequence("right");
-					this.dx+=0.05;
-					break;
+		if(this.path!=null){
+			if(this.path.size()>1){
+				if((int)(this.dx*10)!=this.path.getX(1)*10 || (int)(this.dy*10)!=this.path.getY(1)*10){
+					switch(this.path.direction(0)){
+					case Case.UP:
+						this.sheet.setSequence("up");
+						this.dy-=0.05;
+						break;
+					case Case.DOWN:
+						this.sheet.setSequence("down");
+						this.dy+=0.05;
+						break;
+					case Case.LEFT:
+						this.sheet.setSequence("left");
+						this.dx-=0.05;
+						break;
+					case Case.RIGHT:
+						this.sheet.setSequence("right");
+						this.dx+=0.05;
+						break;
+					}
+				}
+				else{
+					this.x=this.path.getX(1);
+					this.y=this.path.getY(1);
+					this.dx=(double)x;
+					this.dy=(double)y;
+					this.path.removeTop();
 				}
 			}
 			else{
-				this.x=this.path.getX(1);
-				this.y=this.path.getY(1);
+				this.x=this.path.getX(0);
+				this.y=this.path.getY(0);
 				this.dx=(double)x;
 				this.dy=(double)y;
-				this.path.removeTop();
+				this.path=null;
 			}
 		}
 		else{

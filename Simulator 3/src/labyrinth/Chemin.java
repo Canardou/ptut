@@ -14,7 +14,9 @@ public class Chemin {
 	
 	public Chemin(Chemin copie){
 		this();
-		this.route=copie.route;
+		if(copie!=null){
+			this.route=copie.route;
+		}
 	}
 	
 	public Chemin(Case depart){
