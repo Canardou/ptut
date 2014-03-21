@@ -9,18 +9,16 @@ public class ListeCase implements java.lang.Comparable {
 	private ListeCase previous;
 	private Case current;
 	private int cout;
-	private int distance;
 	private int dir;
 	
 	/*
 	 * Constructeurs
 	 */
 	
-	public ListeCase(Case current,int cout,ListeCase previous, int dir, int distance){
+	public ListeCase(Case current,int cout,ListeCase previous, int dir){
 		this.current=current;
 		this.cout=cout;
 		this.previous=previous;
-		this.distance=distance;
 		this.dir=dir;
 	}
 	
@@ -50,8 +48,8 @@ public class ListeCase implements java.lang.Comparable {
 	
 	//From http://java.developpez.com
 	public int compareTo(Object other) { 
-		int nombre1 = ((ListeCase)other).cout+((ListeCase)other).distance; 
-		int nombre2 = this.cout+this.distance; 
+		int nombre1 = ((ListeCase)other).cout; 
+		int nombre2 = this.cout; 
 		if (nombre1 > nombre2)  return -1; 
 		else if(nombre1 == nombre2) return 0; 
 		else return 1; 

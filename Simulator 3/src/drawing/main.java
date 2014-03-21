@@ -22,8 +22,9 @@ public class main implements ActionListener {
 		laby = new Carte(10);
 		application = new JFrame();
 		test = new DessinCarte(laby);
+		test.addRobot((int)(Math.random()*10),(int)(Math.random()*10),0,4);
+		test.toggleDoge();
 		laby.randomMaze(0.35); 
-		test.addRobot((int)(Math.random()*10),(int)(Math.random()*10),0,0);
 		attente=100;
 		application.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		application.add(test); 
@@ -42,8 +43,9 @@ public class main implements ActionListener {
 			attente--;
 		}
 		test.update();
+		laby.reveal(test.getRobot(0).getX(), test.getRobot(0).getY());
 		if(attente==0 && test.getRobot(0).getX()==laby.getMark().getX() && test.getRobot(0).getY()==laby.getMark().getY()){
-			test.getRobot(0).changeType(3);
+			test.getRobot(0).changeType(test.getRobot(0).getType()+3);
 			test.removeMark();
 			Chemin yolo = new Chemin(laby.pathToExit((int)this.test.getRobot(0).getX(), (int)this.test.getRobot(0).getY()));
 			test.getRobot(0).walkPath(yolo);

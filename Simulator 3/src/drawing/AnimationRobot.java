@@ -23,7 +23,7 @@ public class AnimationRobot {
 		if(type>=0 && type<=4)
 			this.type=type;
 		else
-			this.type=5;
+			this.type=4;
 		this.step=0;
 		this.step_max=0;
 		this.row=0;
@@ -53,7 +53,7 @@ public class AnimationRobot {
 			this.step++;
 		else{
 			this.step=this.col;
-			if(type!=5){
+			if(type!=4){
 				if(this.row==4)
 					this.row=5;
 				else if(this.row==5)
@@ -86,9 +86,6 @@ public class AnimationRobot {
 				case "right":
 					this.row=2;
 					break;
-				case "stand":
-					this.row=4;
-					break;
 				case "icone":
 					this.step_max=4;
 					if(type<3){
@@ -99,23 +96,26 @@ public class AnimationRobot {
 						this.col=0;
 					}
 					break;
+				case "stand":
+				default:
+					this.row=4;
+					break;
 				}
 			}
 			else{
 				this.step_max=1;
 				this.row=7;
 				switch(animation){
-				case "down":
-				case "stand":
-					this.col=4;
-					break;
 				case "up":
+				case "up_stand":
 					this.col=7;
 					break;
 				case "left":
+				case "left_stand":
 					this.col=6;
 					break;
 				case "right":
+				case "right_stand":
 					this.col=5;
 					break;
 				case "wow":
@@ -123,6 +123,12 @@ public class AnimationRobot {
 				case "icone":
 					this.col=8;
 					this.step_max=3;
+				case "down":
+				case "stand":
+				case "down_stand":
+				default :
+					this.col=4;
+					break;
 				}
 			}
 			this.step=this.col;
@@ -130,8 +136,11 @@ public class AnimationRobot {
 	}
 	
 	public void changeType(int type){
-		setSequence(this.current,type);
-		this.type=type;
+		if(type>=0 && type<=4)
+			this.type=type;
+		else
+			this.type=4;
+		setSequence(this.current,this.type);
 	}
 
 }

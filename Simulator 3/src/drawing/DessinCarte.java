@@ -31,6 +31,8 @@ public class DessinCarte extends JPanel {
 	private Graphics2D gr ;
 	private boolean dogeMode;
 	
+	private Font comic = FontImport.getFont("ComicRelief.ttf");
+	
 	/*
 	 * Constructeur
 	 */
@@ -48,7 +50,7 @@ public class DessinCarte extends JPanel {
 		this.setPreferredSize(new Dimension(this.img.getWidth(),this.img.getWidth()));
 		this.gr=this.img.createGraphics() ;
 		
-		this.dogeMode=true;
+		this.dogeMode=false;//Wow, so wrong
 	}
 	
 	/*
@@ -60,6 +62,12 @@ public class DessinCarte extends JPanel {
 			this.dogeMode=false;
 		else
 			this.dogeMode=true;
+		for(VirtualRobots robot : robots){
+			if(robot.getType()<4)
+				robot.changeType(robot.getType()+4);
+			else
+				robot.changeType(robot.getType()%4);
+			}
 	}
 	
 	public void addRobot(int x, int y, int direction, int type){
@@ -85,7 +93,7 @@ public class DessinCarte extends JPanel {
     }
 	
 	public void update(){
-		if(this.dogeMode==true){
+		if(this.dogeMode){
 			for(int i=0;i<=this.x+1;i++){
 				for(int j=0;j<=this.y+1;j++){
 					if((i>0 && i<=this.x || j>0 && j<=this.y) && this.carte.isRevealed(i-1, j-1)){
@@ -95,33 +103,79 @@ public class DessinCarte extends JPanel {
 					}
 				}
 			}
+		}
+		else{
+			this.gr.setColor(new Color(32,32,32));
+			this.gr.fillRect(0, 0, this.width, this.height);
+			this.gr.setColor(new Color(60,60,80));
 			for(int i=0;i<this.x;i++){
 				for(int j=0;j<this.y;j++){
-					if(j==0 && !this.carte.isCrossableUp(i, j)){
-						this.gr.drawImage(wallSheet.getImage(0,0), i*DessinCarte.largeur+DessinCarte.largeur/2, (j)*DessinCarte.hauteur+DessinCarte.hauteur/2-wallSheet.getHeight()/2, this) ;
-						this.gr.drawImage(wallSheet.getImage(1,0), i*DessinCarte.largeur+DessinCarte.largeur/2+wallSheet.getWidth(), (j)*DessinCarte.hauteur+DessinCarte.hauteur/2-wallSheet.getHeight()/2, this) ;
-					}
-					if(i==0 && !this.carte.isCrossableLeft(i, j)){
-						this.gr.drawImage(wallSheet.getImage(0,2), (i)*DessinCarte.largeur+DessinCarte.largeur/2-wallSheet.getWidth()/2, j*DessinCarte.hauteur+DessinCarte.hauteur/2, this) ;
-						this.gr.drawImage(wallSheet.getImage(0,3), (i)*DessinCarte.largeur+DessinCarte.largeur/2-wallSheet.getWidth()/2, j*DessinCarte.hauteur+DessinCarte.hauteur/2+wallSheet.getHeight(), this) ;
-					}
-					if(!this.carte.isCrossableRight(i, j)){
-						this.gr.drawImage(wallSheet.getImage(0,2), (i+1)*DessinCarte.largeur+DessinCarte.largeur/2-wallSheet.getWidth()/2, j*DessinCarte.hauteur+DessinCarte.hauteur/2, this) ;
-						this.gr.drawImage(wallSheet.getImage(0,3), (i+1)*DessinCarte.largeur+DessinCarte.largeur/2-wallSheet.getWidth()/2, j*DessinCarte.hauteur+DessinCarte.hauteur/2+wallSheet.getHeight(), this) ;
-					}
-					if(!this.carte.isCrossableDown(i, j)){
-						this.gr.drawImage(wallSheet.getImage(0,0), i*DessinCarte.largeur+DessinCarte.largeur/2, (j+1)*DessinCarte.hauteur+DessinCarte.hauteur/2-wallSheet.getHeight()/2, this) ;
-						this.gr.drawImage(wallSheet.getImage(1,0), i*DessinCarte.largeur+DessinCarte.largeur/2+wallSheet.getWidth(), (j+1)*DessinCarte.hauteur+DessinCarte.hauteur/2-wallSheet.getHeight()/2, this) ;
-					}
+					if(this.carte.isRevealed(i, j))
+						this.gr.fillRect(i*DessinCarte.largeur+DessinCarte.largeur/2, j*DessinCarte.hauteur+DessinCarte.hauteur/2, DessinCarte.largeur, DessinCarte.hauteur);
 				}
 			}
-			if(this.mark)
-				this.drawImageAt(ball.getImage(),this.carte.getMark().getX(),this.carte.getMark().getY());
 		}
+		if(this.mark)
+			this.drawImageAt(ball.getImage(),this.carte.getMark().getX(),this.carte.getMark().getY());
 		for(VirtualRobots robot : robots){
 			robot.update();
 			this.drawImageAt(robot.draw(),robot.getdX(),robot.getdY());
 			}
+		if(this.dogeMode){
+			for(int i=0;i<this.x;i++){
+				for(int j=0;j<this.y;j++){
+					if(j==0 && !this.carte.isCrossableUp(i, j)){
+						this.gr.drawImage(wallSheet.getImage(0,0), i*DessinCarte.largeur+DessinCarte.largeur/2-3, (j)*DessinCarte.hauteur+DessinCarte.hauteur/2-wallSheet.getHeight()/2, this) ;
+						this.gr.drawImage(wallSheet.getImage(1,0), i*DessinCarte.largeur+DessinCarte.largeur/2+wallSheet.getWidth()-3, (j)*DessinCarte.hauteur+DessinCarte.hauteur/2-wallSheet.getHeight()/2, this) ;
+					}
+					if(i==0 && !this.carte.isCrossableLeft(i, j)){
+						this.gr.drawImage(wallSheet.getImage(0,2), (i)*DessinCarte.largeur+DessinCarte.largeur/2-wallSheet.getWidth()/2, j*DessinCarte.hauteur+DessinCarte.hauteur/2-3, this) ;
+						this.gr.drawImage(wallSheet.getImage(0,3), (i)*DessinCarte.largeur+DessinCarte.largeur/2-wallSheet.getWidth()/2, j*DessinCarte.hauteur+DessinCarte.hauteur/2+wallSheet.getHeight()-3, this) ;
+					}
+					if(!this.carte.isCrossableRight(i, j)){
+						this.gr.drawImage(wallSheet.getImage(0,2), (i+1)*DessinCarte.largeur+DessinCarte.largeur/2-wallSheet.getWidth()/2, j*DessinCarte.hauteur+DessinCarte.hauteur/2-3, this) ;
+						this.gr.drawImage(wallSheet.getImage(0,3), (i+1)*DessinCarte.largeur+DessinCarte.largeur/2-wallSheet.getWidth()/2, j*DessinCarte.hauteur+DessinCarte.hauteur/2+wallSheet.getHeight()-3, this) ;
+					}
+					if(!this.carte.isCrossableDown(i, j)){
+						this.gr.drawImage(wallSheet.getImage(0,0), i*DessinCarte.largeur+DessinCarte.largeur/2-3, (j+1)*DessinCarte.hauteur+DessinCarte.hauteur/2-wallSheet.getHeight()/2, this) ;
+						this.gr.drawImage(wallSheet.getImage(1,0), i*DessinCarte.largeur+DessinCarte.largeur/2+wallSheet.getWidth()-3, (j+1)*DessinCarte.hauteur+DessinCarte.hauteur/2-wallSheet.getHeight()/2, this) ;
+					}
+				}
+			}
+		}
+		else{
+			for(int j=0;j<this.y;j++){
+				for(int i=0;i<this.x;i++){
+					if(j==0 && !this.carte.isCrossableUp(i, j)){
+						this.gr.drawImage(wallSheet.getImage(0,1), i*DessinCarte.largeur+DessinCarte.largeur/2-3, (j)*DessinCarte.hauteur+DessinCarte.hauteur/2-wallSheet.getHeight()/2, this) ;
+						this.gr.drawImage(wallSheet.getImage(1,1), i*DessinCarte.largeur+DessinCarte.largeur/2+wallSheet.getWidth()-3, (j)*DessinCarte.hauteur+DessinCarte.hauteur/2-wallSheet.getHeight()/2, this) ;
+					}
+					if(i==0 && !this.carte.isCrossableLeft(i, j)){
+						this.gr.drawImage(wallSheet.getImage(1,2), (i)*DessinCarte.largeur+DessinCarte.largeur/2-wallSheet.getWidth()/2, j*DessinCarte.hauteur+DessinCarte.hauteur/2-3, this) ;
+						this.gr.drawImage(wallSheet.getImage(1,3), (i)*DessinCarte.largeur+DessinCarte.largeur/2-wallSheet.getWidth()/2, j*DessinCarte.hauteur+DessinCarte.hauteur/2+wallSheet.getHeight()-3, this) ;
+					}
+					if(!this.carte.isCrossableRight(i, j)){
+						this.gr.drawImage(wallSheet.getImage(1,2), (i+1)*DessinCarte.largeur+DessinCarte.largeur/2-wallSheet.getWidth()/2, j*DessinCarte.hauteur+DessinCarte.hauteur/2-3, this) ;
+						this.gr.drawImage(wallSheet.getImage(1,3), (i+1)*DessinCarte.largeur+DessinCarte.largeur/2-wallSheet.getWidth()/2, j*DessinCarte.hauteur+DessinCarte.hauteur/2+wallSheet.getHeight()-3, this) ;
+					}
+					if(!this.carte.isCrossableDown(i, j)){
+						this.gr.drawImage(wallSheet.getImage(0,1), i*DessinCarte.largeur+DessinCarte.largeur/2-3, (j+1)*DessinCarte.hauteur+DessinCarte.hauteur/2-wallSheet.getHeight()/2, this) ;
+						this.gr.drawImage(wallSheet.getImage(1,1), i*DessinCarte.largeur+DessinCarte.largeur/2+wallSheet.getWidth()-3, (j+1)*DessinCarte.hauteur+DessinCarte.hauteur/2-wallSheet.getHeight()/2, this) ;
+					}
+				}
+			}
+		}
+		this.gr.setColor(new Color(255,255,255));
+		for(VirtualRobots robot : robots){
+			if(this.dogeMode){
+				this.gr.setFont(this.comic.deriveFont(14f));
+				this.gr.drawString("Doge_"+robot.getID(), (int)((robot.getdX()+1)*DessinCarte.largeur)-DessinCarte.largeur/2, (int)((robot.getdY())*DessinCarte.hauteur)+DessinCarte.hauteur-15);
+			}
+			else{
+				this.gr.setFont(new Font("Dialog", Font.BOLD, 12));
+				this.gr.drawString("Robo_"+robot.getID(), (int)((robot.getdX()+1)*DessinCarte.largeur)-DessinCarte.largeur/2, (int)((robot.getdY())*DessinCarte.hauteur)+DessinCarte.hauteur-15);
+			}
+		}	
 		this.repaint();
 		
 	}

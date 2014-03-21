@@ -174,18 +174,8 @@ public class Carte {
 	
 	/**
 	 * 
-	 * @method createPath
-	 * @param {int} position de départ x
-	 * @param {int} position de départ y
-	 * @param {int} position d'arrivee x
-	 * @param {int} position d'arrivee y
-	 * @desc retourne un chemin entre deux emplacements
-	 * 
+	 * @return
 	 */
-	
-	private int distance(int a, int b, int c, int d){
-		return Math.abs(a-c)+Math.abs(b-d);
-	}
 	
 	public Case setExit(){
 		if(this.exit==null){
@@ -230,24 +220,34 @@ public class Carte {
 			return null;
 	}
 	
+	/**
+	 * 
+	 * @method createPath
+	 * @param {int} position de départ x
+	 * @param {int} position de départ y
+	 * @param {int} position d'arrivee x
+	 * @param {int} position d'arrivee y
+	 * @desc retourne un chemin entre deux emplacements
+	 * 
+	 */
+	
 	public Chemin createPath(Case depart, Case arrivee){
 		Chemin path = new Chemin();
 		ArrayList<ListeCase> recherche=new ArrayList<ListeCase>();
 		ArrayList<ListeCase> closed=new ArrayList<ListeCase>();
 		ArrayList<Case> check=new ArrayList<Case>();
-		recherche.add(new ListeCase(depart,0,null,-1,this.distance(depart.getX(), depart.getY(), arrivee.getX(), arrivee.getY())));
+		recherche.add(new ListeCase(depart,0,null,-1));
 		check.add(depart);
 		while(recherche.get(0).current()!=arrivee){
 			for(int k=0;k<4;k++){
 				Case temp=recherche.get(0).current();
 				if(temp.isCrossable(k) && checkCoord(temp.getX(k),temp.getY(k))){
 					Case test=this.map[temp.getX(k)][temp.getY(k)];
-					test.setReveal();
 					if(!check.contains(test)){
 						int cout=1;
 						if(temp.getDir(test)!=recherche.get(0).getDir() && recherche.get(0).getDir()!=-1)
 							cout=2;
-						recherche.add(new ListeCase(test,recherche.get(0).getCout()+cout,recherche.get(0),temp.getDir(test),this.distance(test.getX(), test.getY(), arrivee.getX(), arrivee.getY())));
+						recherche.add(new ListeCase(test,recherche.get(0).getCout()+cout,recherche.get(0),temp.getDir(test)));
 						check.add(test);
 					}
 				}
@@ -256,7 +256,7 @@ public class Carte {
 						int cout=1;
 						if(temp.getDir(this.exit)!=recherche.get(0).getDir() && recherche.get(0).getDir()!=-1)
 							cout=2;
-						recherche.add(new ListeCase(this.exit,recherche.get(0).getCout()+cout,recherche.get(0),temp.getDir(this.exit),0));
+						recherche.add(new ListeCase(this.exit,recherche.get(0).getCout()+cout,recherche.get(0),temp.getDir(this.exit)));
 						check.add(this.exit);
 					}
 				}
@@ -279,9 +279,9 @@ public class Carte {
 	
 	/**
 	 * 
-	 * @param x
+	 * @param {int} x
 	 * @param y
-	 * @return
+	 * @return 
 	 */
 	
 	public Case getCase(int x, int y){
