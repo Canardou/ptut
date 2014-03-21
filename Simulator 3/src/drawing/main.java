@@ -38,7 +38,7 @@ public class main implements ActionListener {
 		if(attente>1)
 			attente--;
 		else if(attente==1){
-			Chemin yolo = new Chemin(laby.pathToMarque((int)this.test.getRobot(0).getX(), (int)this.test.getRobot(0).getY()));
+			Chemin yolo = new Chemin(laby.pathToMark((int)this.test.getRobot(0).getX(), (int)this.test.getRobot(0).getY()));
 			test.getRobot(0).walkPath(yolo);
 			attente--;
 		}

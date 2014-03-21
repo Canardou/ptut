@@ -10,6 +10,7 @@ import java.util.Collections;
  */
 
 public class Carte {
+	
 	/*
 	 * Attributs
 	 */
@@ -58,7 +59,6 @@ public class Carte {
 	}
 	
 	/**
-	 * 
 	 * @method bound/close
 	 * @param {int} coordonne x
 	 * @param {int} coordonne y
@@ -124,7 +124,6 @@ public class Carte {
 	}
 	
 	/**
-	 * 
 	 * @method reveal
 	 * @param {int} x
 	 * @param {int} y
@@ -136,6 +135,14 @@ public class Carte {
 		if(checkCoord(x,y))
 			this.map[x][y].setReveal();
 	}
+	
+	/**
+	 * @method isRevealed
+	 * @param {int} x
+	 * @param {int} y
+	 * @desc retourne si une case est visitee ou non
+	 * 
+	 */
 
 	public boolean isRevealed(int x, int y){
 		if(checkCoord(x,y))
@@ -173,8 +180,9 @@ public class Carte {
 	}
 	
 	/**
-	 * 
-	 * @return
+	 * @method setExit
+	 * @return {Case} exit
+	 * @desc Cherche/Retourne automatiquement la sortie
 	 */
 	
 	public Case setExit(){
@@ -195,6 +203,15 @@ public class Carte {
 		return this.exit;
 	}
 	
+	/**
+	 * @method pathToExit
+	 * @param {int} position de départ x
+	 * @param {int} position de départ y
+	 * @return {Chemin} chemin
+	 * @desc retourne un chemin entre la position et la sortie si existante, sinon null
+	 * 
+	 */
+	
 	public Chemin pathToExit(int dx, int dy){
 		if(checkCoord(dx,dy)){
 			if(setExit()!=null){
@@ -204,7 +221,16 @@ public class Carte {
 		return null;
 	}
 	
-	public Chemin pathToMarque(int dx, int dy){
+	/**
+	 * @method pathToMark
+	 * @param {int} position de départ x
+	 * @param {int} position de départ y
+	 * @return {Chemin} chemin
+	 * @desc retourne un chemin entre la position et le marqueur si existant, sinon null
+	 * 
+	 */
+	
+	public Chemin pathToMark(int dx, int dy){
 		if(checkCoord(dx,dy)){
 			if(this.marque!=null){
 				return createPath(this.map[dx][dy],this.marque);
@@ -212,6 +238,18 @@ public class Carte {
 		}
 		return null;
 	}
+	
+	/**
+	 * 
+	 * @method createPath
+	 * @param {int} position de départ x
+	 * @param {int} position de départ y
+	 * @param {int} position d'arrivee x
+	 * @param {int} position d'arrivee y
+	 * @return {Chemin} chemin
+	 * @desc retourne un chemin entre deux emplacements
+	 * 
+	 */
 	
 	public Chemin createPath(int dx, int dy, int ax, int ay){
 		if(checkCoord(dx,dy) && checkCoord(ax,ay))
@@ -223,10 +261,9 @@ public class Carte {
 	/**
 	 * 
 	 * @method createPath
-	 * @param {int} position de départ x
-	 * @param {int} position de départ y
-	 * @param {int} position d'arrivee x
-	 * @param {int} position d'arrivee y
+	 * @param {Case} case de départ
+	 * @param {Case} case d'arrivee
+	 * @return {Chemin} chemin
 	 * @desc retourne un chemin entre deux emplacements
 	 * 
 	 */
@@ -278,10 +315,10 @@ public class Carte {
 	}
 	
 	/**
-	 * 
+	 * @method getCase
 	 * @param {int} x
-	 * @param y
-	 * @return 
+	 * @param {int} y
+	 * @return {Case} case
 	 */
 	
 	public Case getCase(int x, int y){
@@ -290,9 +327,11 @@ public class Carte {
 	
 	/**
 	 * 
-	 * @param x
-	 * @param y
-	 * @return
+	 * @method isCrossable
+	 * @param {int} x
+	 * @param {int} y
+	 * @return {boolean} possible
+	 * @desc retourne si un chemin existe vers une direction depuis la case
 	 */
 	
 	public boolean isCrossableUp(int x, int y){
@@ -318,6 +357,12 @@ public class Carte {
 			return false;
 	}
 	
+	/**
+	 * 
+	 * @method getWidth/Height
+	 * @return {int} width/height
+	 */
+	
 	public int getWidth(){
 		return this.width;
 	}
@@ -327,7 +372,9 @@ public class Carte {
 	}
 	
 	/**
-	 * Permet de générer un labyrinthe aléatoire, disposant d'une sortie, à des fins de tests
+	 * @randomMaze
+	 * @param {double} probabilite
+	 * @desc Permet de générer un labyrinthe aléatoire, disposant d'une sortie, à des fins de tests. La probabilité augmente le nombre probable de murs enlevés au delà du minimum.
 	 */
 	
 	public void randomMaze(double wall){

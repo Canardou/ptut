@@ -14,9 +14,9 @@ public class Case {
 	 * Attributs
 	 */
 	
-	private boolean marque;
 	private boolean decouverte;
-	private boolean [] murs;
+	//private boolean [] murs;
+	private byte murs;
 	//Possibilitée d'utiliser un mask
 	private int x;
 	private int y;
@@ -25,12 +25,18 @@ public class Case {
 	 * Constructeurs
 	 */
 	
-	public Case(int x, int y){
-		this.marque=false;
+	public Case(int x, int y, byte murs){
 		this.decouverte=false;
 		this.x=x;
 		this.y=y;
-		this.murs=new boolean[4];
+		this.murs=murs;
+	}
+	
+	public Case(int x, int y){
+		this.decouverte=false;
+		this.x=x;
+		this.y=y;
+		this.murs=0;
 	}
 	
 	public Case(){
@@ -41,10 +47,19 @@ public class Case {
 	 * Méthodes
 	 */
 	
-	//Gestion des arcs accessibles
+	/**
+	 * @method changeState
+	 * @param {int} direction
+	 * @param {int} state
+	 * @return {boolean} true si l'action est effectuee
+	 */
+	
 	private boolean changeState(int direction, boolean state){
 		if(direction>=0 && direction<4){
-			this.murs[direction]=state;
+			if(state)
+				this.murs=(byte)(this.murs|(1<<direction));
+			else
+				this.murs=(byte)(this.murs&~(1<<direction));
 			return true;
 		}
 		else
@@ -52,41 +67,73 @@ public class Case {
 		
 	}
 	
+	/**
+	 * @method close
+	 * @param {int} direction
+	 * @return {boolean} true si action effectuee
+	 */
+	
 	public boolean close(int direction){
 		return changeState(direction,true);
 	}
+	
+	/**
+	 * @method bound
+	 * @param {int} direction
+	 * @return {boolean} true si action effectuee
+	 */
 	
 	public boolean bound(int direction){
 		return changeState(direction,false);
 	}
 	
+	/**
+	 * @method isCrossable
+	 * @param {int} direction
+	 * @return {boolean} true si absence de mur
+	 */
+	
 	public boolean isCrossable(int direction){
 		if(direction>=0 && direction<4){
-			return !this.murs[direction];
+			return !((byte)(murs&(1<<direction))!=0);
 		}
 		else
 			return false;
 	}
 	
+	/**
+	 * @method setreveal
+	 * @desc declare la case visitee
+	 */
+	
 	public void setReveal(){
 		this.decouverte=true;
 	}
+	
+	/**
+	 * @method isRevealed
+	 * @return {boolean}
+	 * @desc retourne si la case est visitee
+	 */
 	
 	public boolean isRevealed(){
 		return this.decouverte;
 	}
 	
-	public void isObjective(){
-		this.marque=true;
-	}
-	
-	public boolean getMarqueur(){
-		return this.marque;
-	}
+	/**
+	 * @method getX
+	 * @return {int} coordonne x de la case
+	 */
 	
 	public int getX(){
 		return this.x;
 	}
+	
+	/**
+	 * @method getX
+	 * @param {int} direction
+	 * @return {int} coordonne x de la case dans la direction
+	 */
 	
 	public int getX(int direction){
 		if(direction==Case.LEFT)
@@ -97,9 +144,20 @@ public class Case {
 			return this.x;
 	}
 	
+	/**
+	 * @method getY
+	 * @return {int} coordonne y de la case
+	 */
+	
 	public int getY(){
 		return this.y;
 	}
+	
+	/**
+	 * @method getY
+	 * @param {int} direction
+	 * @return {int} coordonne y de la case dans la direction
+	 */
 	
 	public int getY(int direction){
 		if(direction==Case.UP)
@@ -128,6 +186,10 @@ public class Case {
 	}
 	
 	public String toString(){
-		return "Case ["+this.getX()+"]["+this.getY()+"] ^"+this.murs[0]+" <"+this.murs[1]+" v"+this.murs[2]+" >"+this.murs[3];
+		return "Case ["+this.getX()+"]["+this.getY()+"]";
+	}
+	
+	public byte getWalls(){
+		return this.murs;
 	}
 }
