@@ -49,14 +49,14 @@ public class Carte {
 	public Carte(byte[] importation){
 		this.width = importation[0];
 		this.height = importation[1];
-		this.map = new Case[width][height];
+		this.map = new Case[this.width][this.height];
 		for(int i=0;i<this.width;i++){
 			for(int j=0;j<this.height;j++){
-				this.map[i][j]=new Case(i,j,importation[i+j*this.width+3]);
+				this.map[i][j]=new Case(i,j,importation[i+j*this.width+4]);
 			}
 		}
 		if(importation[2]!=0){
-			this.marque=this.map[(int)((importation[2]-1)%this.width)][(int)((importation[2]-1)/this.width)];
+			this.marque=this.map[(int)(importation[2])][(int)(importation[3])];
 		}
 		this.setExit();
 	}
@@ -452,16 +452,20 @@ public class Carte {
 	 */
 	
 	public byte[] export(){
-		byte [] tableau = new byte[this.width*this.height+3];
+		byte [] tableau = new byte[this.width*this.height+4];
 		tableau[0]=(byte)this.width;
 		tableau[1]=(byte)this.height;
-		if(this.getMark()!=null)
-			tableau[2]=(byte)(this.getMark().getX()+this.getMark().getY()+1);
-		else
+		if(this.getMark()!=null){
+			tableau[2]=(byte)(this.getMark().getX()+1);
+			tableau[3]=(byte)(this.getMark().getY());
+		}
+		else{
 			tableau[2]=0;
+			tableau[3]=0;
+		}
 		for(int i=0;i<this.width;i++){
 			for(int j=0;j<this.height;j++){
-				tableau[i+j*this.width+3]=this.getCase(i, j).getCompo();
+				tableau[i+j*this.width+4]=this.getCase(i, j).getCompo();
 			}
 		}
 		return tableau;
