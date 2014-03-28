@@ -16,6 +16,7 @@ public class Trame2 {
 	private boolean mur_gauche;
 	private boolean mur_droit;
 	private byte direction;
+	private byte ordre;
 	private byte typeTrame;
 	
 	private int demandeCalibration;
@@ -111,6 +112,20 @@ public class Trame2 {
 		this.contenuT[3]=this.typeTrame;
 	}
 	
+public Trame2(byte tailleTrame,byte ID ,byte ordre){
+		
+		this.tailleTrame=tailleTrame;
+		this.ID=ID;
+		this.ordre= ordre;
+		this.typeTrame=5;
+		
+		this.contenuT= new byte[4];
+		
+		this.contenuT[0]=this.tailleTrame;
+		this.contenuT[1]=this.ID;
+		this.contenuT[2]=this.ordre;
+		this.contenuT[3]=this.typeTrame;
+	}
 	//trame qui contient l'info de la calibration de la boussole
 	public Trame2(byte tailleTrame,byte ID,double moyData){
 		
@@ -201,6 +216,11 @@ public class Trame2 {
 	
 	public boolean getMurDroit(){
 		return this.mur_droit;
+	}		
+	
+
+	public byte getOrdre(){
+		return this.ordre;
 	}		
 	
 	public int getDirection(){
