@@ -9,14 +9,14 @@ public class Case {
 	public static final int LEFT=1;
 	public static final int DOWN=2;
 	public static final int RIGHT=3;
+	private static final int decouverte=4;
 	
 	/*
 	 * Attributs
 	 */
 	
-	private boolean decouverte;
-	//private boolean [] murs;
-	private byte murs;
+	//murs & decouverte
+	private byte composition;
 	//Possibilitée d'utiliser un mask
 	private int x;
 	private int y;
@@ -25,18 +25,16 @@ public class Case {
 	 * Constructeurs
 	 */
 	
-	public Case(int x, int y, byte murs){
-		this.decouverte=false;
+	public Case(int x, int y, byte composition){
 		this.x=x;
 		this.y=y;
-		this.murs=murs;
+		this.composition=composition;
 	}
 	
 	public Case(int x, int y){
-		this.decouverte=false;
 		this.x=x;
 		this.y=y;
-		this.murs=0;
+		this.composition=0;
 	}
 	
 	public Case(){
@@ -57,9 +55,9 @@ public class Case {
 	private boolean changeState(int direction, boolean state){
 		if(direction>=0 && direction<4){
 			if(state)
-				this.murs=(byte)(this.murs|(1<<direction));
+				this.composition=(byte)(this.composition|(1<<direction));
 			else
-				this.murs=(byte)(this.murs&~(1<<direction));
+				this.composition=(byte)(this.composition&~(1<<direction));
 			return true;
 		}
 		else
@@ -95,7 +93,7 @@ public class Case {
 	
 	public boolean isCrossable(int direction){
 		if(direction>=0 && direction<4){
-			return !((byte)(murs&(1<<direction))!=0);
+			return !((byte)(composition&(1<<direction))!=0);
 		}
 		else
 			return false;
@@ -107,7 +105,7 @@ public class Case {
 	 */
 	
 	public void setReveal(){
-		this.decouverte=true;
+		this.composition=(byte)(this.composition|(1<<decouverte));
 	}
 	
 	/**
@@ -117,7 +115,7 @@ public class Case {
 	 */
 	
 	public boolean isRevealed(){
-		return this.decouverte;
+		return ((byte)(composition&(1<<decouverte))!=0);
 	}
 	
 	/**
@@ -186,10 +184,10 @@ public class Case {
 	}
 	
 	public String toString(){
-		return "Case ["+this.getX()+"]["+this.getY()+"]";
+		return "Case ["+this.getX()+"]["+this.getY()+"]-"+this.getCompo();
 	}
 	
-	public byte getWalls(){
-		return this.murs;
+	public byte getCompo(){
+		return this.composition;
 	}
 }
