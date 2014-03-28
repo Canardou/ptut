@@ -6,12 +6,13 @@ import java.io.*;
 public class EntiteeBT{
 	
 	private String nom;
-	private int ID;
+	private byte ID;
 	private String adr;
 	private DataInputStream input;
 	private DataOutputStream output;
+	public Trame2 trame;
 	
-	public EntiteeBT(String nom, int ID, String adr){
+	public EntiteeBT(String nom, byte ID, String adr){
 		
 		this.nom=nom;
 		this.ID=ID;
@@ -32,7 +33,7 @@ public class EntiteeBT{
 		return this.adr;
 	}
 	
-	public int getID(){
+	public byte getID(){
 		return this.ID;
 	}	
 	public DataInputStream getInput(){
