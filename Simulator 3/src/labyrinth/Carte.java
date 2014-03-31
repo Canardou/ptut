@@ -47,18 +47,7 @@ public class Carte {
 	}
 	
 	public Carte(byte[] importation){
-		this.width = importation[0];
-		this.height = importation[1];
-		this.map = new Case[this.width][this.height];
-		for(int i=0;i<this.width;i++){
-			for(int j=0;j<this.height;j++){
-				this.map[i][j]=new Case(i,j,importation[i+j*this.width+4]);
-			}
-		}
-		if(importation[2]!=0){
-			this.marque=this.map[(int)(importation[2])][(int)(importation[3])];
-		}
-		this.setExit();
+		this.update(importation);
 	}
 	
 	public Carte(int side){
@@ -469,5 +458,20 @@ public class Carte {
 			}
 		}
 		return tableau;
+	}
+	
+	public void update(byte[] importation){
+		this.width = importation[0];
+		this.height = importation[1];
+		this.map = new Case[this.width][this.height];
+		for(int i=0;i<this.width;i++){
+			for(int j=0;j<this.height;j++){
+				this.map[i][j]=new Case(i,j,importation[i+j*this.width+4]);
+			}
+		}
+		if(importation[2]!=0){
+			this.marque=this.map[(int)(importation[2]-1)][(int)(importation[3])];
+		}
+		this.setExit();
 	}
 }

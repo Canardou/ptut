@@ -37,10 +37,6 @@ public class Case {
 		this.composition=0;
 	}
 	
-	public Case(){
-		this(0,0);
-	}
-	
 	/*
 	 * Méthodes
 	 */

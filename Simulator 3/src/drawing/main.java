@@ -46,6 +46,7 @@ public class main implements ActionListener {
 		laby.reveal(test.getRobot(0).getX(), test.getRobot(0).getY());
 		if(attente==0 && test.getRobot(0).getX()==laby.getMark().getX() && test.getRobot(0).getY()==laby.getMark().getY()){
 			test.getRobot(0).changeType(test.getRobot(0).getType()+3);
+			laby.update(laby.export());
 			test.removeMark();
 			Chemin yolo = new Chemin(laby.pathToExit((int)this.test.getRobot(0).getX(), (int)this.test.getRobot(0).getY()));
 			test.getRobot(0).walkPath(yolo);
