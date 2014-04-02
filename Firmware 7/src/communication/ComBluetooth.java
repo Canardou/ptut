@@ -42,32 +42,38 @@ public class ComBluetooth{
 	
 	public Trame2 ecouter()throws Exception{
 				
-		this.recepteur.getOutput().write(0);
+		//this.recepteur.getOutput().write(0);
 				
 		//on lit les données sur le flux d'entrée
 		int tailleTrameRecue = this.recepteur.getInput().read();
+		System.out.println("j'ai lu: "+ tailleTrameRecue);
+		
 		byte[] trameRecue= new byte[tailleTrameRecue];
 		trameRecue[0]=(byte)tailleTrameRecue;
 		 
-		for (int j=1; j <= tailleTrameRecue-1; j++){
+		for (int j=1; j <= tailleTrameRecue; j++){
 			trameRecue[j]= this.recepteur.getInput().readByte();
 		}
 		
 		Trame2 trameR = null;
-		if (trameRecue[tailleTrameRecue-1]==1){
+		if (trameRecue[tailleTrameRecue]==1){
 			trameR= new Trame2(trameRecue[0],trameRecue[1],trameRecue[2],trameRecue[3],Trame2.convertByteBool(trameRecue[4]),Trame2.convertByteBool(trameRecue[5]),Trame2.convertByteBool(trameRecue[6]),trameRecue[7]);
 			//return trameR;
 		}
-		else if (trameRecue[tailleTrameRecue-1]==2){
+		else if (trameRecue[tailleTrameRecue]==2){
 			trameR= new Trame2(trameRecue[0],trameRecue[1],trameRecue[2],trameRecue[3],trameRecue[4]);
 			//return trameR;
 		}
-		else if (trameRecue[tailleTrameRecue-1]==3){
+		else if (trameRecue[tailleTrameRecue]==3){
 			trameR= new Trame2(trameRecue[0],trameRecue[1],(int)trameRecue[2]);
 			//return trameR;
 		}
-		else if (trameRecue[tailleTrameRecue-1]==4){
+		else if (trameRecue[tailleTrameRecue]==4){
 			trameR= new Trame2(trameRecue[0],trameRecue[1],(double)trameRecue[2]);
+			//return trameR;
+		}
+		else if (trameRecue[tailleTrameRecue]==5){
+			trameR= new Trame2(trameRecue[0],trameRecue[1],trameRecue[2]);
 			//return trameR;
 		}
 		

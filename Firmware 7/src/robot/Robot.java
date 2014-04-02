@@ -50,7 +50,7 @@ public class Robot {
 		this.order      	= Param.STOP ;
 		//this.music      	= new Jukebox();
 		
-		this.entitee		= new EntiteeBT("Robot H",(byte)1,"00:16:53:06:DA:CF");
+		this.entitee		= new EntiteeBT("Robot J",(byte)1,"00:16:53:06:F5:30");
 		this.com			= new ComBluetooth(entitee);
 		this.trame			= new Trame2((byte)3,(byte)1 ,(byte)0);		
 	 }
@@ -87,7 +87,21 @@ public class Robot {
 		 
 		 System.out.println("Go!");
 		 while(!Button.ENTER.isDown()){			 
-			this.chooseOrder();			
+			this.chooseOrder();	
+			System.out.println(this.order);
+			System.out.println("type trame: "+this.trame.tableauTrame()[3]);
+			try {
+				this.trame.printTrame();
+			} catch (InterruptedException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+			try {
+				Thread.sleep(4000);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 			this.executeOrder();	
 			this.env.refreshCoord();
 			this.env.afficher();			
@@ -110,11 +124,11 @@ public class Robot {
 		 this.order=this.trame.getOrdre();
 		 
 		 /*
-		 // Test récuperation de l'ordre depuis la liste
+		 // Test rï¿½cuperation de l'ordre depuis la liste
 		 this.order = this.listOrder.getOrder();*/
 		 
 		 /*
-		 // Algo d'explo basique pour tester les déplacements
+		 // Algo d'explo basique pour tester les dï¿½placements
 		 if(!this.env.getFrontWallDetected()){
 			 this.order=Param.FORWARD;
 		 }
@@ -167,13 +181,13 @@ public class Robot {
 		this.pause();
 		this.pauseTime(2000);
 				
-		//Le robot est ici posé à son point initial, on met à jour les capteurs
+		//Le robot est ici posï¿½ ï¿½ son point initial, on met ï¿½ jour les capteurs
 		this.env.check3WallsCompass();
  
 		// On enregistre l'angle initial qui servira de reference pour tout le trip
 		this.mov.saveInitAngle();
 		
-		// On check tout les murs de la case initiale (rotation necessaire pour checker le mur arrière)
+		// On check tout les murs de la case initiale (rotation necessaire pour checker le mur arriï¿½re)
 		this.mov.turnLeft();
 		this.mov.turnRight();
 		

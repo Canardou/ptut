@@ -63,7 +63,7 @@ public class BluetoothCommPC2 extends Thread{
 					this.emetteur.setInput(this.dis);
 					this.emetteur.setOutput(this.dos);
 					
-				//on vérifie que le PC recoie la valeur 0  pour initier la communication
+				//on vï¿½rifie que le PC recoie la valeur 0  pour initier la communication
 					
 				
 				} catch (NXTCommException e) {
@@ -76,7 +76,7 @@ public class BluetoothCommPC2 extends Thread{
 	}
 	
 	
-	//méthode : PC envoie trame à la brique NXT
+	//mï¿½thode : PC envoie trame ï¿½ la brique NXT
 	
 	public void sendTrameToNXT(Trame2 trameEnvoyee) throws IOException {
 		
@@ -86,15 +86,16 @@ public class BluetoothCommPC2 extends Thread{
 	
 			
 		
-		// si communication OK alors le superviseur envoie la trame à la brique NXT
+		// si communication OK alors le superviseur envoie la trame ï¿½ la brique NXT
 		int tailleTrame=trameEnvoyee.tableauTrame().length;
 		
 		for (int i=0; i<tailleTrame;i++){
 			this.emetteur.getOutput().writeByte(trameEnvoyee.tableauTrame()[i]);
+			System.out.println("j'envoie: "+trameEnvoyee.tableauTrame()[i]);
 		}
 		this.emetteur.getOutput().flush();
 		 
-		//superviseur recoit la trame renvoyée par la brique pour verifier que c'est la bonne
+		//superviseur recoit la trame renvoyï¿½e par la brique pour verifier que c'est la bonne
 		
 		/*int tailleTrameRecue = this.emetteur.getInput().read();
 		 
@@ -108,7 +109,7 @@ public class BluetoothCommPC2 extends Thread{
 		}     */
 	
 		
-		// si les deux trames sont identiques alors le superviseur envoie 0 à la brique sinon 1
+		// si les deux trames sont identiques alors le superviseur envoie 0 ï¿½ la brique sinon 1
 	/*	if(trameIdentique==true){
 			this.emetteur.getOutput().write(0);
 			this.emetteur.getOutput().flush();
@@ -129,10 +130,10 @@ public class BluetoothCommPC2 extends Thread{
 				
 	}
 	
-	//méthode : PC recoie trame de la brique NXT
+	//mï¿½thode : PC recoie trame de la brique NXT
 	
 	public Trame2 receiveTrameNXT() throws IOException, NXTCommException{
-		//superviseur reçoit une demande de la brique
+		//superviseur reï¿½oit une demande de la brique
 		/*try {
 			nxtComm.open(new NXTInfo(NXTCommFactory.BLUETOOTH, emetteur.getNom() , emetteur.getAdr()),NXTComm.PACKET);  // pas sure
 			System.out.println("connexion ok");
@@ -181,7 +182,7 @@ public class BluetoothCommPC2 extends Thread{
 		
 		this.recepteur.getOutput().flush();     */
 		
-		//Si NXT renvoie 0 alors la trame est bonne, la méthode retourne la trame, sinon elle retourne null
+		//Si NXT renvoie 0 alors la trame est bonne, la mï¿½thode retourne la trame, sinon elle retourne null
 		/*		if(this.recepteur.getInput().read()==0){
 					this.recepteur.getInput().close();
 					this.recepteur.getOutput().close();

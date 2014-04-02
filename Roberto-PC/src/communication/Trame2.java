@@ -16,7 +16,8 @@ public class Trame2 {
 	private boolean mur_gauche;
 	private boolean mur_droit;
 	private byte direction;
-	private byte typeTrame;
+	private byte typeTrame;	
+	private byte ordre;	
 	
 	private int demandeCalibration;
 	private int donneeCalibration;
@@ -34,7 +35,7 @@ public class Trame2 {
 	
 	//constructeur
 	
-	// Trame qui contient des informations sur une case explorée par le robot
+	// Trame qui contient des informations sur une case explorï¿½e par le robot
 	public Trame2(byte tailleTrame,byte ID, byte x, byte y, boolean h, boolean g, boolean d, byte dir){
 
 		this.tailleTrame=tailleTrame;
@@ -127,7 +128,7 @@ public class Trame2 {
 		this.contenuT[3]=this.typeTrame;
 	}
 	
-	//trame qui contient les coordonnees de la case cible  --     il faut rajouter une méthode getx et gety dans la classe Case
+	//trame qui contient les coordonnees de la case cible  --     il faut rajouter une mï¿½thode getx et gety dans la classe Case
 	/*public Trame2(byte tailleTrame,byte ID,Case caseCible){
 		
 		this.tailleTrame=tailleTrame;
@@ -145,13 +146,26 @@ public class Trame2 {
 		
 	}*/
 	
-	//trame indiquant que la mission est terminée
+	//trame indiquant que la mission est terminï¿½e
 	
 	
+public Trame2(byte tailleTrame,byte ID ,byte ordre){
+		
+		this.tailleTrame=tailleTrame;
+		this.ID=ID;
+		this.ordre= ordre;
+		this.typeTrame=5;
+		
+		this.contenuT= new byte[4];
+		
+		this.contenuT[0]=this.tailleTrame;
+		this.contenuT[1]=this.ID;
+		this.contenuT[2]=this.ordre;
+		this.contenuT[3]=this.typeTrame;
+	}
 	
 	
-	
-	//méthodes
+	//mï¿½thodes
 	
 	public byte convertBoolByte(Boolean condition){
 		if (condition == true){
