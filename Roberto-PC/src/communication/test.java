@@ -20,26 +20,23 @@ public class test {
 		
 		EntiteeBT robot2= new EntiteeBT("Robot I",(byte)1,"00:16:53:06:DE:F2");
 		
-		Trame2 trameEnvoyee1= new Trame2((byte)3,(byte)1,(byte)2);
+		Trame2 trameEnvoyee1= new Trame2((byte)3,(byte)1,(byte)1);
 		//Trame2 trameEnvoyee2= new Trame2((byte)9,(byte)22,(byte)22,(byte)22,true,false,false,(byte)3);
 			
-		while(true){
+		
 			System.out.println("entrée robot :");
 			Scanner sc = new Scanner(System.in);
 			int str =sc.nextInt();
-							
+			while(true){			
 			if (str==1){
+				System.out.println("entrée ordre :");
+				int strordre =sc.nextInt();
+				trameEnvoyee1= new Trame2((byte)3,(byte)1,(byte)strordre);
 				BluetoothCommPC2 bluetoothPC1= new BluetoothCommPC2(PC, robot1);
 				bluetoothPC1.initialisationCommunication();
 				System.out.println("robot 1 connecté");
 				System.out.println("j'ai reçu 0, j'envoie une trame" );
 				trameEnvoyee1.printTrame();
-				try {
-					Thread.sleep(4000);
-				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
 				bluetoothPC1.sendTrameToNXT (trameEnvoyee1);
 				System.out.println("c'est fait" );
 

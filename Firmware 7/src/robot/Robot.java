@@ -88,20 +88,6 @@ public class Robot {
 		 System.out.println("Go!");
 		 while(!Button.ENTER.isDown()){			 
 			this.chooseOrder();	
-			System.out.println(this.order);
-			System.out.println("type trame: "+this.trame.tableauTrame()[3]);
-			try {
-				this.trame.printTrame();
-			} catch (InterruptedException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			}
-			try {
-				Thread.sleep(4000);
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
 			this.executeOrder();	
 			this.env.refreshCoord();
 			this.env.afficher();			
@@ -115,8 +101,8 @@ public class Robot {
 		 // Tentative de recevoir un ordre via bluetooth
 		 System.out.println("Ecoute");
 		 try{
-			 this.entitee.getOutput().write(0);
-			 this.entitee.getOutput().flush();
+			 //this.entitee.getOutput().write(0);
+			 //this.entitee.getOutput().flush();
 			 System.out.println("Bla");
 			 this.trame=this.com.ecouter();
 		 } catch (Exception e) {}

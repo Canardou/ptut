@@ -42,18 +42,23 @@ public class ComBluetooth{
 	
 	public Trame2 ecouter()throws Exception{
 				
-		//this.recepteur.getOutput().write(0);
-				
-		//on lit les données sur le flux d'entrée
-		int tailleTrameRecue = this.recepteur.getInput().read();
-		System.out.println("j'ai lu: "+ tailleTrameRecue);
+		this.recepteur.getOutput().write(0);
+		this.recepteur.getOutput().flush();		
 		
-		byte[] trameRecue= new byte[tailleTrameRecue];
+		//on lit les données sur le flux d'entrée
+		int tailleTrameRecue = (int)this.recepteur.getInput().read();
+		//System.out.println("j'ai lu: "+ tailleTrameRecue);
+		
+		byte[] trameRecue= new byte[tailleTrameRecue+2];
 		trameRecue[0]=(byte)tailleTrameRecue;
-		 
-		for (int j=1; j <= tailleTrameRecue; j++){
+		//System.out.println("trame[0]"+trameRecue[0]);
+
+		int j;
+		for (j=1; j < tailleTrameRecue+1; j++){
 			trameRecue[j]= this.recepteur.getInput().readByte();
+			//System.out.println("trame["+j+"]: "+trameRecue[j]);
 		}
+		
 		
 		Trame2 trameR = null;
 		if (trameRecue[tailleTrameRecue]==1){
@@ -76,6 +81,7 @@ public class ComBluetooth{
 			trameR= new Trame2(trameRecue[0],trameRecue[1],trameRecue[2]);
 			//return trameR;
 		}
+
 		
 		return trameR;
 	}
