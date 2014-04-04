@@ -15,10 +15,13 @@ public class test {
 		//E1=new Emission();
 		//E2=new Emission();
 	
-		EntiteeBT PC= new EntiteeBT("kiwor-0", "00:15:83:0C:BF:EB");
-		EntiteeBT robot1= new EntiteeBT("Robot J",(byte)1,"00:16:53:06:F5:30");
+		//EntiteeBT PC= new EntiteeBT("marion","00:0C:78:33:EB:0C");
+		//EntiteeBT PC= new EntiteeBT("kiwor-0", "00:15:83:0C:BF:EB");
+		EntiteeBT PC= new EntiteeBT("Thomas", "26:0A:64:62:8D:29");
 		
-		EntiteeBT robot2= new EntiteeBT("Robot I",(byte)1,"00:16:53:06:DE:F2");
+		EntiteeBT robot1= new EntiteeBT("Robot H",(byte)1,"00:16:53:06:DA:CF");
+		EntiteeBT robot2= new EntiteeBT("Robot J",(byte)1,"00:16:53:06:F5:30");
+		EntiteeBT robot3= new EntiteeBT("Robot I",(byte)1,"00:16:53:06:DE:F2");
 		
 		Trame2 trameEnvoyee1= new Trame2((byte)3,(byte)1,(byte)1);
 		//Trame2 trameEnvoyee2= new Trame2((byte)9,(byte)22,(byte)22,(byte)22,true,false,false,(byte)3);
