@@ -20,24 +20,12 @@ public class AnimationRobot {
 	 */
 	
 	public AnimationRobot(int type){
-		if(type>=0 && type<=4)
-			this.type=type;
-		else
-			this.type=4;
 		this.step=0;
 		this.step_max=0;
 		this.row=0;
 		this.col=0;
 		this.current="";
-	}
-	
-	public AnimationRobot(int type, String sequence){
-		this();
-		this.setSequence(sequence);
-	}
-	
-	public AnimationRobot(){
-		this(4);
+		this.changeType(type);
 	}
 	
 	/*
@@ -53,7 +41,7 @@ public class AnimationRobot {
 			this.step++;
 		else{
 			this.step=this.col;
-			if(type!=4){
+			if(type>=4){
 				if(this.row==4)
 					this.row=5;
 				else if(this.row==5)
@@ -70,9 +58,9 @@ public class AnimationRobot {
 	public void setSequence(String animation, int type){
 		if(!animation.contentEquals(this.current) || this.type!=type){
 			this.current=animation;
-			if(type!=4){
+			if(type>=4){
 				this.step_max=3;
-				this.col=type*3;
+				this.col=(type-4)*3;
 				switch(animation){
 				case "down":
 					this.row=0;
@@ -88,13 +76,8 @@ public class AnimationRobot {
 					break;
 				case "icone":
 					this.step_max=4;
-					if(type<3){
-						this.row=6;
-						this.col=type*4;
-					}else{
-						this.row=7;
-						this.col=0;
-					}
+					this.row=6;
+					this.col=(type-4)*4;
 					break;
 				case "stand":
 				default:
@@ -103,31 +86,48 @@ public class AnimationRobot {
 				}
 			}
 			else{
-				this.step_max=1;
-				this.row=7;
+				this.step_max=2;
+				if(type==3)
+					this.col=14;
+				else
+					this.col=12;
 				switch(animation){
 				case "up":
-				case "up_stand":
-					this.col=7;
+					this.row=3;
+					break;
+				case "stand_up":
+					this.step_max=1;
+					this.row=3;
 					break;
 				case "left":
-				case "left_stand":
-					this.col=6;
+					this.row=1;
+					break;
+				case "stand_left":
+					this.step_max=1;
+					this.row=1;
 					break;
 				case "right":
-				case "right_stand":
-					this.col=5;
+					this.row=2;
 					break;
-				case "wow":
-					this.col=11;
-				case "icone":
-					this.col=8;
-					this.step_max=3;
+				case "stand_right":
+					this.step_max=1;
+					this.row=2;
+					break;
 				case "down":
+					this.row=0;
+					break;
+				case "icone":
+					if(type==3)
+						this.row=5;
+					else
+						this.row=4;
+					this.step_max=4;
+					break;
 				case "stand":
-				case "down_stand":
+				case "stand_down":
 				default :
-					this.col=4;
+					this.step_max=1;
+					this.row=0;
 					break;
 				}
 			}
@@ -136,11 +136,12 @@ public class AnimationRobot {
 	}
 	
 	public void changeType(int type){
-		if(type>=0 && type<=4)
+		if(type>=0 && type<=7)
 			this.type=type;
 		else
-			this.type=4;
+			this.type=0;
 		setSequence(this.current,this.type);
+		this.nextImage();
 	}
 
 }

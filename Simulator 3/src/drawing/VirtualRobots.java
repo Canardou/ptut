@@ -10,38 +10,40 @@ public class VirtualRobots {
 	 * Attributs
 	 */
 	
-	private final int precision=100;
-	private final int speed=10;
-	
-	private static int number=0;
+	public static int speed=20;
+	public static int aleatoire=0;
+
 	private int id;
-	
 	private int type;
 	private int exposition;
 	private int x;
 	private int y;
-	private int dx;
-	private int dy;
+	private int ax;
+	private int ay;
 	private int direction;
-	private int ddir;
+	private int mouvement;
+	private int objectif;
 	private Chemin path;
 	private AnimationRobot sheet;
+	private boolean visible;
+	private boolean wait;
 	
 	/*
 	 * Constructeurs
 	 */
 	
-	public VirtualRobots(int x, int y, int direction, int type){
-		VirtualRobots.number++;
-		this.id=VirtualRobots.number;
+	public VirtualRobots(int x, int y, int direction, int type, int id){
+		this.id=id;
 		this.direction=direction;
 		this.x=x;
 		this.y=y;
-		this.dx=x*precision;
-		this.dy=y*precision;
-		this.ddir=direction*precision;
+		this.ax=x;
+		this.ay=y;
 		this.type=type;
 		this.sheet = new AnimationRobot(type);
+		this.mouvement=0;
+		this.objectif=0;
+		this.visible=false;
 	}
 	
 	
@@ -50,7 +52,7 @@ public class VirtualRobots {
 	 */
 	
 	public boolean walkPath(Chemin path){
-		if(this.x==this.dx/precision && this.y==this.dy/precision && this.x==path.getX(0) && this.y==path.getY(0)){
+		if(this.x==this.ax && this.y==this.ay && this.x==path.getX(0) && this.y==path.getY(0)){
 			this.path = path;
 			return true;
 		}
@@ -58,8 +60,16 @@ public class VirtualRobots {
 			return false;
 	}
 	
-	public void moveTo(int x, int y){
-		moveTo(x,y,0);
+	public void stop(){
+		if(busy())
+			this.path=new Chemin(this.path.get(0));
+	}
+	
+	public boolean busy(){
+		if(path!=null)
+			return true;
+		else
+			return false;
 	}
 	
 	public int getX(){
@@ -71,21 +81,40 @@ public class VirtualRobots {
 	}
 	
 	public double getdX(){
-		return (double)this.dx/precision;
+		if(this.objectif!=0)
+			return (this.x+(double)((this.ax-this.x)*this.mouvement)/this.objectif);
+		else
+			return this.x;
 	}
 	
 	public double getdY(){
-		return (double)this.dy/precision;
+		if(this.objectif!=0)
+			return (this.y+(double)((this.ay-this.y)*this.mouvement)/this.objectif);
+		else
+			return this.y;
+	}
+	
+	public int getAX(){
+		return this.ax;
+	}
+	
+	public int getAY(){
+		return this.ay;
+	}
+	
+	public Chemin getPath(){
+		return this.path;
+	}
+	
+	public void moveTo(int x, int y){
+		moveTo(x,y,this.direction);
 	}
 	
 	public void moveTo(int x, int y, int direction){
 		this.path=null;
 		this.x=x;
 		this.y=y;
-		this.dx=x*precision;
-		this.dy=y*precision;
 		this.direction=direction;
-		this.ddir=direction*precision;
 	}
 	
 	public void changeType(int type){
@@ -101,6 +130,10 @@ public class VirtualRobots {
 		return this.id;
 	}
 	
+	public void setWait(boolean wait){
+		this.wait=wait;
+	}
+	
 	public void update(){
 		if(exposition<5){
 			this.exposition++;
@@ -109,105 +142,88 @@ public class VirtualRobots {
 			this.sheet.nextImage();
 			this.exposition=0;
 		}
-		if(this.path!=null){
-			if(this.path.size()>1){
-				if(this.dx!=this.path.getX(1)*precision || this.dy!=this.path.getY(1)*precision){
-					switch(this.path.direction(0)){
-					case Case.UP:
-						if(this.ddir!=this.path.direction(0)*precision){
-							this.sheet.setSequence("up_stand");
-							if(this.direction==Case.RIGHT && this.ddir>0){
-								this.ddir=-1*precision;
-							}
-							if(this.direction==Case.RIGHT){
-								this.ddir+=0.01*speed*precision;
-							}
-							else{
-								this.ddir-=0.01*speed*precision;
-							}
-						}
-						else{
-							this.sheet.setSequence("up");
-							this.direction=Case.UP;
-							this.dy-=precision*0.01*speed;
-						}
-						break;
-					case Case.DOWN:
-						if(this.ddir!=this.path.direction(0)*precision){
-							this.sheet.setSequence("down_stand");
-							if(this.direction>Case.DOWN){
-								this.ddir-=0.01*speed*precision;
-							}
-							else{
-								this.ddir+=0.01*speed*precision;
-							}
-						}
-						else{
-							this.sheet.setSequence("down");
-							this.direction=Case.DOWN;
-							this.dy+=precision*0.01*speed;
-						}
-						break;
-					case Case.LEFT:
-						if(this.ddir!=this.path.direction(0)*precision){
-							this.sheet.setSequence("left_stand");
-							if(this.direction>Case.LEFT){
-								this.ddir-=0.01*speed*precision;
-							}
-							else{
-								this.ddir+=0.01*speed*precision;
-							}
-						}
-						else{
-							this.sheet.setSequence("left");
-							this.direction=Case.LEFT;
-							this.dx-=precision*0.01*speed;
-						}
-						break;
-					case Case.RIGHT:
-						if(this.ddir!=this.path.direction(0)*precision){
-							this.sheet.setSequence("right_stand");
-							if(this.direction==Case.UP && this.ddir<3*precision){
-								this.ddir=4*precision;
-							}
-							if(this.direction==Case.UP){
-								this.ddir-=0.01*speed*precision;
-							}
-							else{
-								this.ddir+=0.01*speed*precision;
-							}
-						}
-						else{
-							this.sheet.setSequence("right");
-							this.direction=Case.RIGHT;
-							this.dx+=precision*0.01*speed;
-						}
-						break;
+		if(this.path!=null && this.wait==false){
+			if(this.path.size()>1 || this.mouvement<this.objectif){
+				if(this.mouvement>=this.objectif){
+					this.x=this.path.getX(0);
+					this.y=this.path.getY(0);
+					this.ax=this.path.getX(1);
+					this.ay=this.path.getY(1);
+					this.mouvement=0;
+					this.objectif=100;
+					if(this.direction!=this.path.direction(0)){
+						if(Math.abs(this.direction-this.path.direction(0))==2)
+							this.objectif+=200;
+						else
+							this.objectif+=100;
 					}
+					this.direction=this.path.direction(0);
+					switch(this.path.direction(0)){
+						case Case.UP:
+							this.sheet.setSequence("up");
+							break;
+						case Case.DOWN:
+							this.sheet.setSequence("down");
+							break;
+						case Case.LEFT:
+							this.sheet.setSequence("left");
+							break;
+						case Case.RIGHT:
+							this.sheet.setSequence("right");
+							break;
+					}
+					this.path.removeTop();
 				}
 				else{
-					this.x=this.path.getX(1);
-					this.y=this.path.getY(1);
-					this.dx=x*precision;
-					this.dy=y*precision;
-					this.path.removeTop();
+					this.mouvement+=this.speed+Math.random()*aleatoire;
+					if(this.mouvement>this.objectif)
+						this.mouvement=this.objectif;
 				}
 			}
 			else{
 				this.x=this.path.getX(0);
 				this.y=this.path.getY(0);
-				this.dx=x*precision;
-				this.dy=y*precision;
+				this.ax=x;
+				this.ay=y;
+				this.mouvement=0;
+				this.objectif=0;
 				this.path=null;
+				this.stand();
 			}
 		}
 		else{
-			this.sheet.setSequence("stand");
+			this.stand();
 		}
-		
+	}
+	
+	private void stand(){
+		switch(this.direction){
+		case Case.UP:
+			this.sheet.setSequence("stand_up");
+			break;
+		case Case.DOWN:
+			this.sheet.setSequence("stand_down");
+			break;
+		case Case.LEFT:
+			this.sheet.setSequence("stand_left");
+			break;
+		case Case.RIGHT:
+			this.sheet.setSequence("stand_right");
+			break;
+		default :
+			this.sheet.setSequence("stand");
+	}
 	}
 	
 	public BufferedImage draw(){
 		return this.sheet.getImage();
+	}
+	
+	public void setVisible(boolean visible){
+		this.visible=visible;
+	}
+	
+	public boolean isVisible(){
+		return this.visible;
 	}
 }

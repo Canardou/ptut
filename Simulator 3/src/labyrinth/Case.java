@@ -25,12 +25,6 @@ public class Case {
 	 * Constructeurs
 	 */
 	
-	public Case(int x, int y, byte composition){
-		this.x=x;
-		this.y=y;
-		this.composition=composition;
-	}
-	
 	public Case(int x, int y){
 		this.x=x;
 		this.y=y;
@@ -185,5 +179,15 @@ public class Case {
 	
 	public byte getCompo(){
 		return this.composition;
+	}
+	
+	public void update(int x, int y, byte composition){
+		this.x=x;
+		this.y=y;
+		this.composition=composition;
+	}
+	
+	public void update(byte composition){
+		this.composition=composition;
 	}
 }

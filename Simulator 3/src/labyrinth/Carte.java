@@ -234,9 +234,16 @@ public class Carte {
 	 * 
 	 */
 	
+	public boolean mark(){
+		if(this.marque!=null)
+			return true;
+		else
+			return false;
+	}
+	
 	public Chemin pathToMark(int dx, int dy){
 		if(checkCoord(dx,dy)){
-			if(this.marque!=null){
+			if(this.mark()){
 				return createPath(this.map[dx][dy],this.marque);
 			}
 		}
@@ -279,9 +286,72 @@ public class Carte {
 		ArrayList<Case> check=new ArrayList<Case>();
 		recherche.add(new ListeCase(depart,0,null,-1));
 		check.add(depart);
-		while(recherche.get(0).current()!=arrivee){
+		while(recherche.get(0).current()!=arrivee && !recherche.isEmpty()){	
+			Case temp=recherche.get(0).current();
+			//if(temp.isRevealed()){
+				for(int k=0;k<4;k++){
+					if(temp.isCrossable(k) && checkCoord(temp.getX(k),temp.getY(k))){
+						Case test=this.map[temp.getX(k)][temp.getY(k)];
+						if(!check.contains(test)){
+							int cout=1;
+							if(temp.getDir(test)!=recherche.get(0).getDir() && recherche.get(0).getDir()!=-1)
+								cout=2;
+							recherche.add(new ListeCase(test,recherche.get(0).getCout()+cout,recherche.get(0),temp.getDir(test)));
+							check.add(test);
+						}
+					}
+					else if(this.exit!=null){
+						if (this.exit.getX()==temp.getX(k) && this.exit.getY()==temp.getY(k)){
+							int cout=1;
+							if(temp.getDir(this.exit)!=recherche.get(0).getDir() && recherche.get(0).getDir()!=-1)
+								cout=2;
+							recherche.add(new ListeCase(this.exit,recherche.get(0).getCout()+cout,recherche.get(0),temp.getDir(this.exit)));
+							check.add(this.exit);
+						}
+					}
+				}
+			//}
+			closed.add(recherche.get(0));
+			if(recherche.size()>=1){
+				recherche.remove(0);
+				if(recherche.size()>0)
+					Collections.sort(recherche);
+				else
+					break;		
+			}
+		}
+		if(!recherche.isEmpty()){
+			ListeCase temp = recherche.get(0);
+			while(temp.current()!=depart){
+				path.push(temp.current());
+				temp=temp.previous();
+			}
+			path.push(temp.current());
+			return path;
+		}
+		else{
+			return null;
+		}
+	}
+	
+	
+	/*public Chemin closestDiscover(int dx, int dy){
+		if(checkCoord(dx,dy))
+			return closestDiscover(this.map[dx][dy]);
+		else
+			return null;
+	}
+	
+	public Chemin closestDiscover(Case depart){
+		Chemin path = new Chemin();
+		ArrayList<ListeCase> recherche=new ArrayList<ListeCase>();
+		ArrayList<ListeCase> closed=new ArrayList<ListeCase>();
+		ArrayList<Case> check=new ArrayList<Case>();
+		recherche.add(new ListeCase(depart,0,null,-1));
+		check.add(depart);
+		while(recherche.get(0).current()!=arrivee && !recherche.isEmpty()){	
+			Case temp=recherche.get(0).current();
 			for(int k=0;k<4;k++){
-				Case temp=recherche.get(0).current();
 				if(temp.isCrossable(k) && checkCoord(temp.getX(k),temp.getY(k))){
 					Case test=this.map[temp.getX(k)][temp.getY(k)];
 					if(!check.contains(test)){
@@ -292,31 +362,34 @@ public class Carte {
 						check.add(test);
 					}
 				}
-				else if(this.exit!=null){
-					if (this.exit.getX()==temp.getX(k) && this.exit.getY()==temp.getY(k)){
-						int cout=1;
-						if(temp.getDir(this.exit)!=recherche.get(0).getDir() && recherche.get(0).getDir()!=-1)
-							cout=2;
-						recherche.add(new ListeCase(this.exit,recherche.get(0).getCout()+cout,recherche.get(0),temp.getDir(this.exit)));
-						check.add(this.exit);
-					}
-				}
 			}
 			closed.add(recherche.get(0));
-			recherche.remove(0);
-			if(recherche.size()>0)
-				Collections.sort(recherche);
-			else
-				break;
+			if(recherche.size()>=1){
+				recherche.remove(0);
+				if(recherche.size()>0)
+					Collections.sort(recherche);
+				else
+					break;		
+			}
 		}
-		ListeCase temp = recherche.get(0);
-		while(temp.current()!=depart){
-			path.push(temp.current());
-			temp=temp.previous();
+		if(!recherche.isEmpty()){
+			ListeCase temp = recherche.get(0);
+			Chemin yolo = new Chemin();
+			while(temp.current()!=depart){
+				yolo.push(temp.current());
+				temp=temp.previous();
+			}
+			yolo.push(temp.current());
+			int i=0;
+			while(yolo.get(i).isRevealed()){
+				path.add(yolo.get(i));
+			}
+			return path;
 		}
-		path.push(temp.current());
-		return path;
-	}
+		else{
+			return null;
+		}
+	}*/
 	
 	/**
 	 * @method getCase
@@ -441,37 +514,36 @@ public class Carte {
 	 */
 	
 	public byte[] export(){
-		byte [] tableau = new byte[this.width*this.height+4];
-		tableau[0]=(byte)this.width;
-		tableau[1]=(byte)this.height;
+		byte [] tableau = new byte[this.width*this.height+2];
 		if(this.getMark()!=null){
-			tableau[2]=(byte)(this.getMark().getX()+1);
-			tableau[3]=(byte)(this.getMark().getY());
+			tableau[0]=(byte)(this.getMark().getX()+1);
+			tableau[1]=(byte)(this.getMark().getY());
 		}
 		else{
-			tableau[2]=0;
-			tableau[3]=0;
+			tableau[0]=0;
+			tableau[1]=0;
 		}
 		for(int i=0;i<this.width;i++){
 			for(int j=0;j<this.height;j++){
-				tableau[i+j*this.width+4]=this.getCase(i, j).getCompo();
+				tableau[i+j*this.width+2]=this.getCase(i, j).getCompo();
 			}
 		}
 		return tableau;
 	}
 	
 	public void update(byte[] importation){
-		this.width = importation[0];
-		this.height = importation[1];
-		this.map = new Case[this.width][this.height];
 		for(int i=0;i<this.width;i++){
 			for(int j=0;j<this.height;j++){
-				this.map[i][j]=new Case(i,j,importation[i+j*this.width+4]);
+				this.map[i][j].update(importation[i+j*this.width+2]);
 			}
 		}
-		if(importation[2]!=0){
-			this.marque=this.map[(int)(importation[2]-1)][(int)(importation[3])];
+		if(importation[0]!=0){
+			this.marque=this.map[(int)(importation[0]-1)][(int)(importation[1])];
 		}
 		this.setExit();
+	}
+	
+	public void update(int x, int y, byte importation){
+		this.map[x][y].update(importation);
 	}
 }

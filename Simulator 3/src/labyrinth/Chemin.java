@@ -36,6 +36,10 @@ public class Chemin {
 		this.route.add(0,nouvelle);
 	}
 	
+	public void add(Case nouvelle){
+		this.route.add(nouvelle);
+	}
+	
 	public int direction(int k){
 		if(k+1>this.route.size())
 			return -1;
@@ -65,6 +69,10 @@ public class Chemin {
 			return null;
 	}
 	
+	public Stack<Case> get(){
+		return this.route;
+	}
+	
 	public void removeTop(){
 		this.route.remove(0);
 	}
@@ -74,38 +82,45 @@ public class Chemin {
 	}
 	
 	/**
-	 * Compare deux chemins pour savoir s'ils se croisent. Dans le cas d'un croisement la fonction retourne vrai.
+	 * Compare deux chemins pour savoir s'ils se croisent. Dans le cas d'un croisement la fonction retourne l'index.
 	 * @param autre
 	 * @return
 	 */
 	
-	public boolean collision(Chemin autre){
-		boolean retour=false;
-		for(int i=0;i<autre.route.size();i++){
-			if(this.route.contains(autre.get(i)))
-				retour=true;
+	public int collision(Chemin autre){
+		int retour=this.size();
+		if(autre!=null){
+			int i=0;
+			while(i<this.size() && retour>=this.size()){
+				if(autre.route.contains(this.get(i)))
+					retour=i-1;
+				i++;
+			}
 		}
+		if(retour<1)
+			retour=1;
 		return retour;
 	}
 	
-	/*/**
+	/**
 	 * Retourne le chemin resultant de l'intersection de deux chemins
 	 * @param autre
 	 * @return
-	 
+	**/
 	
-	public Chemin intersection(Chemin autre){
-		Chemin retour=new Chemin();
-		if(this.collision(autre)){
-			for(int i=0;i<autre.route.size();i++){
-				if(this.route.contains(autre.get(i)))
-					retour.add(autre.get(i));
+	public void beforeBlock(Chemin autre){
+		this.route.setSize(this.collision(autre));
+	}
+	
+	public void stopToVisibility(){
+		int i=0;
+		while(i<this.route.size()){
+			if(!this.route.get(i).isRevealed()){
+				this.route.setSize(i+1);
 			}
+			i++;
 		}
-		else
-			retour=null;
-		return retour;
-	}*/
+	}
 	
 	/**
 	 * Retourne vrai si le chemin ne dispose pas de possibilité de croisement
