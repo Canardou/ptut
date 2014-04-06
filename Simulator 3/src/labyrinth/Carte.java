@@ -14,7 +14,7 @@ public class Carte {
 	/*
 	 * Attributs
 	 */
-	
+
 	private int height;
 	private int width;
 	private Case[][] map;
@@ -46,9 +46,9 @@ public class Carte {
 		}
 	}
 	
-	public Carte(byte[] importation){
+	/*public Carte(byte[] importation){
 		this.update(importation);
-	}
+	}*/
 	
 	public Carte(int side){
 		this(side,side);
@@ -216,6 +216,13 @@ public class Carte {
 	 * 
 	 */
 	
+	public boolean exit(){
+		if(this.exit!=null)
+			return true;
+		else
+			return false;
+	}
+	
 	public Chemin pathToExit(int dx, int dy){
 		if(checkCoord(dx,dy)){
 			if(setExit()!=null){
@@ -279,6 +286,7 @@ public class Carte {
 	 * 
 	 */
 	
+	@SuppressWarnings("unchecked")
 	public Chemin createPath(Case depart, Case arrivee){
 		Chemin path = new Chemin();
 		ArrayList<ListeCase> recherche=new ArrayList<ListeCase>();
@@ -286,34 +294,35 @@ public class Carte {
 		ArrayList<Case> check=new ArrayList<Case>();
 		recherche.add(new ListeCase(depart,0,null,-1));
 		check.add(depart);
+		//Tant que la case n'est pas celle d'arrivée on continu de chercher
 		while(recherche.get(0).current()!=arrivee && !recherche.isEmpty()){	
 			Case temp=recherche.get(0).current();
-			//if(temp.isRevealed()){
-				for(int k=0;k<4;k++){
-					if(temp.isCrossable(k) && checkCoord(temp.getX(k),temp.getY(k))){
-						Case test=this.map[temp.getX(k)][temp.getY(k)];
-						if(!check.contains(test)){
-							int cout=1;
-							if(temp.getDir(test)!=recherche.get(0).getDir() && recherche.get(0).getDir()!=-1)
-								cout=2;
-							recherche.add(new ListeCase(test,recherche.get(0).getCout()+cout,recherche.get(0),temp.getDir(test)));
-							check.add(test);
-						}
-					}
-					else if(this.exit!=null){
-						if (this.exit.getX()==temp.getX(k) && this.exit.getY()==temp.getY(k)){
-							int cout=1;
-							if(temp.getDir(this.exit)!=recherche.get(0).getDir() && recherche.get(0).getDir()!=-1)
-								cout=2;
-							recherche.add(new ListeCase(this.exit,recherche.get(0).getCout()+cout,recherche.get(0),temp.getDir(this.exit)));
-							check.add(this.exit);
-						}
+			for(int k=0;k<4;k++){
+				if(temp.isCrossable(k) && checkCoord(temp.getX(k),temp.getY(k))){
+					Case test=this.map[temp.getX(k)][temp.getY(k)];
+					if(!check.contains(test)){
+						int cout=1;
+						if(temp.getDir(test)!=recherche.get(0).getDir() && recherche.get(0).getDir()!=-1)
+							cout=2;
+						recherche.add(new ListeCase(test,recherche.get(0).getCout()+cout,recherche.get(0),temp.getDir(test)));
+						check.add(test);
 					}
 				}
-			//}
+				else if(this.exit()){
+					//Cas particulier de la recherche de sortie
+					if (this.exit.getX()==temp.getX(k) && this.exit.getY()==temp.getY(k)){
+						int cout=1;
+						if(temp.getDir(this.exit)!=recherche.get(0).getDir() && recherche.get(0).getDir()!=-1)
+							cout=2;
+						recherche.add(new ListeCase(this.exit,recherche.get(0).getCout()+cout,recherche.get(0),temp.getDir(this.exit)));
+						check.add(this.exit);
+					}
+				}
+			}
 			closed.add(recherche.get(0));
 			if(recherche.size()>=1){
 				recherche.remove(0);
+				//Tri de cases à parcourir restante par distance depuis le point de départ
 				if(recherche.size()>0)
 					Collections.sort(recherche);
 				else
@@ -321,6 +330,7 @@ public class Carte {
 			}
 		}
 		if(!recherche.isEmpty()){
+			//On retourne le chemin trouvé par parcours inversé des cases
 			ListeCase temp = recherche.get(0);
 			while(temp.current()!=depart){
 				path.push(temp.current());
@@ -335,36 +345,41 @@ public class Carte {
 	}
 	
 	
-	/*public Chemin closestDiscover(int dx, int dy){
-		if(checkCoord(dx,dy))
-			return closestDiscover(this.map[dx][dy]);
+	public Case closestDiscover(int dx, int dy, int number){
+		if(checkCoord(dx,dy) && number>=0)
+			return closestDiscover(this.map[dx][dy], number);
 		else
 			return null;
 	}
 	
-	public Chemin closestDiscover(Case depart){
-		Chemin path = new Chemin();
+	@SuppressWarnings("unchecked")
+	public Case closestDiscover(Case depart, int number){
 		ArrayList<ListeCase> recherche=new ArrayList<ListeCase>();
 		ArrayList<ListeCase> closed=new ArrayList<ListeCase>();
 		ArrayList<Case> check=new ArrayList<Case>();
 		recherche.add(new ListeCase(depart,0,null,-1));
 		check.add(depart);
-		while(recherche.get(0).current()!=arrivee && !recherche.isEmpty()){	
+		while(number>0 && recherche.size()>0){
 			Case temp=recherche.get(0).current();
-			for(int k=0;k<4;k++){
-				if(temp.isCrossable(k) && checkCoord(temp.getX(k),temp.getY(k))){
-					Case test=this.map[temp.getX(k)][temp.getY(k)];
-					if(!check.contains(test)){
-						int cout=1;
-						if(temp.getDir(test)!=recherche.get(0).getDir() && recherche.get(0).getDir()!=-1)
-							cout=2;
-						recherche.add(new ListeCase(test,recherche.get(0).getCout()+cout,recherche.get(0),temp.getDir(test)));
-						check.add(test);
+			if(!temp.isRevealed()){
+				number--;
+			}
+			else{
+				for(int k=0;k<4;k++){
+					if(temp.isCrossable(k) && checkCoord(temp.getX(k),temp.getY(k))){
+						Case test=this.map[temp.getX(k)][temp.getY(k)];
+						if(!check.contains(test)){
+							int cout=1;
+							if(temp.getDir(test)!=recherche.get(0).getDir() && recherche.get(0).getDir()!=-1)
+								cout=2;
+							recherche.add(new ListeCase(test,recherche.get(0).getCout()+cout,recherche.get(0),temp.getDir(test)));
+							check.add(test);
+						}
 					}
 				}
 			}
 			closed.add(recherche.get(0));
-			if(recherche.size()>=1){
+			if(recherche.size()>0 && number>0){
 				recherche.remove(0);
 				if(recherche.size()>0)
 					Collections.sort(recherche);
@@ -373,23 +388,12 @@ public class Carte {
 			}
 		}
 		if(!recherche.isEmpty()){
-			ListeCase temp = recherche.get(0);
-			Chemin yolo = new Chemin();
-			while(temp.current()!=depart){
-				yolo.push(temp.current());
-				temp=temp.previous();
-			}
-			yolo.push(temp.current());
-			int i=0;
-			while(yolo.get(i).isRevealed()){
-				path.add(yolo.get(i));
-			}
-			return path;
+			return recherche.get(0).current();
 		}
 		else{
 			return null;
 		}
-	}*/
+	}
 	
 	/**
 	 * @method getCase
@@ -399,7 +403,10 @@ public class Carte {
 	 */
 	
 	public Case getCase(int x, int y){
-		return this.map[x][y];
+		if(checkCoord(x,y))
+			return this.map[x][y];
+		else
+			return null;
 	}
 	
 	/**
@@ -467,6 +474,7 @@ public class Carte {
 			}
 		}
 		Case temp = recherche.get((int)(Math.random()*recherche.size()));
+		//Tant qu'il reste des cases potentiellements non reliés aux autres, on continu la recherche
 		while(recherche.size()>0){
 			ArrayList<Case> random = new ArrayList<Case>();
 			if(Math.random()>wall)
@@ -492,6 +500,7 @@ public class Carte {
 			else
 				temp=recherche.get((int)(Math.random()*recherche.size()));
 		}
+		//Ajout de la sortie
 		if(Math.random()>0.5){
 			if(Math.random()>0.5){
 				this.boundLeft(0,(int)(Math.random()*this.height));
@@ -506,13 +515,12 @@ public class Carte {
 			else
 				this.boundDown((int)(Math.random()*this.width),this.height-1);
 		}
+		//Ajout de la marque
 		this.mark((int)(Math.random()*this.width), (int)(Math.random()*this.height));
+		this.getMark().setMark();
 	}
 	
-	/**
-	 * 
-	 */
-	
+	/*	
 	public byte[] export(){
 		byte [] tableau = new byte[this.width*this.height+2];
 		if(this.getMark()!=null){
@@ -541,9 +549,13 @@ public class Carte {
 			this.marque=this.map[(int)(importation[0]-1)][(int)(importation[1])];
 		}
 		this.setExit();
-	}
+	}*/
 	
 	public void update(int x, int y, byte importation){
-		this.map[x][y].update(importation);
+		if(checkCoord(x,y)){
+			this.map[x][y].update(importation);
+			if(this.map[x][y].isMark())
+				this.mark(x,y);
+		}
 	}
 }

@@ -1,7 +1,10 @@
 package drawing;
 import java.awt.image.BufferedImage;
 import java.io.*;
+
 import javax.imageio.* ;
+
+import Dialogue.Dialogue;
 
 public class SpriteSheet {
 	
@@ -24,7 +27,7 @@ public class SpriteSheet {
 			image = ImageIO.read(new File(sheet));
 		}
 		catch (IOException e){
-			image = null;
+			Dialogue.Error("Problème lors de l'importation de l'image "+sheet);
 		}
 	}
 	
@@ -33,7 +36,7 @@ public class SpriteSheet {
 			image = ImageIO.read(new File(sheet));
 		}
 		catch (IOException e){
-			image = null;
+			Dialogue.Error("Problème lors de l'importation de l'image "+sheet);
 		}
 		if(image!=null){
 			this.WIDTH=image.getWidth();

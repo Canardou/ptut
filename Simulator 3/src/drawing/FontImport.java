@@ -4,6 +4,8 @@ import java.awt.Font;
 import java.awt.FontFormatException;
 import java.io.*;
 
+import Dialogue.Dialogue;
+
 public class FontImport {
 	
 	/*
@@ -22,6 +24,7 @@ public class FontImport {
 			temp = Font.createFont(Font.TRUETYPE_FONT, new File(path));
 		}
 		catch (IOException | FontFormatException e){
+			Dialogue.Error("Problème lors de l'importation de font");
 		}
 		return temp;
 	}

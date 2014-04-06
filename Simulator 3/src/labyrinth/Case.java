@@ -10,6 +10,7 @@ public class Case {
 	public static final int DOWN=2;
 	public static final int RIGHT=3;
 	private static final int decouverte=4;
+	private static final int marque=5;
 	
 	/*
 	 * Attributs
@@ -175,6 +176,25 @@ public class Case {
 	
 	public String toString(){
 		return "Case ["+this.getX()+"]["+this.getY()+"]-"+this.getCompo();
+	}
+	
+	/**
+	 * @method setmark
+	 * @desc declare la case visitee
+	 */
+	
+	public void setMark(){
+		this.composition=(byte)(this.composition|(1<<marque));
+	}
+	
+	/**
+	 * @method ismark
+	 * @return {boolean}
+	 * @desc retourne si la case est visitee
+	 */
+	
+	public boolean isMark(){
+		return ((byte)(composition&(1<<marque))!=0);
 	}
 	
 	public byte getCompo(){

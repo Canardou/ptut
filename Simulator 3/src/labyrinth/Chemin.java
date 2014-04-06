@@ -122,11 +122,24 @@ public class Chemin {
 		}
 	}
 	
+	public boolean concatenation(Chemin autre){
+		if (autre!=null){
+			if(autre.get(0)==this.get(this.size()-1)){
+				this.route.addAll(autre.get());
+				return true;
+			}
+			else
+				return false;
+		}
+		else
+			return false;
+	}
+	
 	/**
 	 * Retourne vrai si le chemin ne dispose pas de possibilité de croisement
 	 * @param autre
 	 * @return
-	 */
+	 
 	public boolean blocked(){
 		boolean retour=true;
 		int i=0;
@@ -147,7 +160,7 @@ public class Chemin {
 	 * Compare deux chemins pour savoir s'ils se croisent et s'il existe une possibilité de croisement.
 	 * @param autre
 	 * @return
-	 */
+	 
 	public boolean blocked(Chemin autre){
 		boolean retour;
 		if(this.route.containsAll(autre.route)){
@@ -167,7 +180,7 @@ public class Chemin {
 		else
 			retour=false;
 		return retour;
-	}
+	}*/
 	
 	public String toString(){
 		String temp="";

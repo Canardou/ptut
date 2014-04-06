@@ -1,6 +1,7 @@
 package labyrinth;
 import java.lang.Comparable;
 
+@SuppressWarnings({ "rawtypes", "unused" })
 public class ListeCase implements java.lang.Comparable {
 	/*
 	 * Attributs

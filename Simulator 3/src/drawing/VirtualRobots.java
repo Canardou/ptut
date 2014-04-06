@@ -2,7 +2,6 @@ package drawing;
 
 import labyrinth.*;
 
-import java.awt.* ;
 import java.awt.image.* ;
 
 public class VirtualRobots {
@@ -10,7 +9,7 @@ public class VirtualRobots {
 	 * Attributs
 	 */
 	
-	public static int speed=20;
+	public static int speed=50;
 	public static int aleatoire=0;
 
 	private int id;
@@ -56,6 +55,8 @@ public class VirtualRobots {
 			this.path = path;
 			return true;
 		}
+		else if(this.path!=null)
+			return this.path.concatenation(path);
 		else
 			return false;
 	}
@@ -63,6 +64,7 @@ public class VirtualRobots {
 	public void stop(){
 		if(busy())
 			this.path=new Chemin(this.path.get(0));
+		this.wait=true;
 	}
 	
 	public boolean busy(){
@@ -134,6 +136,10 @@ public class VirtualRobots {
 		this.wait=wait;
 	}
 	
+	public boolean isWaiting(){
+		return this.wait;
+	}
+	
 	public void update(){
 		if(exposition<5){
 			this.exposition++;
@@ -142,8 +148,8 @@ public class VirtualRobots {
 			this.sheet.nextImage();
 			this.exposition=0;
 		}
-		if(this.path!=null && this.wait==false){
-			if(this.path.size()>1 || this.mouvement<this.objectif){
+		if(this.path!=null){
+			if((this.path.size()>1 && !isWaiting()) || this.mouvement<this.objectif){
 				if(this.mouvement>=this.objectif){
 					this.x=this.path.getX(0);
 					this.y=this.path.getY(0);
@@ -175,7 +181,7 @@ public class VirtualRobots {
 					this.path.removeTop();
 				}
 				else{
-					this.mouvement+=this.speed+Math.random()*aleatoire;
+					this.mouvement+=speed+Math.random()*aleatoire;
 					if(this.mouvement>this.objectif)
 						this.mouvement=this.objectif;
 				}

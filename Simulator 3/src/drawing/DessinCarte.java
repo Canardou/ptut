@@ -1,14 +1,20 @@
 package drawing;
-import java.util.*;
 import java.awt.* ;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.image.* ;
 
 import javax.swing.JPanel;
+import javax.swing.Timer;
 
 import labyrinth.*;
 
-public class DessinCarte extends JPanel {
+public class DessinCarte extends JPanel implements ActionListener {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	public static final int largeur=42;
 	public static final int hauteur=42;
 	private static final SpriteSheet wallSheet=new SpriteSheet("So_wall.png",25,25);
@@ -30,6 +36,7 @@ public class DessinCarte extends JPanel {
 	private Graphics2D gr ;
 	private boolean dogeMode;
 	private boolean showMark;
+	private Timer timer;
 	
 	private Font comic = FontImport.getFont("ComicRelief.ttf");
 	
@@ -56,6 +63,20 @@ public class DessinCarte extends JPanel {
 	/*
 	 * Methodes
 	 */
+	
+	public void launch(){
+		timer=new Timer(20,this);
+		timer.setInitialDelay(20);
+		timer.start();
+	}
+	
+	public void restart(){
+		timer.restart();
+	}
+	
+	public void stop(){
+		timer.stop();
+	}
 	
 	public void toggleDoge(){
 		if(this.dogeMode)
@@ -116,12 +137,14 @@ public class DessinCarte extends JPanel {
 			}
 		}
 		for(VirtualRobots robot : robots){
-			if(robot.isVisible()){
-				Chemin temp = robot.getPath();
-				if(temp!=null){
-					for(int i=0;i<temp.size();i++){
-						this.gr.setColor(new Color(robot.getID()*75,robot.getID()*75,255-robot.getID()*75,128));
-						this.gr.fillRect(temp.getX(i)*DessinCarte.largeur+DessinCarte.largeur/2, temp.getY(i)*DessinCarte.hauteur+DessinCarte.hauteur/2, DessinCarte.largeur, DessinCarte.hauteur);
+			if(robot!=null){
+				if(robot.isVisible()){
+					Chemin temp = robot.getPath();
+					if(temp!=null){
+						for(int i=0;i<temp.size();i++){
+							this.gr.setColor(new Color(robot.getID()*75,robot.getID()*75,255-robot.getID()*75,128));
+							this.gr.fillRect(temp.getX(i)*DessinCarte.largeur+DessinCarte.largeur/2, temp.getY(i)*DessinCarte.hauteur+DessinCarte.hauteur/2, DessinCarte.largeur, DessinCarte.hauteur);
+						}
 					}
 				}
 			}
@@ -129,9 +152,11 @@ public class DessinCarte extends JPanel {
 		if(this.carte.mark() && this.showMark)
 			this.drawImageAt(ball.getImage(),this.carte.getMark().getX(),this.carte.getMark().getY());
 		for(VirtualRobots robot : robots){
-			robot.update();
-			if(robot.isVisible())
-				this.drawImageAt(robot.draw(),robot.getdX(),robot.getdY());
+			if(robot!=null){
+				robot.update();
+				if(robot.isVisible())
+					this.drawImageAt(robot.draw(),robot.getdX(),robot.getdY());
+			}
 		}
 		if(this.dogeMode){
 			for(int i=0;i<this.x;i++){
@@ -179,18 +204,24 @@ public class DessinCarte extends JPanel {
 		}
 		this.gr.setColor(new Color(255,255,255));
 		for(VirtualRobots robot : robots){
-			if(robot.isVisible()){
-				if(this.dogeMode){
-					this.gr.setFont(this.comic.deriveFont(14f));
-					this.gr.drawString("Doge_"+robot.getID(), (int)((robot.getdX()+1)*DessinCarte.largeur)-DessinCarte.largeur/2, (int)((robot.getdY())*DessinCarte.hauteur)+DessinCarte.hauteur-15);
-				}
-				else{
-					this.gr.setFont(new Font("Dialog", Font.BOLD, 12));
-					this.gr.drawString("Robo_"+robot.getID(), (int)((robot.getdX()+1)*DessinCarte.largeur)-DessinCarte.largeur/2, (int)((robot.getdY())*DessinCarte.hauteur)+DessinCarte.hauteur-15);
+			if(robot!=null){
+				if(robot.isVisible()){
+					if(this.dogeMode){
+						this.gr.setFont(this.comic.deriveFont(14f));
+						this.gr.drawString("Doge_"+robot.getID(), (int)((robot.getdX()+1)*DessinCarte.largeur)-DessinCarte.largeur/2, (int)((robot.getdY())*DessinCarte.hauteur)+DessinCarte.hauteur-15);
+					}
+					else{
+						this.gr.setFont(new Font("Dialog", Font.BOLD, 12));
+						this.gr.drawString("Robo_"+robot.getID(), (int)((robot.getdX()+1)*DessinCarte.largeur)-DessinCarte.largeur/2, (int)((robot.getdY())*DessinCarte.hauteur)+DessinCarte.hauteur-15);
+					}
 				}
 			}
 		}	
 		this.repaint();
-		
+	}
+	
+	@Override
+	public void actionPerformed(ActionEvent e) {
+	    this.update();
 	}
 }
