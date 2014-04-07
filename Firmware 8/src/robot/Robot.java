@@ -15,7 +15,7 @@ import lejos.nxt.Sound;
  * de représenter le robot.
  * @author Thomas
  */
-public class Robot {	
+public class Robot extends Thread {	
 		
 	/**
 	 * Attribut représentant les mouvements du robot
@@ -73,15 +73,21 @@ public class Robot {
 	 private int order; 
 	 
 	 /**
-	  * Attribut représentant la tache de communication
-	  * @see ThreadCom
-	  */
-	 private ThreadCom tCom;
-	 
-	 /**
-	  * Attribut permettant de savoir si le robot est prét à démarrer
+	  * Attribut permettant de savoir si le robot à rempli les conditions initiales pour commencer a se déplacer
 	  */
 	 private boolean readyToGo;
+	 
+	 /**
+	  * Attribut permettant de savoir si le robot à verifié au moins une fois les 4 murs de sa case initiale
+	  */
+	 private boolean checkFirstCaseDone;
+	 
+	 /**
+	  * Attribut permettant de connaitre l'erreur courante sur l'ordre (utile lors des vérifications des conditions initiales)
+	  */
+	 private int errOrder;
+	 
+	 private int etatRobot;
 
 	 /**
 	  * Constructeur de Robot
@@ -95,18 +101,17 @@ public class Robot {
 		this.rightSonar 	= new Sonar(SensorPort.S1);		
 		this.listOrder      = new ListOrder();
 		this.order      	= Param.STOP ;
-		this.tCom			= new ThreadCom(this);
 		this.readyToGo		= false;
+		this.checkFirstCaseDone=false;
+		this.errOrder		= -1;
 	 }
 	 
-	/**
-	 * Fonction principale du robot
-	 */
-	 private void go(){
-		 this.init();
-
-		 while(!Button.ENTER.isDown()){			 
-			this.chooseOrder();			
+	 /**
+	  * Tache principale du robot
+	  */
+	 public void run() {
+		 while(true){			 
+			this.chooseOrderInsecurely();			
 			this.executeOrder();	
 			if(this.readyToGo) {
 				this.env.refreshCoord();
@@ -118,27 +123,82 @@ public class Robot {
 	 
 	 /**
 	  * Choisit un ordre en se basant sur la liste d'ordre recu du superviseur
+	  *  On vérifie que les conditions initiales soit bonnes si on veut deplacer le robot, i.e. : </br>
+	  *  1 - La boussole a été calibrée (au moins une fois) -> ordre CALCOMPASS</br>
+	  *  2 - L'angle de référence a été enregistré et la position du robot a été recu (au moins une fois, peu importe l'ordre) -> ordre SAVEREFANGLE et SETPOSITION</br>
+	  *  3 - La premiere case a été visité entièrement (au moins une fois) -> ordre CHECKFIRSTCASE</br>
 	  * @see ListOrder
 	  * @see Robot#order
 	  */
-	 private void chooseOrder(){
+	 private int chooseOrder(){
 		 this.order = this.listOrder.getOrder();
-		 // On vérifie que les conditions initiales soit bonnes si on veut deplacer le robot, i.e. :
-		 //  - La boussole a été calibrée
-		 //  - L'angle de référence a été enregistré
-		 //  - La position du robot a été recu
-		 if( (!this.mov.getRefAngleDone() || !this.compass.getCalDone() || !this.env.getInitPositionDone() )
-				 && (this.order==Param.FORWARD || this.order==Param.TURNL || this.order==Param.TURNR || this.order==Param.TURNB || this.order==Param.CHECKFIRSTCASE)) {
-			 this.order=Param.STOP;
-			 System.out.println("Impossible de deplacer le robot sans cal,angleref ou coordinit");
+		 
+		 if(!this.readyToGo && this.order!=Param.STOP) {
+			 if( !this.compass.getCalDone() ) {
+				 if( this.order!=Param.CALCOMPASS ) {
+					 if(this.errOrder!=Param.CALCOMPASS) {
+						 System.out.println("[ERR]chooseOrder:cal");
+						 this.errOrder=Param.CALCOMPASS;
+					 }	
+					 this.order=Param.STOP;
+					 return 1;
+				 }			 
+			 }
+			 else if( !this.mov.getRefAngleDone() || !this.env.getInitPositionDone() ) {
+				 if ( this.order!=Param.SAVEREFANGLE && this.order!=Param.SETPOSITION ) {
+					 if(this.errOrder!=Param.SAVEREFANGLE) {
+						 System.out.println("[ERR]chooseOrder:refangle/pos");
+						 this.errOrder=Param.SAVEREFANGLE;
+					 }
+					 this.order=Param.STOP;
+					 return 1;
+				 }
+			 }
+			 else if( !this.checkFirstCaseDone ) {
+				 if ( this.order!=Param.CHECKFIRSTCASE ) {
+					 if(this.errOrder!=Param.CHECKFIRSTCASE) {
+						 System.out.println("[ERR]chooseOrder:checkfirstcase");
+						 this.errOrder=Param.CHECKFIRSTCASE;
+					 }
+					 this.order=Param.STOP;
+					 this.readyToGo=true;
+					 return 1;
+				 }			 
+			 }
+		 }		 
+		 return 0;
+	 }
+	 
+	 /**
+	  * Méthode de test, algorithme d'exploration basique
+	  */
+	 private void chooseOrderExploration(){
+		 if(!this.readyToGo) {
+			 this.readyToGo=true;
 		 }
-		 // Si les conditions initiales sont bonnes, le prochain ordre de deplacement ne peut etre que CHECKFIRSTCASE
-		 else if ( this.mov.getRefAngleDone() && this.compass.getCalDone() && this.env.getInitPositionDone() 
-				 && !this.readyToGo 
-				 && ( this.order==Param.FORWARD || this.order==Param.TURNL || this.order==Param.TURNR || this.order==Param.TURNB) ) {
-			 this.order=Param.STOP;
-			 System.out.println("Le premier deplacement doit etre un CHECKFIRSTCASE");
+		 if(!this.env.getFrontWallDetected()){
+			 this.listOrder.addOrder(Param.FORWARD);
 		 }
+	     else if(!this.env.getRightWallDetected()){
+	    	 this.listOrder.addOrder(Param.TURNR);
+		 }
+		 else if(!this.env.getLeftWallDetected()){
+			 this.listOrder.addOrder(Param.TURNL);
+		 }
+		 else {
+			 this.listOrder.addOrder(Param.TURNB);
+		 }
+		 this.order = this.listOrder.getOrder();
+	 }
+	 
+	 /**
+	  * Méthode de test, permet d'executer n'importe quel ordre sans verifier les conditions initiales
+	  */
+	 private void chooseOrderInsecurely(){
+		 if(!this.readyToGo) {
+			 this.readyToGo=true;
+		 }
+		 this.order = this.listOrder.getOrder();
 	 }
 	 
 	 /**
@@ -172,11 +232,13 @@ public class Robot {
 		 else if(this.order==Param.CHECKFIRSTCASE) {
 			this.mov.turnLeft();
 			this.mov.turnRight();
-			this.readyToGo=true;
 			this.env.saveCurrentCase(true);
 		 }
 		 else if(this.order==Param.SETPOSITION) {
 			 this.env.setPosition();		 
+		 }
+		 else if(this.order==Param.CLEARLISTORDER) {
+			 this.listOrder.clear();
 		 }
 	 }
 
@@ -194,7 +256,6 @@ public class Robot {
 		this.sonarMotor.setSpeed(Param.RSPEED_SONARMOTOR);
 
 		this.env.setInitValues(10, 10, 0); 					// A faire depuis la com
-		this.listOrder.addOrder(Param.SETPOSITION);			// A faire depuis la com
 		
 		//this.listOrder.addOrder(Param.CALCOMPASS); 		// Fait depuis la com :D
 		//this.listOrder.addOrder(Param.SAVEREFANGLE); 		// Fait depuis la com :D
@@ -202,13 +263,39 @@ public class Robot {
 	 } 
 	 
 	 /**
+	  * Fonction d'initialisation test
+	  */
+	 private void init2(){
+		Sound.setVolume(Param.VOLUME);	
+		this.mov.getDiffPilot().setTravelSpeed(Param.SPEED_CRUISE);
+		this.mov.getDiffPilot().setRotateSpeed(Param.RSPEED_CRUISE);
+		this.sonarMotor.setSpeed(Param.RSPEED_SONARMOTOR);
+
+		this.env.setInitValues(10, 10, 0); 					// A faire depuis la com
+		this.order=Param.SETPOSITION;			// A faire depuis la com
+		this.executeOrder();
+		this.order=Param.SAVEREFANGLE;
+		this.executeOrder();
+		this.order=Param.CHECKFIRSTCASE;
+		this.executeOrder();		
+	 }
+	 
+	 /**
 	  * Main
 	  * @param args
 	  */
 	 public static void main(String[] args) {
-		Robot bob = new Robot();
-		bob.go();		
-	}
+		/*Robot bob = new Robot();
+		bob.go();		*/
+		 
+		Robot bot = new Robot();
+		ThreadCom tCom = new ThreadCom(bot);
+		
+		bot.init();
+		
+		bot.start();
+		tCom.start();
+	 }
 	 
 	 /**
 	  * Attent que l'utilisateur appui sur un bouton

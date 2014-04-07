@@ -3,6 +3,7 @@ package robot;
 import communication.ComBluetooth;
 import communication.EntiteeBT;
 import communication.Trame2;
+import env.ListCase;
 
 /**
  * Cette classe permet de gerer la tache de communication avec le superviseur
@@ -42,7 +43,6 @@ public class ThreadCom extends Thread {
 		this.robot=r;
 		this.entitee= new EntiteeBT("Robot H",(byte)1,"00:16:53:06:DA:CF");
 		this.com	= new ComBluetooth(entitee);
-		start(); //appel à run() (lancement de la tache)
 	}
 
 	/**
@@ -54,24 +54,27 @@ public class ThreadCom extends Thread {
 		this.com.connexion();
 		
 		while(true) {
-			/*
+			
 			// On regarde d'abord si on a des données à envoyer
-			if(!this.robot.getEnv().getListCase().isEmpty()) {
-				//Envoi de la liste de cases
-				//...
+			/*if(!this.robot.getEnv().getListCase().isEmpty()) {
+				System.out.println("tCom:envoi?");
+				this.com.send(new Trame2((byte)0, this.robot.getEnv().getListCase()));
+				System.out.println("tCom:envoi!");
 			}
 			// Sinon on se met en attente de reception de données
-			else {
-			*/
+			else {*/
+				System.out.println("tCom:receive?");
 				this.trame=this.com.receive();
-				
-				if(this.trame.getTypeTrame()==Param.ORDRE) {
-					// Ordre a pour valeur {STOP,FORWARD,TURNL,TURNR,TURNB,CALCOMPASS,SAVEREFANGLE,CHECKFIRSTCASE}
-					this.robot.getListOrder().addOrder(this.trame.getOrdre());
-				}
-				else if(this.trame.getTypeTrame()==Param.INITPOSITION) {
-					this.robot.getEnv().setInitValues(this.trame.getPosX(), this.trame.getPosY(), this.trame.getDirection());
-					this.robot.getListOrder().addOrder(Param.SETPOSITION);
+				System.out.println("tCom:receive!");
+				if(this.trame!=null) {
+					if(this.trame.getTypeTrame()==Param.ORDRE) {
+						// Ordre a pour valeur {STOP,FORWARD,TURNL,TURNR,TURNB,CALCOMPASS,SAVEREFANGLE,CHECKFIRSTCASE}
+						this.robot.getListOrder().addOrder(this.trame.getOrdre());
+					}
+					else if(this.trame.getTypeTrame()==Param.INITPOSITION) {
+						//this.robot.getEnv().setInitValues(this.trame.getPosX(), this.trame.getPosY(), this.trame.getDirection());
+						this.robot.getListOrder().addOrder(Param.SETPOSITION);
+					}
 				}
 			//}
 		}		

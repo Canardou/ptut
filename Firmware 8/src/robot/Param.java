@@ -117,6 +117,11 @@ public class Param {
 	public static final int SETPOSITION	= 8;
  	
 	/**
+	 * Ordre : supprimer tout les ordres présents sur le robots et pas encore éxecutés
+	 */
+	public static final int CLEARLISTORDER = 9;
+	
+	/**
 	 * Limite en dessous de laquelle on considère qu'il y a un mur à gauche en cm
 	 */
  	public static final double LIMLEFTWALL = 18;  

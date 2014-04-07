@@ -5,42 +5,45 @@ import env.Case;
 import java.util.*;
 
 /**
- * Cette classe contient une pile qui permet de gerer les cases 
+ * Cette classe contient une liste qui permet de gerer les cases 
  * qui sont explorées par le robot (en FIFO). Elle sert de buffer d'émission,
- * elle doit être régulièrement vidée (émission des cases vers
- * le superviseur)
+ * elle doit être régulièrement vidée (émission des cases vers le superviseur).
  * @author Thomas
- * @see Stack
+ * @see ArrayList
  * @see Case
  */
 public class ListCase {	
 	
 	/**
-	 * Attribut contenant la pile de cases
-	 * @see Stack
+	 * Attribut contenant la liste de cases
+	 * @see ArrayList
 	 */
-	private Stack<Case> pile;
+	private ArrayList<Case> list;
 	
 	/**
 	 * Constructeur de ListeCase
 	 */
 	public ListCase () {
-		this.pile = new Stack<Case>() ;
+		this.list = new ArrayList<Case>() ;
 	}
-
+	
+	public ArrayList<Case> getArrayList() {
+		return this.list;
+	}
+	
 	/**
-	 * Compare les coordonées en paramètre avec les coordonées de la dernière case insérée dans la pile (case en bas de la pile)
+	 * Compare les coordonées en paramètre avec les coordonées de la dernière case insérée dans la liste
 	 * @param x	  	
 	 * 		Coordonée x de la case à tester	
 	 * @param y
 	 * 		Coordonée y de la case à tester
 	 * @return true s'il ne s'agit pas de la meme case ou si la pile est vide
 	 * @see Case
-	 * @see ListCase#pile
+	 * @see ListCase#list
 	 */
 	public boolean isDifferent(int x, int y) {
-		if(!this.pile.isEmpty()) {
-			return !(this.pile.elementAt(0).getX()==x && this.pile.elementAt(0).getY()==y); 
+		if(!this.list.isEmpty()) {
+			return !(this.list.get(this.list.size()-1).getX()==x && this.list.get(this.list.size()-1).getY()==y); 
 		}
 		else {
 			return true;
@@ -48,7 +51,8 @@ public class ListCase {
 	}
 	
 	/**
-	 * Ajoute une case en bas de la pile. Réalise le changement necessaire pour passer du repère relatif au robot au répère absolu du superviseur. Ainsi la case ajoutée est directement utilisable par le superviseur
+	 * Ajoute une case en fin de liste. Réalise le changement necessaire pour passer du repère relatif au robot 
+	 * au répère absolu du superviseur. Ainsi la case ajoutée est directement utilisable par le superviseur
 	 * @param x
 	 * 		Coordonée x de la case
 	 * @param y
@@ -63,6 +67,7 @@ public class ListCase {
 	 * 		Mur eventuel à droite du robot (true si un mur est présent)
 	 * @param rightWall
 	 * 		Mur eventuel à l'arrière du robot (true si un mur est présent)
+	 * @return 0  si l'opération s'est bien déroulée
 	 * @see Environment#x
 	 * @see Environment#y
 	 * @see Environment#dir
@@ -72,91 +77,112 @@ public class ListCase {
 	 * @see Environment#rightWallDetected
 	 * @see Case
 	 */
-	public void addCase(int x, int y, int dir, boolean frontWall, boolean leftWall, boolean backWall, boolean rightWall)
-	{
-		Case caseTemp = new Case(x,y);
-		caseTemp.setReveal();
-		
-		if(dir==Param.XP) {			
-			if(frontWall) {
-				caseTemp.close(Case.RIGHT);
+	public int addCase(int x, int y, int dir, boolean frontWall, boolean leftWall, boolean backWall, boolean rightWall)
+	{		
+		if( x>=0 && y>=0 && (dir==Param.XP || dir==Param.YP || dir==Param.XN || dir==Param.YN) ) {
+			
+			Case caseTemp = new Case(x,y);
+			caseTemp.setReveal();			
+			
+			if(dir==Param.XP) {			
+				if(frontWall) {
+					caseTemp.close(Case.RIGHT);
+				}
+				else if (leftWall) {
+					caseTemp.close(Case.UP);
+				}
+				else if (backWall) {
+					caseTemp.close(Case.LEFT);
+				}
+				else if (rightWall) {
+					caseTemp.close(Case.DOWN);
+				}
 			}
-			else if (leftWall) {
-				caseTemp.close(Case.UP);
+			else if(dir==Param.YP){
+				if(frontWall) {
+					caseTemp.close(Case.UP);
+				}
+				else if (leftWall) {
+					caseTemp.close(Case.LEFT);
+				}
+				else if (backWall) {
+					caseTemp.close(Case.DOWN);
+				}
+				else if (rightWall) {
+					caseTemp.close(Case.RIGHT);
+				}	
 			}
-			else if (backWall) {
-				caseTemp.close(Case.LEFT);
+			else if(dir==Param.XN){
+				if(frontWall) {
+					caseTemp.close(Case.LEFT);
+				}
+				else if (leftWall) {
+					caseTemp.close(Case.DOWN);
+				}
+				else if (backWall) {
+					caseTemp.close(Case.RIGHT);
+				}
+				else if (rightWall) {
+					caseTemp.close(Case.UP);
+				}	
 			}
-			else if (rightWall) {
-				caseTemp.close(Case.DOWN);
+			else if(dir==Param.YN){
+				if(frontWall) {
+					caseTemp.close(Case.DOWN);
+				}
+				else if (leftWall) {
+					caseTemp.close(Case.RIGHT);
+				}
+				else if (backWall) {
+					caseTemp.close(Case.UP);
+				}
+				else if (rightWall) {
+					caseTemp.close(Case.LEFT);
+				}	
+			}	
+			System.out.println(caseTemp);
+			if(this.list.add(caseTemp)) {
+				return 0;
+			}
+			else {
+				System.out.println("[ERR]addCase:add");
+				return 1;
 			}
 		}
-		else if(dir==Param.YP){
-			if(frontWall) {
-				caseTemp.close(Case.UP);
-			}
-			else if (leftWall) {
-				caseTemp.close(Case.LEFT);
-			}
-			else if (backWall) {
-				caseTemp.close(Case.DOWN);
-			}
-			else if (rightWall) {
-				caseTemp.close(Case.RIGHT);
-			}	
+		else {
+			System.out.println("[ERR]addCase:param");
+			return 1;
 		}
-		else if(dir==Param.XN){
-			if(frontWall) {
-				caseTemp.close(Case.LEFT);
-			}
-			else if (leftWall) {
-				caseTemp.close(Case.DOWN);
-			}
-			else if (backWall) {
-				caseTemp.close(Case.RIGHT);
-			}
-			else if (rightWall) {
-				caseTemp.close(Case.UP);
-			}	
-		}
-		else if(dir==Param.YN){
-			if(frontWall) {
-				caseTemp.close(Case.DOWN);
-			}
-			else if (leftWall) {
-				caseTemp.close(Case.RIGHT);
-			}
-			else if (backWall) {
-				caseTemp.close(Case.UP);
-			}
-			else if (rightWall) {
-				caseTemp.close(Case.LEFT);
-			}	
-		}		
-		this.pile.insertElementAt(caseTemp, 0);
-		System.out.println(caseTemp);
+			
 	}
 	
 	/**
-	 * Retire la case en haut de la pile
-	 * @return la case en haut de la pile ou null si la pile est vide
+	 * Retire la case de la liste (indice 0) et retourne l'objet
+	 * @return la case la plus ancienne de la liste
 	 * @see Case
 	 */
 	public Case getCase() {
-		if(this.pile.isEmpty()) {
+		if(this.list.isEmpty()) {
 			return null;
 		}
 		else {
-			return this.pile.pop();
+			return this.list.remove(0);
 		}		
 	}
 	
 	/**
-	 * Vérifie si la pile est vide
-	 * @return true si la pile est vide
+	 * Vide entierement la liste
+	 */
+	public void clear() {
+		this.list.clear();
+	}
+	
+	/**
+	 * Vérifie si la liste est vide
+	 * @return true si la liste est vide
 	 */
 	public boolean isEmpty() {
-		if(this.pile.isEmpty()) {
+		if(this.list.isEmpty()) {
 			return true;
 		}
 		else {

@@ -1,10 +1,10 @@
 package orders;
 
 import robot.*;
-import java.util.Stack;
+import java.util.ArrayList;
 
 /**
- * Cette classe contient une pile qui permet de gerer les ordres qui seront executés 
+ * Cette classe contient une liste qui permet de gerer les ordres qui seront executés 
  * par le robot (en FIFO). Elle sert de buffer de reception
  * @author Thomas
  * @see Stack
@@ -22,21 +22,23 @@ public class ListOrder {
 	
 	/**
 	 * Attribut contenant la pile d'ordres
-	 * @see Stack
+	 * @see ArrayList
 	 */
-	private Stack<Integer> pile;
+	private ArrayList<Integer> list;
 	
 	/**
 	 * Constructeur de ListOrder
 	 */
 	public ListOrder () {
-		this.pile = new Stack<Integer> () ;
+		this.list = new ArrayList<Integer> () ;
 	}
 	
 	/**
-	 * Ajoute un ordre en bas de la pile
+	 * Ajoute un ordre à la fin de liste. Sauf s'il s'agit d'un ordre jugé à haute priorité, 
+	 * auquel cas l'ordre est mis à l'index 0 pour etre le prochain executé
 	 * @param order
-	 * 		Ordre à insérer dans la pile
+	 * 		Ordre à insérer dans la liste
+	 * @return 0 si l'opération s'est bien déroulée
 	 * @see Param#STOP
 	 * @see Param#FORWARD
 	 * @see Param#TURNL
@@ -46,14 +48,30 @@ public class ListOrder {
  	 * @see Param#SAVEREFANGLE
  	 * @see Param#CHECKFIRSTCASE
  	 * @see Param#SETPOSITION
+ 	 * @see Param#CLEARLISTORDER
 	 */
-	public void addOrder(int order)
+	public int addOrder(int order)
 	{
-		this.pile.insertElementAt(order, 0);
+		if( order==Param.STOP || order==Param.FORWARD 
+				|| order==Param.TURNL || order==Param.TURNR 
+				|| order==Param.TURNB || order==Param.CALCOMPASS 
+				|| order==Param.SAVEREFANGLE || order==Param.CHECKFIRSTCASE 
+				|| order==Param.SETPOSITION ) {
+			this.list.add(order);
+			return 0;
+		}
+		else if( order==Param.CLEARLISTORDER ) {
+			this.list.add(0,order);
+			return 0;
+		}
+		else {
+			System.out.println("[ERR]addOrder:param");
+			return 1;
+		}
 	}
 	
 	/**
-	 * Retire l'ordre en haut de la pile
+	 * Retire et renvoit l'ordre le plus ancien présent dans la liste
 	 * @return l'ordre en haut de la pile ou l'ordre STOP si la pile est vide
 	 * @see Param#STOP
 	 * @see Param#FORWARD
@@ -66,12 +84,32 @@ public class ListOrder {
  	 * @see Param#SETPOSITION
 	 */
 	public Integer getOrder(){
-		if(this.pile.isEmpty()) {
+		if(this.list.isEmpty()) {
 			return Param.STOP;
 		}
 		else {
-			return this.pile.pop();
+			return this.list.remove(0);
 		}		
+	}
+	
+	/**
+	 * Vide entierement la liste
+	 */
+	public void clear() {
+		this.list.clear();
+	}
+	
+	/**
+	 * Vérifie si la liste est vide
+	 * @return true si la liste est vide
+	 */
+	public boolean isEmpty() {
+		if(this.list.isEmpty()) {
+			return true;
+		}
+		else {
+			return false;
+		}
 	}
 	
 }
