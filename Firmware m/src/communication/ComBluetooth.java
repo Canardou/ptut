@@ -2,8 +2,8 @@ package communication;
 import java.io.*;
 
 import env.Case;
-//import lejos.nxt.comm.NXTConnection;
-//import lejos.nxt.LCD;
+import lejos.nxt.comm.NXTConnection;
+import lejos.nxt.LCD;
 import lejos.nxt.comm.BTConnection;
 import lejos.nxt.comm.Bluetooth;
 

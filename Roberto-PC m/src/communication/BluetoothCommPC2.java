@@ -157,7 +157,7 @@ public class BluetoothCommPC2 extends Thread{
 			int k=2;
 			
 			for (int i=0; i<(tailleTrameRecue-3)/3 ; i++){
-				listCase.addCase((int)trameRecue[k], (int)trameRecue[k+1], trameRecue[k+2]);
+				listCase.addCase2((int)trameRecue[k], (int)trameRecue[k+1], trameRecue[k+2]);
 				k=k+3;
 			}
 			trameR= new Trame2(trameRecue[1],listCase);}

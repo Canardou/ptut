@@ -5,7 +5,7 @@ import java.io.IOException;
 import java.util.Scanner;
 
 import env.Case;
-import robot.Param;
+//import robot.Param;
 
 public class test {
 	
@@ -17,12 +17,12 @@ public class test {
 	public static void main(String[] args) throws IOException, InterruptedException{
 		
 	
-		//EntiteeBT PC= new EntiteeBT("marion","00:0C:78:33:EB:0C");
+		EntiteeBT PC= new EntiteeBT("marion","00:0C:78:33:EB:0C");
 		//EntiteeBT PC= new EntiteeBT("kiwor-0", "00:15:83:0C:BF:EB");
-		EntiteeBT PC= new EntiteeBT("Thomas", "26:0A:64:62:8D:29");
+		//EntiteeBT PC= new EntiteeBT("Thomas", "26:0A:64:62:8D:29");
 		
-		EntiteeBT robot1= new EntiteeBT("Robot H",(byte)1,"00:16:53:06:DA:CF");
-		EntiteeBT robot2= new EntiteeBT("Robot J",(byte)1,"00:16:53:06:F5:30");
+		//EntiteeBT robot1= new EntiteeBT("Robot H",(byte)1,"00:16:53:06:DA:CF");
+		EntiteeBT robot1= new EntiteeBT("Robot J",(byte)1,"00:16:53:06:F5:30");
 		EntiteeBT robot3= new EntiteeBT("Robot I",(byte)1,"00:16:53:06:DE:F2");
 		
 
@@ -47,7 +47,7 @@ public class test {
 					int strTrame =sc.nextInt();
 					
 					if (strTrame==1){
-						BluetoothCommPC2 bluetoothPC1= new BluetoothCommPC2(PC, robot1);
+						/*BluetoothCommPC2 bluetoothPC1= new BluetoothCommPC2(PC, robot1);
 						bluetoothPC1.connexion();
 						System.out.println("robot 1 connecté");
 						System.out.println("j'ai recu 0, j'envoie une trame" );
@@ -55,7 +55,7 @@ public class test {
 						Trame2 sendFirstPosition = new Trame2((byte)1,caseFirst,Param.XP);
 						sendFirstPosition.printTrame();
 						bluetoothPC1.send (sendFirstPosition);
-						System.out.println("c'est fait" );
+						System.out.println("c'est fait" );*/
 						
 					
 						
@@ -138,7 +138,7 @@ public class test {
 				
 					
 			else if (str==2){
-				BluetoothCommPC2 bluetoothPC2= new BluetoothCommPC2(PC, robot2);
+				BluetoothCommPC2 bluetoothPC2= new BluetoothCommPC2(PC, robot1);
 				bluetoothPC2.initialisationCommunication();
 				System.out.println("robot 2 connecté");		
 				

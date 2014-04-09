@@ -1,8 +1,10 @@
 package communication;
 
-import java.util.Stack;
+import java.util.ArrayList;
 
+import threads.ThreadRobot;
 import env.Case;
+import env.Environment;
 import env.ListCase;
 
 
@@ -22,7 +24,7 @@ public class Trame2 {
 	private byte message;
 	private int typeMessage;
 
-	private Stack<Case> pile;
+	private ArrayList<Case> pile;
 
 	
 	private byte[] contenuT;
@@ -55,9 +57,11 @@ public class Trame2 {
 		
 		int i=2;
 		//this.tailleTrame=tailleTrame;
+		
 		this.ID=ID;
-		this.pile=listCase.getListCase();
-		this.typeTrame=6;
+		this.pile=listCase.getArrayList();
+		
+		this.typeTrame=1;
 		
 		
 		
@@ -66,7 +70,7 @@ public class Trame2 {
 		
 		this.contenuT[1]=this.ID;
 		
-		for (Case Case1 :this.pile){   // POURQUOI j'ai une erreur ici des fois, une classe sur 2, marche très bien dans classe cote PC
+		for (Case Case1 : this.pile){   
 			this.contenuT[i]=(byte)Case1.getX();
 			this.contenuT[i+1]=(byte)Case1.getY();
 			this.contenuT[i+2]=Case1.getCompo();
