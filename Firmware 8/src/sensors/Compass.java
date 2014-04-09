@@ -1,5 +1,8 @@
-package sensor;
+package sensors;
+
 import robot.*;
+import env.*;
+import threads.ThreadRobot;
 import lejos.nxt.I2CPort;
 import lejos.nxt.addon.CompassHTSensor;
 
@@ -11,10 +14,15 @@ import lejos.nxt.addon.CompassHTSensor;
 public class Compass extends CompassHTSensor {	
 	
 	/**
+	 * Angle à réaliser pour faire les 2 tours de calibration de la boussole en degrés
+	 */
+	public static final int ANGLE_CAL = 760; 
+	
+	/**
 	 * Attribut représentant le robot
 	 * @see Robot
 	 */
-	private 	Robot 	bot;
+	private 	ThreadRobot 	robot;
 	
 	/**
 	 * Attribut contenant un tableau d'échantillons de la boussole
@@ -46,10 +54,10 @@ public class Compass extends CompassHTSensor {
 	 * @see Robot
 	 * @see I2CPort
 	 */
-	public Compass (I2CPort port,Robot botinit) {
+	public Compass (I2CPort port,ThreadRobot botinit) {
 		super(port);
-		this.bot 		= botinit;
-		this.data		= new double[Param.TAB_NBDATA];
+		this.robot 		= botinit;
+		this.data		= new double[Environment.TAB_NBDATA];
 		this.idxData 	= 0 ;
 		this.moyData 	= 0 ;
 		this.calDone	= false;
@@ -68,11 +76,11 @@ public class Compass extends CompassHTSensor {
 	 */
 	public void calibrate() {
 		System.out.println("Cal compass");
-		this.bot.getMov().getDiffPilot().setRotateSpeed(Param.RSPEED_CAL);
+		this.robot.getMov().getDiffPilot().setRotateSpeed(Movement.RSPEED_CAL);
 		this.startCalibration() ;
-		this.bot.getMov().getDiffPilot().rotate(Param.ANGLE_CAL);
+		this.robot.getMov().getDiffPilot().rotate(ANGLE_CAL);
 		this.stopCalibration() ;
-		this.bot.getMov().getDiffPilot().setRotateSpeed(Param.RSPEED_CRUISE);
+		this.robot.getMov().getDiffPilot().setRotateSpeed(Movement.RSPEED_CRUISE);
 		this.calDone=true;		
 	}
 	
@@ -92,10 +100,10 @@ public class Compass extends CompassHTSensor {
 	private double moyenne() {
 		int i;
 		double sum = 0;
-		for(i=0;i<Param.TAB_NBDATA;i++){
+		for(i=0;i<Environment.TAB_NBDATA;i++){
 			sum+=this.data[i];
 		}
-		return (sum/Param.TAB_NBDATA);
+		return (sum/Environment.TAB_NBDATA);
 	}
 	 
 	/**
@@ -105,7 +113,7 @@ public class Compass extends CompassHTSensor {
 	 */
 	private void acquisition() {
 		this.data[this.idxData] = this.getDegreesCartesian();
-		this.idxData = (this.idxData+1)%Param.TAB_NBDATA;
+		this.idxData = (this.idxData+1)%Environment.TAB_NBDATA;
 	} 
 	
 	/**

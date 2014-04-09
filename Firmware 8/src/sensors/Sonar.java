@@ -1,9 +1,8 @@
-package sensor;
+package sensors;
 
-import robot.*;
+import env.*;
 import lejos.nxt.I2CPort;
 import lejos.nxt.UltrasonicSensor;
-import lejos.nxt.addon.CompassHTSensor;
 
 /**
  * Cette classe représente un sonar
@@ -11,6 +10,11 @@ import lejos.nxt.addon.CompassHTSensor;
  * @see UltrasonicSensor
  */
 public class Sonar extends UltrasonicSensor {	
+	
+    /**
+     * Offset d'erreur des sonars en cm
+     */
+    public static final double SONAR_OFFSET = 2;
 	
 	/**
 	 * Attribut contenant un tableau d'échantillons de la boussole
@@ -36,7 +40,7 @@ public class Sonar extends UltrasonicSensor {
 	 */
 	public Sonar (I2CPort port) {
 		super(port);
-		this.data = new double[Param.TAB_NBDATA];
+		this.data = new double[Environment.TAB_NBDATA];
 		this.idxData = 0 ;
 		this.moyData = 0 ;
 	}
@@ -64,10 +68,10 @@ public class Sonar extends UltrasonicSensor {
 	private double moyenne(){
 		int i;
 		double sum = 0;
-		for(i=0;i<Param.TAB_NBDATA;i++){
+		for(i=0;i<Environment.TAB_NBDATA;i++){
 			sum+=this.data[i];
 		}
-		return (sum/Param.TAB_NBDATA);
+		return (sum/Environment.TAB_NBDATA);
 	}
 	 
 	/**
@@ -76,7 +80,7 @@ public class Sonar extends UltrasonicSensor {
 	 * @see Sonar#idxData
 	 */
 	private void acquisition(){
-		this.data[this.idxData] = (this.getRange()+Param.SONAR_OFFSET);
-		this.idxData = (this.idxData+1)%Param.TAB_NBDATA;
+		this.data[this.idxData] = (this.getRange()-SONAR_OFFSET);
+		this.idxData = (this.idxData+1)%Environment.TAB_NBDATA;
 	} 	 
 }

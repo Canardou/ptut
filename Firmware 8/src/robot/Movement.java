@@ -5,11 +5,146 @@ import lejos.robotics.RegulatedMotor;
 
 import java.lang.Math;
 
+import env.Environment;
+import threads.ThreadRobot;
+
 /**
  * Cette classe permet de gérer les déplacements du robot
  * @author Thomas
  */
 public class Movement {
+	
+	/**
+	 * Distance unitaire inter-case du labyrinthe en cm
+	 */
+	public static final double UNIT_DIST = 30;
+	
+	/**
+	 * Vitesse de croisière. De 0 à 36 cm/s
+	 */
+	public static final double SPEED_CRUISE = 16; 
+	
+	/**
+	 * Vitesse à l'approche d'un mur avant. De 0 à 36 cm/s
+	 */
+	public static final double SPEED_DANGER = 12; 
+	
+	/**
+	 * Vitesse de rotation normale. De 0 à 366 deg/s
+	 */
+	public static final double RSPEED_CRUISE = 70;   
+	
+	/**
+	 * Vitesse de rotation lorsqu'on approche de l'angle voulu. De 0 à 366 deg/s
+	 */
+	public static final double RSPEED_DANGER = 25; 
+	
+	/**
+	 * Vitesse de rotation lors de la calibration. De 0 à 366 deg/s
+	 */
+	public static final double RSPEED_CAL = 20; 
+	
+	/**
+	 * Vitesse de rotation du moteur qui guide le sonar. De 0 à 366 deg/s
+	 */
+	public static final int RSPEED_SONARMOTOR= 270; 
+	
+	/**
+	 * Angle relatif à l'objectif à partir duquel on réduit la vitesse de rotation
+	 */
+	public static final double ANGLE_DANGER = 18;  
+	
+	/**
+	 * Erreur permise sur la rotation en degrés
+	 */
+	public static final double ANGLE_ERR = 1;   
+	
+	/**
+	 * Hystérésis sur la vitesse pour éviter les oscillations en vitesse qui perturbe la boussole
+	 */
+	public static final double ANGLE_HYST = 1; 
+	
+	/**
+	 * Rayon du cercle pour réguler fortement en cm.
+	 * Lorsque le robot avance	
+	 */
+	public static final double ARC2 = 5;
+	
+	/**
+	 * Erreur permise pour rester bien au milieu du couloir, lorsque les 2 murs latéraux sont présent
+	 */
+	public static final double REG_ERRDIST = 1.5; 
+	
+	/**
+	 * Angle critique à ne pas dépasser lorqu'on avance en degrés
+	 */
+	public static final double REG_ERRANGLEMAX = 40;  
+	
+	/**
+	 * Erreur permise sur l'angle de régulation lorsqu'on avance
+	 */
+	public static final double REG_ERRANGLE = 5;
+	
+	/**
+	 * Distance à partir de laquelle le robot va tourner pour s'approcher du mur droit en cm.
+	 * Lorsqu'il n'y a que le mur droit de présent.
+	 */
+	public static final double RIGHTWALL_MAX = 9; 
+	
+	/**
+	 * Distance à partir de laquelle le robot va tourner pour s'approcher du mur  gauche en cm.
+	 * Lorsqu'il n'y a que le mur gauche de présent.
+	 */
+	public static final double LEFTWALL_MAX = 9;  
+
+	/**
+	 * Distance à partir de laquelle le robot va tourner pour s'éloigner du mur droit en cm.
+	 * Lorsqu'il n'y a que le mur droit de présent.
+	 */
+	public static final double RIGHTWALL_MIN = 9;  
+
+	/**
+	 * Distance à partir de laquelle le robot va tourner pour s'éloigner du mur gauche en cm.
+	 * Lorsqu'il n'y a que le mur gauche de présent.
+	 */
+	public static final double LEFTWALL_MIN = 9;  
+	
+	/**
+	 * Rayon du cercle pour réguler faiblement en cm.
+	 * Lorsque le robot avance	
+	 */
+	public static final double ARC1 =30; 
+	
+	/**
+	 * Distance à partir de laquelle le sonar se tournera vers l'avant pour voir si un mur est présent.
+	 * Lorsque le robot avance	
+	 */
+	public static final double REG_CHECK = 25;  
+	
+	/**
+	 * Définit le type de régulation (régulation forte vers là droite)
+	 */
+	public static final int LEFTREG = 0;
+	
+	/**
+	 * Définit le type de régulation (régulation faible vers là droite)
+	 */
+	public static final int MIDLEFTREG = 1;
+	
+	/**
+	 * Définit le type de régulation (pas de régulation)
+	 */
+	public static final int NOREG = 2;
+	
+	/**
+	 * Définit le type de régulation (régulation faible vers là gauche)
+	 */
+	public static final int MIDRIGHTREG = 3;
+	
+	/**
+	 * Définit le type de régulation (régulation forte vers là gauche)
+	 */
+	public static final int RIGHTREG = 4;
 
 	/**
 	 * Attribut représentant les 2 moteurs qui permettent de déplacer le robot
@@ -21,19 +156,7 @@ public class Movement {
 	 * Attribut contenant l'objet robot
 	 * @see Robot
 	 */
-	private Robot robot ;
-	
-	/**
-	 * Attribut contenant le type de régulation necessaire pour la méthode moveForward()
-	 * @see Movement#chooseReg(double, double)
-	 * @see Movement#moveForward()
-	 * @see Param#LEFTREG
-	 * @see Param#MIDLEFTREG
-	 * @see Param#NOREG
-	 * @see Param#RIGHTREG
-	 * @see Param#MIDRIGHTREG
-	 */
-	private int reg ;
+	private ThreadRobot robot ;
 	
 	/**
 	 * Attribut indiquant que le sonar gauche/avant est en position avant
@@ -93,7 +216,7 @@ public class Movement {
 	 * @see DifferentialPilot
 	 * @see Robot
 	 */
-	public Movement(double wheelDiameter, double trackWidth, RegulatedMotor leftMotor, RegulatedMotor rightMotor, boolean reverse, Robot bob) {
+	public Movement(double wheelDiameter, double trackWidth, RegulatedMotor leftMotor, RegulatedMotor rightMotor, boolean reverse, ThreadRobot bob) {
 		this.diffPilot 		= new DifferentialPilot(wheelDiameter, trackWidth, leftMotor, rightMotor, reverse);
 		this.robot 			= bob ;
 		this.refAngleDone	= false;
@@ -133,12 +256,12 @@ public class Movement {
 	public void moveForward() {
 		double errAngle	  = 0 ;
 		double errDist	  = 0 ;
+		int	   reg		  = NOREG;
 		this.distTraveled = 0 ;
-		this.reg		  = Param.NOREG ;
 		this.frontWallReg = false;
 		this.finish    	  = false;
 		
-		this.diffPilot.setTravelSpeed(Param.SPEED_CRUISE);
+		this.diffPilot.setTravelSpeed( SPEED_CRUISE);
 		
 		// On remplit les filtres
 		this.robot.getEnv().check2WallsCompassFull();
@@ -148,7 +271,7 @@ public class Movement {
 		while (!this.finish) {
 			
 			// Calcul des erreurs pour la régulation (distance aux murs et angle)
-			errDist	  = this.robot.getLeftFrontSonar().getMoyData() - this.robot.getRightSonar().getMoyData() + 1 ;
+			errDist	  = this.robot.getLeftFrontSonar().getMoyData() - this.robot.getRightSonar().getMoyData() +1 ;
 			errAngle  = this.refAngle - this.robot.getCompass().getMoyData();
 			if(errAngle<-180) {
 				errAngle = errAngle+360;
@@ -157,12 +280,12 @@ public class Movement {
 				errAngle = errAngle-360;
 			}
 			
-			if ( this.distTraveled > Param.REG_CHECK ) {
+			if ( this.distTraveled >  REG_CHECK ) {
 				this.endOfMove(errAngle);			
 			}
 			else {			
-				this.chooseReg(errAngle,errDist);
-				this.executeReg(errAngle);
+				reg=this.chooseReg(errAngle,errDist);
+				this.executeReg(errAngle,reg);
 				this.robot.getEnv().check2WallsCompass();
 			}			
 		}
@@ -170,7 +293,7 @@ public class Movement {
 		this.turn(-errAngle);
 		
 		if(this.frontWallReg) {
-			this.robot.getSonarMotor().rotateTo(0);
+			this.robot.getEnv().sonarLeft();
 		}
 		
 		// Mise a jour de l'environnement
@@ -190,17 +313,17 @@ public class Movement {
 			this.stop();
 			this.turn(-errAngle);
 			this.frontWallReg = true;
-			this.robot.getSonarMotor().rotateTo(-90);
+			this.robot.getEnv().sonarFront();
 			this.robot.getEnv().checkFrontWallFull();
-			this.diffPilot.setTravelSpeed(Param.SPEED_DANGER);
+			this.diffPilot.setTravelSpeed( SPEED_DANGER);
 		} 
 		else {
 			this.distTraveled += this.diffPilot.getMovement().getDistanceTraveled();
 			this.diffPilot.forward();	
 			this.robot.getEnv().checkFrontWallCompass();
 			
-			if(this.robot.getLeftFrontSonar().getMoyData()<=Param.LIMFRONTWALL
-					|| this.robot.getLeftFrontSonar().getMoyData()>Param.FRONTWALL_DANGER && this.distTraveled > Param.UNIT_DIST) {
+			if(this.robot.getLeftFrontSonar().getMoyData()<=Environment.LIMFRONTWALL
+					|| this.robot.getLeftFrontSonar().getMoyData()>Environment.FRONTWALL_DANGER && this.distTraveled > UNIT_DIST) {
 				this.finish=true;
 				this.stop();
 			}
@@ -216,89 +339,90 @@ public class Movement {
 	 * 		Différence entre la distance au mur gauche et la distance au mur droit
 	 * @see Movement#reg
 	 */
-	private void chooseReg(double errAngle, double errDist) {
+	public int chooseReg(double errAngle, double errDist) {
 
 		//Si on a un mur de chaque coté
 		if ( this.robot.getEnv().getRightWallDetected() && this.robot.getEnv().getLeftWallDetected() ) {
 
 			//Si on est trop à droite
-			if ( errDist > Param.REG_ERRDIST ) {
+			if ( errDist >  REG_ERRDIST ) {
 				//Si le robot n'est pas déjà orienté vers le centre du couloir
-				if( errAngle > -Param.REG_ERRANGLEMAX ) {
-					this.reg = Param.RIGHTREG ;
+				if( errAngle > - REG_ERRANGLEMAX ) {
+					return RIGHTREG ;
 				}
 				//Sinon on le laisse continuer vers le centre
 				else {
-					this.reg = Param.NOREG ;				
+					return NOREG ;				
 				}
 			}
 			//Sinon si on est légèrement à droite
 			else if ( errDist > 0 ) {
 				// Si le robot est trop orienté vers la droite
-				if ( errAngle > Param.REG_ERRANGLEMAX ) {
-					this.reg = Param.RIGHTREG ;
+				if ( errAngle >  REG_ERRANGLEMAX ) {
+					return RIGHTREG ;
 				}
 				// Sinon si le robot est trop orienté vers la gauche
-				else if ( errAngle < -Param.REG_ERRANGLEMAX ) {
-					this.reg = Param.MIDLEFTREG ;
+				else if ( errAngle < - REG_ERRANGLEMAX ) {
+					return MIDLEFTREG ;
 				}
+								
 				// Sinon si le robot est orienté légèrement vers la droite
-				else if ( errAngle > Param.REG_ERRANGLE ) {
-					this.reg = Param.MIDRIGHTREG ;
+				else if ( errAngle >  REG_ERRANGLE ) {
+					return MIDRIGHTREG ;
 				}
 				else {
-					this.reg = Param.NOREG ;
+					return NOREG ;
 				}
-			}			
+			}
 			//Sinon si on est trop à gauche
-			else if ( errDist < -Param.REG_ERRDIST ) {
+			else if ( errDist < - REG_ERRDIST ) {
 				//Si le robot n'est pas déjà orienté vers le centre du couloir
-				if( errAngle < Param.REG_ERRANGLEMAX ) {
-					this.reg = Param.LEFTREG ;
+				if( errAngle <  REG_ERRANGLEMAX ) {
+					return LEFTREG ;
 				}
 				//Sinon on le laisse continuer vers le centre
 				else {
-					this.reg = Param.NOREG ;				
+					return NOREG ;				
 				}
 			}
 			//Sinon si on est légèrement à gauche
 			else if ( errDist < 0 ) {
 				// Si le robot est trop orienté vers la gauche
-				if ( errAngle < -Param.REG_ERRANGLEMAX ) {
-					this.reg = Param.LEFTREG ;
+				if ( errAngle < - REG_ERRANGLEMAX ) {
+					return LEFTREG ;
 				}
 				// Sinon si le robot est trop orienté vers la droite
-				else if ( errAngle > Param.REG_ERRANGLEMAX ) {
-					this.reg = Param.MIDRIGHTREG ;
+				else if ( errAngle >  REG_ERRANGLEMAX ) {
+					return MIDRIGHTREG ;
 				}
 				// Sinon si le robot est orienté légèrement vers la gauche
-				else if ( errAngle < -Param.REG_ERRANGLE ) {
-					this.reg = Param.MIDLEFTREG ;
+				else if ( errAngle < - REG_ERRANGLE ) {
+					return MIDLEFTREG ;
 				}
 				else {
-					this.reg = Param.NOREG ;
+					return NOREG ;
 				}				
 			}
 			//Sinon si on est au centre du couloir (d'un point de vu distance)
 			else {
 				// Si le robot est trop orienté vers la gauche
-				if ( errAngle < -Param.REG_ERRANGLEMAX ) {
-					this.reg = Param.LEFTREG ;
+				if ( errAngle < - REG_ERRANGLEMAX ) {
+					return LEFTREG ;
 				}
 				// Sinon si le robot est trop orienté vers la droite
-				else if ( errAngle > Param.REG_ERRANGLEMAX ) {
-					this.reg = Param.RIGHTREG ;
+				else if ( errAngle >  REG_ERRANGLEMAX ) {
+					return RIGHTREG ;
 				}
 				// Sinon si le robot est orienté légèrement vers la gauche
-				else if ( errAngle < -Param.REG_ERRANGLE ) {
-					this.reg = Param.MIDLEFTREG ;
+				else if ( errAngle < - REG_ERRANGLE ) {
+					return MIDLEFTREG ;
 				}
 				// Sinon si le robot est orienté légèrement vers la droite
-				else if ( errAngle > Param.REG_ERRANGLE ) {
-					this.reg = Param.MIDRIGHTREG ;
+				else if ( errAngle >  REG_ERRANGLE ) {
+					return MIDRIGHTREG ;
 				}		
 				else {
-					this.reg = Param.NOREG ;
+					return NOREG ;
 				}
 			}
 		}
@@ -307,83 +431,83 @@ public class Movement {
 		else if ( this.robot.getEnv().getRightWallDetected() ) {
 			
 			//Si on est trop à droite
-			if ( this.robot.getRightSonar().getMoyData() < Param.RIGHTWALL_MIN ) {
+			if ( this.robot.getRightSonar().getMoyData() <  RIGHTWALL_MIN ) {
 				//Si le robot n'est pas déjà orienté vers le centre du couloir
-				if( errAngle > -Param.REG_ERRANGLEMAX ) {
-					this.reg = Param.RIGHTREG ;
+				if( errAngle > - REG_ERRANGLEMAX ) {
+					return RIGHTREG ;
 				}
 				//Sinon on le laisse continuer vers le centre
 				else {
-					this.reg = Param.NOREG ;				
+					return NOREG ;				
 				}
 			}			
 			//Sinon si on est légèrement à droite
-			else if ( this.robot.getRightSonar().getMoyData() < (Param.RIGHTWALL_MIN+Param.RIGHTWALL_MAX)/2 ) {
+			else if ( this.robot.getRightSonar().getMoyData() < ( RIGHTWALL_MIN+ RIGHTWALL_MAX)/2 ) {
 				// Si le robot est trop orienté vers la droite
-				if ( errAngle > Param.REG_ERRANGLEMAX ) {
-					this.reg = Param.RIGHTREG ;
+				if ( errAngle >  REG_ERRANGLEMAX ) {
+					return RIGHTREG ;
 				}
 				// Sinon si le robot est trop orienté vers la gauche
-				else if ( errAngle < -Param.REG_ERRANGLEMAX ) {
-					this.reg = Param.MIDLEFTREG ;
+				else if ( errAngle < - REG_ERRANGLEMAX ) {
+					return MIDLEFTREG ;
 				}
 				// Sinon si le robot est orienté légèrement vers la droite
-				else if ( errAngle > Param.REG_ERRANGLE ) {
-					this.reg = Param.MIDRIGHTREG ;
+				else if ( errAngle >  REG_ERRANGLE ) {
+					return MIDRIGHTREG ;
 				}
 				else {
-					this.reg = Param.NOREG ;
+					return NOREG ;
 				}
 			}			
 			//Sinon si on est trop à gauche
-			else if ( this.robot.getRightSonar().getMoyData() > Param.RIGHTWALL_MAX ) {
+			else if ( this.robot.getRightSonar().getMoyData() >  RIGHTWALL_MAX ) {
 				//Si le robot n'est pas déjà orienté vers le centre du couloir
-				if( errAngle < Param.REG_ERRANGLEMAX ) {
-					this.reg = Param.LEFTREG ;
+				if( errAngle <  REG_ERRANGLEMAX ) {
+					return LEFTREG ;
 				}
 				//Sinon on le laisse continuer vers le centre
 				else {
-					this.reg = Param.NOREG ;				
+					return NOREG ;				
 				}
 			}
 			//Sinon si on est légèrement à gauche
-			else if ( this.robot.getRightSonar().getMoyData() > (Param.RIGHTWALL_MIN+Param.RIGHTWALL_MAX)/2 ) {
+			else if ( this.robot.getRightSonar().getMoyData() > ( RIGHTWALL_MIN+ RIGHTWALL_MAX)/2 ) {
 				// Si le robot est trop orienté vers la gauche
-				if ( errAngle < -Param.REG_ERRANGLEMAX ) {
-					this.reg = Param.LEFTREG ;
+				if ( errAngle < - REG_ERRANGLEMAX ) {
+					return LEFTREG ;
 				}
 				// Sinon si le robot est trop orienté vers la droite
-				else if ( errAngle > Param.REG_ERRANGLEMAX ) {
-					this.reg = Param.MIDRIGHTREG ;
+				else if ( errAngle >  REG_ERRANGLEMAX ) {
+					return MIDRIGHTREG ;
 				}
 				// Sinon si le robot est orienté légèrement vers la gauche
-				else if ( errAngle < -Param.REG_ERRANGLE ) {
-					this.reg = Param.MIDLEFTREG ;
+				else if ( errAngle < - REG_ERRANGLE ) {
+					return MIDLEFTREG ;
 				}
 				else {
-					this.reg = Param.NOREG ;
+					return NOREG ;
 				}			
 			}
 			//Sinon si on est au centre du couloir (d'un point de vu distance)
 			else {
 				// Si le robot est trop orienté vers la gauche
-				if ( errAngle < -Param.REG_ERRANGLEMAX ) {
-					this.reg = Param.LEFTREG ;
+				if ( errAngle < - REG_ERRANGLEMAX ) {
+					return LEFTREG ;
 				}
 				// Sinon si le robot est trop orienté vers la droite
-				else if ( errAngle > Param.REG_ERRANGLEMAX ) {
-					this.reg = Param.RIGHTREG ;
+				else if ( errAngle >  REG_ERRANGLEMAX ) {
+					return RIGHTREG ;
 				}
 				// Sinon si le robot est orienté légèrement vers la gauche
-				else if ( errAngle < -Param.REG_ERRANGLE ) {
-					this.reg = Param.MIDLEFTREG ;
+				else if ( errAngle < - REG_ERRANGLE ) {
+					return MIDLEFTREG ;
 				}
 				// Sinon si le robot est orienté légèrement vers la droite
-				else if ( errAngle > Param.REG_ERRANGLE ) {
-					this.reg = Param.MIDRIGHTREG ;
+				else if ( errAngle >  REG_ERRANGLE ) {
+					return MIDRIGHTREG ;
 				}		
 				else {
-					this.reg = Param.NOREG ;
+					return NOREG ;
 				}
 			}
 			
@@ -393,90 +517,90 @@ public class Movement {
 		else if ( this.robot.getEnv().getLeftWallDetected() ) {
 			
 			//Si on est trop à droite
-			if ( this.robot.getLeftFrontSonar().getMoyData() < Param.LEFTWALL_MIN ) {
+			if ( this.robot.getLeftFrontSonar().getMoyData() >  LEFTWALL_MAX ) {
 				//Si le robot n'est pas déjà orienté vers le centre du couloir
-				if( errAngle > -Param.REG_ERRANGLEMAX ) {
-					this.reg = Param.RIGHTREG ;
+				if( errAngle > - REG_ERRANGLEMAX ) {
+					return RIGHTREG ;
 				}
 				//Sinon on le laisse continuer vers le centre
 				else {
-					this.reg = Param.NOREG ;				
+					return NOREG ;				
 				}
 			}			
 			//Sinon si on est légèrement à droite
-			else if ( this.robot.getLeftFrontSonar().getMoyData() < (Param.LEFTWALL_MIN+Param.LEFTWALL_MAX)/2 ) {
+			else if ( this.robot.getLeftFrontSonar().getMoyData() > ( LEFTWALL_MIN+ LEFTWALL_MAX)/2 ) {
 				// Si le robot est trop orienté vers la droite
-				if ( errAngle > Param.REG_ERRANGLEMAX ) {
-					this.reg = Param.RIGHTREG ;
+				if ( errAngle >  REG_ERRANGLEMAX ) {
+					return RIGHTREG ;
 				}
 				// Sinon si le robot est trop orienté vers la gauche
-				else if ( errAngle < -Param.REG_ERRANGLEMAX ) {
-					this.reg = Param.MIDLEFTREG ;
+				else if ( errAngle < - REG_ERRANGLEMAX ) {
+					return MIDLEFTREG ;
 				}
 				// Sinon si le robot est orienté légèrement vers la droite
-				else if ( errAngle > Param.REG_ERRANGLE ) {
-					this.reg = Param.MIDRIGHTREG ;
+				else if ( errAngle >  REG_ERRANGLE ) {
+					return MIDRIGHTREG ;
 				}
 				else {
-					this.reg = Param.NOREG ;
+					return NOREG ;
 				}
 			}			
 			//Sinon si on est trop à gauche
-			else if ( this.robot.getLeftFrontSonar().getMoyData() > Param.LEFTWALL_MAX ) {
+			else if ( this.robot.getLeftFrontSonar().getMoyData() <  LEFTWALL_MIN ) {
 				//Si le robot n'est pas déjà orienté vers le centre du couloir
-				if( errAngle < Param.REG_ERRANGLEMAX ) {
-					this.reg = Param.LEFTREG ;
+				if( errAngle <  REG_ERRANGLEMAX ) {
+					return LEFTREG ;
 				}
 				//Sinon on le laisse continuer vers le centre
 				else {
-					this.reg = Param.NOREG ;				
+					return NOREG ;				
 				}
 			}
 			//Sinon si on est légèrement à gauche
-			else if ( this.robot.getLeftFrontSonar().getMoyData() > (Param.LEFTWALL_MIN+Param.LEFTWALL_MAX)/2 ) {
+			else if ( this.robot.getLeftFrontSonar().getMoyData() > ( LEFTWALL_MIN+ LEFTWALL_MAX)/2 ) {
 				// Si le robot est trop orienté vers la gauche
-				if ( errAngle < -Param.REG_ERRANGLEMAX ) {
-					this.reg = Param.LEFTREG ;
+				if ( errAngle < - REG_ERRANGLEMAX ) {
+					return LEFTREG ;
 				}
 				// Sinon si le robot est trop orienté vers la droite
-				else if ( errAngle > Param.REG_ERRANGLEMAX ) {
-					this.reg = Param.MIDRIGHTREG ;
+				else if ( errAngle >  REG_ERRANGLEMAX ) {
+					return MIDRIGHTREG ;
 				}
 				// Sinon si le robot est orienté légèrement vers la gauche
-				else if ( errAngle < -Param.REG_ERRANGLE ) {
-					this.reg = Param.MIDLEFTREG ;
+				else if ( errAngle < - REG_ERRANGLE ) {
+					return MIDLEFTREG ;
 				}
 				else {
-					this.reg = Param.NOREG ;
+					return NOREG ;
 				}			
 			}
 			//Sinon si on est au centre du couloir (d'un point de vu distance)
 			else {
 				// Si le robot est trop orienté vers la gauche
-				if ( errAngle < -Param.REG_ERRANGLEMAX ) {
-					this.reg = Param.LEFTREG ;
+				if ( errAngle < - REG_ERRANGLEMAX ) {
+					return LEFTREG ;
 				}
 				// Sinon si le robot est trop orienté vers la droite
-				else if ( errAngle > Param.REG_ERRANGLEMAX ) {
-					this.reg = Param.RIGHTREG ;
+				else if ( errAngle >  REG_ERRANGLEMAX ) {
+					return RIGHTREG ;
 				}
 				// Sinon si le robot est orienté légèrement vers la gauche
-				else if ( errAngle < -Param.REG_ERRANGLE ) {
-					this.reg = Param.MIDLEFTREG ;
+				else if ( errAngle < - REG_ERRANGLE ) {
+					return MIDLEFTREG ;
 				}
 				// Sinon si le robot est orienté légèrement vers la droite
-				else if ( errAngle > Param.REG_ERRANGLE ) {
-					this.reg = Param.MIDRIGHTREG ;
+				else if ( errAngle >  REG_ERRANGLE ) {
+					return MIDRIGHTREG ;
 				}		
 				else {
-					this.reg = Param.NOREG ;
+					return NOREG ;
 				}
 			}	
 			
 		}
 		// Sinon si on a aucun mur à coté
 		else {
-			this.reg = Param.NOREG ;
+			return NOREG ;
 		}
 	}
 	
@@ -487,28 +611,28 @@ public class Movement {
 	 * @see Movement#moveForward()
 	 * @see Movement#reg
 	 */
-	private void executeReg(double errAngle) {
-	    if ( this.reg == Param.RIGHTREG  ){
+	private void executeReg(double errAngl, int reg) {
+	    if ( reg ==  RIGHTREG  ){
 	    	this.distTraveled += this.diffPilot.getMovement().getDistanceTraveled();
-			this.diffPilot.arcForward(-Param.ARC1);
+			this.diffPilot.arcForward(- ARC1);
 	    }
 
-	    else if ( this.reg == Param.LEFTREG ) {
+	    else if ( reg ==  LEFTREG ) {
 	    	this.distTraveled += this.diffPilot.getMovement().getDistanceTraveled();
-			this.diffPilot.arcForward(Param.ARC1);
+			this.diffPilot.arcForward( ARC1);
 	    }
 
-	    else if ( this.reg == Param.MIDRIGHTREG ) {
+	    else if ( reg ==  MIDRIGHTREG ) {
 	    	this.distTraveled += this.diffPilot.getMovement().getDistanceTraveled();
-			this.diffPilot.arcForward(-Param.ARC2);
+			this.diffPilot.arcForward(- ARC2);
 	    }
 	    
-	    else if ( this.reg == Param.MIDLEFTREG ) {
+	    else if ( reg ==  MIDLEFTREG ) {
 	    	this.distTraveled += this.diffPilot.getMovement().getDistanceTraveled();
-			this.diffPilot.arcForward(Param.ARC2);
+			this.diffPilot.arcForward( ARC2);
 	    }
 	    
-	    else if( this.reg == Param.NOREG ) {
+	    else if( reg ==  NOREG ) {
 	    	this.distTraveled += this.diffPilot.getMovement().getDistanceTraveled();
 			this.diffPilot.forward();
 	    }
@@ -611,7 +735,7 @@ public class Movement {
 		}
 		
 		// Tant qu'on n'a pas atteind l'angle
-		while ( err <= -Param.ANGLE_ERR || err >= Param.ANGLE_ERR ) {
+		while ( err <= - ANGLE_ERR || err >=  ANGLE_ERR ) {
 			
 			if(err<0) {
 				this.diffPilot.rotate(Math.abs(angle), true);
@@ -621,11 +745,11 @@ public class Movement {
 			}
 			
 			// Lorsqu'on se rapproche de l'angle désiré on réduit la vitesse de rotation
-			if ( err > -Param.ANGLE_DANGER+Param.ANGLE_HYST && err < Param.ANGLE_DANGER-Param.ANGLE_HYST ) {
-				this.diffPilot.setRotateSpeed(Param.RSPEED_DANGER);
+			if ( err > - ANGLE_DANGER+ ANGLE_HYST && err <  ANGLE_DANGER- ANGLE_HYST ) {
+				this.diffPilot.setRotateSpeed( RSPEED_DANGER);
 			}
-			else if ( err < -Param.ANGLE_DANGER-Param.ANGLE_HYST || err > Param.ANGLE_DANGER+Param.ANGLE_HYST ) {
-				this.diffPilot.setRotateSpeed(Param.RSPEED_CRUISE);
+			else if ( err < - ANGLE_DANGER- ANGLE_HYST || err >  ANGLE_DANGER+ ANGLE_HYST ) {
+				this.diffPilot.setRotateSpeed( RSPEED_CRUISE);
 			}
 
 			this.robot.getCompass().refresh();
@@ -690,7 +814,7 @@ public class Movement {
 	 * @see Movement#refAngleDone
 	 */
 	public void saveRefAngle() {
-		System.out.println("Sauv. de l'angle de ref");
+		this.robot.getEnv().check2WallsCompassFull();
 		this.initAngle =  this.robot.getCompass().getMoyData();
 		this.refAngle  =  this.initAngle;	
 		this.refAngleDone=true;
@@ -702,6 +826,10 @@ public class Movement {
 	 */
 	public boolean getRefAngleDone() {
 		return this.refAngleDone;
+	}
+	
+	public double getRefAngle()  {
+		return this.refAngle;
 	}
 	
 	/**

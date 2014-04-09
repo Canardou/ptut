@@ -1,6 +1,5 @@
 package env;
 
-import robot.*;
 import env.Case;
 import java.util.*;
 
@@ -79,12 +78,12 @@ public class ListCase {
 	 */
 	public int addCase(int x, int y, int dir, boolean frontWall, boolean leftWall, boolean backWall, boolean rightWall)
 	{		
-		if( x>=0 && y>=0 && (dir==Param.XP || dir==Param.YP || dir==Param.XN || dir==Param.YN) ) {
+		if( x>=0 && y>=0 && (dir==Case.UP || dir==Case.RIGHT || dir==Case.LEFT || dir==Case.DOWN) ) {
 			
 			Case caseTemp = new Case(x,y);
 			caseTemp.setReveal();			
 			
-			if(dir==Param.XP) {			
+			if(dir==Case.RIGHT) {			
 				if(frontWall) {
 					caseTemp.close(Case.RIGHT);
 				}
@@ -98,7 +97,7 @@ public class ListCase {
 					caseTemp.close(Case.DOWN);
 				}
 			}
-			else if(dir==Param.YP){
+			else if(dir==Case.UP){
 				if(frontWall) {
 					caseTemp.close(Case.UP);
 				}
@@ -112,7 +111,7 @@ public class ListCase {
 					caseTemp.close(Case.RIGHT);
 				}	
 			}
-			else if(dir==Param.XN){
+			else if(dir==Case.LEFT){
 				if(frontWall) {
 					caseTemp.close(Case.LEFT);
 				}
@@ -126,7 +125,7 @@ public class ListCase {
 					caseTemp.close(Case.UP);
 				}	
 			}
-			else if(dir==Param.YN){
+			else if(dir==Case.DOWN){
 				if(frontWall) {
 					caseTemp.close(Case.DOWN);
 				}
