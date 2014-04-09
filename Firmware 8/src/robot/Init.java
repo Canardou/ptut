@@ -8,7 +8,7 @@ import tests.*;
 public class Init {
 	
 	/**
-	 * Volume sonore du robot. De 0 à 100
+	 * Volume sonore du robot. De 0 ï¿½ 100
 	 */
 	public static final int VOLUME = 10; 
 
@@ -30,11 +30,11 @@ public class Init {
 	 */
 	public static void main(String[] args) {
 		//new Init();
-		new Tests(5);
+		new Tests(8);
 	}
 
 	/**
-	 * Initialise divers paramètre
+	 * Initialise divers paramï¿½tre
 	 * 
 	 * @see Param#VOLUME
 	 * @see Param#SPEED_CRUISE

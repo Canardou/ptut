@@ -7,9 +7,9 @@ import lejos.nxt.LightSensor;
 import lejos.nxt.SensorPort;
 
 /**
- * Cette classe repr�sente un sonar
- * @author Thomas
- * @see UltrasonicSensor
+ * Cette classe repr�sente un capteur de luminosité
+ * @author Clément
+ * @see LihghtSensor
  */
 public class Light extends LightSensor {	
 	

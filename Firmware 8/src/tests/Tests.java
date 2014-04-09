@@ -1,6 +1,7 @@
 package tests;
 
 import lejos.nxt.Button;
+import lejos.nxt.Sound;
 import env.*;
 import communication.*;
 import orders.*;
@@ -9,7 +10,7 @@ import sensors.*;
 import threads.*;
 
 /**
- * Méthodes de tests
+ * Mï¿½thodes de tests
  * @author Thomas
  *
  */
@@ -46,11 +47,14 @@ public class Tests {
 			this.test6();
 		} else if(test==7) {
 			this.test7();
+		} else if(test==8){
+			this.test8();
 		}
+		
 	}
 	
 	/**
-	 * Affiche les valeurs moyennes renvoyées par les 2 sonars et la présence eventuelle des murs (droite et gauche)
+	 * Affiche les valeurs moyennes renvoyï¿½es par les 2 sonars et la prï¿½sence eventuelle des murs (droite et gauche)
 	 */
 	public void test1() {
 		System.out.println("test1:sonar droite et gauche");
@@ -69,7 +73,7 @@ public class Tests {
 	}
 	
 	/**
-	 * Affiche la valeur moyenne renvoyée par le sonar avant et la présence eventuelle d'un mur avant
+	 * Affiche la valeur moyenne renvoyï¿½e par le sonar avant et la prï¿½sence eventuelle d'un mur avant
 	 */
 	public void test2() {
 		System.out.println("test2:sonar avant");
@@ -87,7 +91,7 @@ public class Tests {
 	}
 	
 	/**
-	 * Affiche la valeur moyenne renvoyée par la boussole
+	 * Affiche la valeur moyenne renvoyï¿½e par la boussole
 	 */
 	public void test3() {
 		System.out.println("test3:demarrage");
@@ -99,7 +103,7 @@ public class Tests {
 	}
 	
 	/**
-	 * Affiche le type de régulation appliqué, l'erreur de distance, l'erreur d'angle ainsi que la présence de mur
+	 * Affiche le type de rï¿½gulation appliquï¿½, l'erreur de distance, l'erreur d'angle ainsi que la prï¿½sence de mur
 	 */
 	public void test4() {
 		double errAngle;
@@ -178,6 +182,17 @@ public class Tests {
 	
 	public void test7() {
 		
+	}
+	
+	public void test8() {
+		System.out.println("test8: lumiÃ¨re");
+		this.tRobot.getLightSensor().refresh();
+		while(!Button.ESCAPE.isDown()) {
+			this.tRobot.getLightSensor().refresh();
+			if(this.tRobot.getLightSensor().getMoyData()>580){
+				Sound.beep();
+			}
+		}
 	}
 	
 	/**
