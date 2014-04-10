@@ -1,5 +1,6 @@
 package labyrinth;
 import java.util.ArrayList;
+import java.util.Random;
 import java.util.Stack;
 import java.util.Collections;
 
@@ -20,6 +21,8 @@ public class Carte {
 	private Case[][] map;
 	private Case marque;
 	private Case exit;
+	
+	public Random rand = new Random(100);
 	
 	/*
 	 * Constructeurs
@@ -203,6 +206,8 @@ public class Carte {
 				if(this.map[this.width-1][i].isCrossable(Case.RIGHT))
 					this.exit= new Case(this.width,i);
 			}
+			for(int i=0;i<4;i++)
+				this.exit.close(i);
 		}
 		return this.exit;
 	}
@@ -226,7 +231,7 @@ public class Carte {
 	public Chemin pathToExit(int dx, int dy){
 		if(checkCoord(dx,dy)){
 			if(setExit()!=null){
-				return createPath(this.map[dx][dy],this.exit);
+				return createPath(this.map[dx][dy],this.exit,null);
 			}
 		}
 		return null;
@@ -251,7 +256,7 @@ public class Carte {
 	public Chemin pathToMark(int dx, int dy){
 		if(checkCoord(dx,dy)){
 			if(this.mark()){
-				return createPath(this.map[dx][dy],this.marque);
+				return createPath(this.map[dx][dy],this.marque,null);
 			}
 		}
 		return null;
@@ -271,7 +276,15 @@ public class Carte {
 	
 	public Chemin createPath(int dx, int dy, int ax, int ay){
 		if(checkCoord(dx,dy) && checkCoord(ax,ay))
-			return createPath(this.map[dx][dy],this.map[ax][ay]);
+			return createPath(this.map[dx][dy],this.map[ax][ay],null);
+		else
+			return null;
+	}
+	
+	public Chemin createPath(int dx, int dy, int ax, int ay, Chemin blocked){
+		if(checkCoord(dx,dy) && checkCoord(ax,ay)){
+			return createPath(this.map[dx][dy],this.map[ax][ay],blocked);
+		}
 		else
 			return null;
 	}
@@ -287,11 +300,13 @@ public class Carte {
 	 */
 	
 	@SuppressWarnings("unchecked")
-	public Chemin createPath(Case depart, Case arrivee){
+	public Chemin createPath(Case depart, Case arrivee, Chemin blocked){
 		Chemin path = new Chemin();
 		ArrayList<ListeCase> recherche=new ArrayList<ListeCase>();
-		ArrayList<ListeCase> closed=new ArrayList<ListeCase>();
 		ArrayList<Case> check=new ArrayList<Case>();
+		if(blocked!=null){
+				check.addAll(blocked.get());
+		}
 		recherche.add(new ListeCase(depart,0,null,-1));
 		check.add(depart);
 		//Tant que la case n'est pas celle d'arrivée on continu de chercher
@@ -319,7 +334,6 @@ public class Carte {
 					}
 				}
 			}
-			closed.add(recherche.get(0));
 			if(recherche.size()>=1){
 				recherche.remove(0);
 				//Tri de cases à parcourir restante par distance depuis le point de départ
@@ -332,11 +346,13 @@ public class Carte {
 		if(!recherche.isEmpty()){
 			//On retourne le chemin trouvé par parcours inversé des cases
 			ListeCase temp = recherche.get(0);
+			int yolo = temp.getCout();
 			while(temp.current()!=depart){
 				path.push(temp.current());
 				temp=temp.previous();
 			}
 			path.push(temp.current());
+			path.setValue(yolo);
 			return path;
 		}
 		else{
@@ -345,26 +361,47 @@ public class Carte {
 	}
 	
 	
-	public Case closestDiscover(int dx, int dy, int number){
+	public Chemin closestDiscover(int dx, int dy, int number){
 		if(checkCoord(dx,dy) && number>=0)
-			return closestDiscover(this.map[dx][dy], number);
+			return closestDiscover(this.map[dx][dy], number, null, null, false);
+		else
+			return null;
+	}
+	
+	public Chemin closestDiscover(int dx, int dy, int number, Chemin avoid, Chemin blocked, boolean exit){
+		if(checkCoord(dx,dy) && number>=0)
+			return closestDiscover(this.map[dx][dy], number, avoid, blocked, exit);
 		else
 			return null;
 	}
 	
 	@SuppressWarnings("unchecked")
-	public Case closestDiscover(Case depart, int number){
+	public Chemin closestDiscover(Case depart, int number, Chemin avoid, Chemin blocked, boolean canExit){
+		Chemin path = new Chemin();
 		ArrayList<ListeCase> recherche=new ArrayList<ListeCase>();
-		ArrayList<ListeCase> closed=new ArrayList<ListeCase>();
 		ArrayList<Case> check=new ArrayList<Case>();
+		if(blocked!=null){
+				check.addAll(blocked.get());
+		}
 		recherche.add(new ListeCase(depart,0,null,-1));
 		check.add(depart);
 		while(number>0 && recherche.size()>0){
 			Case temp=recherche.get(0).current();
-			if(!temp.isRevealed()){
-				number--;
+			if(avoid!=null){
+				if(!avoid.get().contains(temp)){
+					Boolean yolo=true;
+					for(int k=0;k<4;k++){
+						if(avoid.get().contains(this.getCase(temp.getX(k),temp.getY(k))) && this.isCrossable(temp.getX(), temp.getY(), k))
+							yolo=false;
+					}
+					if(yolo)
+						number--;
+				}
 			}
-			else{
+			else
+				if(!temp.isRevealed())
+					number--;
+			if(temp.isRevealed() && number>0){
 				for(int k=0;k<4;k++){
 					if(temp.isCrossable(k) && checkCoord(temp.getX(k),temp.getY(k))){
 						Case test=this.map[temp.getX(k)][temp.getY(k)];
@@ -376,19 +413,39 @@ public class Carte {
 							check.add(test);
 						}
 					}
+					else if(this.exit() && canExit){
+						//Cas particulier de la recherche de sortie
+						if (this.exit.getX()==temp.getX(k) && this.exit.getY()==temp.getY(k)){
+							int cout=1;
+							if(temp.getDir(this.exit)!=recherche.get(0).getDir() && recherche.get(0).getDir()!=-1)
+								cout=2;
+							recherche.add(new ListeCase(this.exit,recherche.get(0).getCout()+cout,recherche.get(0),temp.getDir(this.exit)));
+							check.add(this.exit);
+						}
+					}
 				}
 			}
-			closed.add(recherche.get(0));
 			if(recherche.size()>0 && number>0){
 				recherche.remove(0);
-				if(recherche.size()>0)
+				if(recherche.size()>0){
+					Collections.shuffle(recherche,new Random(this.rand.nextInt()));
 					Collections.sort(recherche);
+				}
 				else
 					break;		
 			}
 		}
 		if(!recherche.isEmpty()){
-			return recherche.get(0).current();
+			//On retourne le chemin trouvé par parcours inversé des cases
+			ListeCase temp = recherche.get(0);
+			int yolo = temp.getCout();
+			while(temp.current()!=depart){
+				path.push(temp.current());
+				temp=temp.previous();
+			}
+			path.push(temp.current());
+			path.setValue(yolo);
+			return path;
 		}
 		else{
 			return null;
@@ -471,13 +528,14 @@ public class Carte {
 				this.map[i][j].close(Case.LEFT);
 				this.map[i][j].close(Case.RIGHT);
 				recherche.add(this.map[i][j]);
+				this.map[i][j].setReveal();
 			}
 		}
-		Case temp = recherche.get((int)(Math.random()*recherche.size()));
+		Case temp = recherche.get(rand.nextInt(recherche.size()));
 		//Tant qu'il reste des cases potentiellements non reliés aux autres, on continu la recherche
 		while(recherche.size()>0){
 			ArrayList<Case> random = new ArrayList<Case>();
-			if(Math.random()>wall)
+			if(rand.nextDouble()>wall)
 				recherche.remove(temp);
 			for(int k=0;k<4;k++){
 				if(checkCoord(temp.getX(k),temp.getY(k))){
@@ -488,7 +546,7 @@ public class Carte {
 				}
 			}
 			if(!random.isEmpty()){
-				Case select = random.get((int)(Math.random()*random.size()));
+				Case select = random.get(rand.nextInt(random.size()));
 				select.bound(select.getDir(temp));
 				temp.bound(temp.getDir(select));
 				stack.push(temp);
@@ -498,25 +556,25 @@ public class Carte {
 				temp=stack.pop();
 			}
 			else
-				temp=recherche.get((int)(Math.random()*recherche.size()));
+				temp=recherche.get(rand.nextInt(recherche.size()));
 		}
 		//Ajout de la sortie
-		if(Math.random()>0.5){
-			if(Math.random()>0.5){
-				this.boundLeft(0,(int)(Math.random()*this.height));
+		if(rand.nextInt(2)==0){
+			if(rand.nextInt(2)==0){
+				this.boundLeft(0,rand.nextInt(this.height));
 			}
 			else
-				this.boundRight(this.width-1,(int)(Math.random()*this.height));
+				this.boundRight(this.width-1,rand.nextInt(this.height));
 		}
 		else{
-			if(Math.random()>0.5){
-				this.boundUp((int)(Math.random()*this.width),0);
+			if(rand.nextInt(2)==0){
+				this.boundUp(rand.nextInt(this.width),0);
 			}
 			else
-				this.boundDown((int)(Math.random()*this.width),this.height-1);
+				this.boundDown(rand.nextInt(this.width),this.height-1);
 		}
 		//Ajout de la marque
-		this.mark((int)(Math.random()*this.width), (int)(Math.random()*this.height));
+		this.mark(rand.nextInt(this.width), rand.nextInt(this.height));
 		this.getMark().setMark();
 	}
 	

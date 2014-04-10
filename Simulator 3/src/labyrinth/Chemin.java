@@ -7,6 +7,7 @@ public class Chemin {
 	 */
 	
 	private Stack<Case> route;
+	private int value;
 	
 	/*
 	 * Constructeurs
@@ -14,8 +15,10 @@ public class Chemin {
 	
 	public Chemin(Chemin copie){
 		this();
+		this.value=copie.value;
 		if(copie!=null){
-			this.route=copie.route;
+			for(Case copy : copie.route)
+			this.route.add(copy);
 		}
 	}
 	
@@ -69,6 +72,14 @@ public class Chemin {
 			return null;
 	}
 	
+	public void setValue(int value){
+		this.value=value;
+	}
+	
+	public int getValue(){
+		return this.value;
+	}
+	
 	public Stack<Case> get(){
 		return this.route;
 	}
@@ -87,13 +98,32 @@ public class Chemin {
 	 * @return
 	 */
 	
-	public int collision(Chemin autre){
+	public boolean isCollision(Carte carte, Chemin autre, boolean ecart){
+		if(collision(carte,autre,ecart)<this.size()){
+			return true;
+		}
+		else
+			return false;
+	}
+	
+	public int collision(Carte carte, Chemin autre, boolean ecart){
 		int retour=this.size();
 		if(autre!=null){
 			int i=0;
 			while(i<this.size() && retour>=this.size()){
-				if(autre.route.contains(this.get(i)))
-					retour=i-1;
+				if(autre.route.contains(this.get(i))){
+					if(ecart)
+						retour=i-1;
+					else
+						retour=i;
+				}
+				for(int k=0;k<4;k++){
+					Case temp=carte.getCase(this.get(i).getX(k),this.get(i).getY(k));
+					if(autre.route.contains(temp) && temp.isCrossable(temp.getDir(this.get(i))) && this.get(i).isCrossable(this.get(i).getDir(temp))){
+						if(ecart)
+							retour=i;
+					}
+				}
 				i++;
 			}
 		}
@@ -108,8 +138,8 @@ public class Chemin {
 	 * @return
 	**/
 	
-	public void beforeBlock(Chemin autre){
-		this.route.setSize(this.collision(autre));
+	public void beforeBlock(Carte carte, Chemin autre, boolean ecart){
+		this.route.setSize(this.collision(carte, autre, ecart));
 	}
 	
 	public void stopToVisibility(){
@@ -125,6 +155,7 @@ public class Chemin {
 	public boolean concatenation(Chemin autre){
 		if (autre!=null){
 			if(autre.get(0)==this.get(this.size()-1)){
+				autre.removeTop();
 				this.route.addAll(autre.get());
 				return true;
 			}

@@ -10,7 +10,6 @@ public class VirtualRobots {
 	 */
 	
 	public static int speed=50;
-	public static int aleatoire=0;
 
 	private int id;
 	private int type;
@@ -24,12 +23,17 @@ public class VirtualRobots {
 	private int objectif;
 	private Chemin path;
 	private AnimationRobot sheet;
+	private RobotIcone icone;
 	private boolean visible;
 	private boolean wait;
 	
 	/*
 	 * Constructeurs
 	 */
+	
+	public VirtualRobots(int id){
+		this(0,0,0,id,id);
+	}
 	
 	public VirtualRobots(int x, int y, int direction, int type, int id){
 		this.id=id;
@@ -40,6 +44,7 @@ public class VirtualRobots {
 		this.ay=y;
 		this.type=type;
 		this.sheet = new AnimationRobot(type);
+		this.icone = new RobotIcone(type);
 		this.mouvement=0;
 		this.objectif=0;
 		this.visible=false;
@@ -51,12 +56,14 @@ public class VirtualRobots {
 	 */
 	
 	public boolean walkPath(Chemin path){
-		if(this.x==this.ax && this.y==this.ay && this.x==path.getX(0) && this.y==path.getY(0)){
-			this.path = path;
-			return true;
+		if(path!=null){
+			if(!busy() && this.x==this.ax && this.y==this.ay && this.x==path.getX(0) && this.y==path.getY(0)){
+				this.path = path;
+				return true;
+			}
+			else
+				return this.path.concatenation(path);
 		}
-		else if(this.path!=null)
-			return this.path.concatenation(path);
 		else
 			return false;
 	}
@@ -64,7 +71,6 @@ public class VirtualRobots {
 	public void stop(){
 		if(busy())
 			this.path=new Chemin(this.path.get(0));
-		this.wait=true;
 	}
 	
 	public boolean busy(){
@@ -122,6 +128,7 @@ public class VirtualRobots {
 	public void changeType(int type){
 		this.type=type;
 		this.sheet.changeType(type);
+		this.icone.changeType(type);
 	}
 	
 	public int getType(){
@@ -146,6 +153,7 @@ public class VirtualRobots {
 		}
 		else{
 			this.sheet.nextImage();
+			this.icone.update();
 			this.exposition=0;
 		}
 		if(this.path!=null){
@@ -156,7 +164,7 @@ public class VirtualRobots {
 					this.ax=this.path.getX(1);
 					this.ay=this.path.getY(1);
 					this.mouvement=0;
-					this.objectif=100;
+					this.objectif=150;
 					if(this.direction!=this.path.direction(0)){
 						if(Math.abs(this.direction-this.path.direction(0))==2)
 							this.objectif+=200;
@@ -181,7 +189,7 @@ public class VirtualRobots {
 					this.path.removeTop();
 				}
 				else{
-					this.mouvement+=speed+Math.random()*aleatoire;
+					this.mouvement+=speed;
 					if(this.mouvement>this.objectif)
 						this.mouvement=this.objectif;
 				}
@@ -223,6 +231,10 @@ public class VirtualRobots {
 	
 	public BufferedImage draw(){
 		return this.sheet.getImage();
+	}
+	
+	public RobotIcone getIcone(){
+		return this.icone;
 	}
 	
 	public void setVisible(boolean visible){

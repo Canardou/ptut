@@ -3,8 +3,10 @@ import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 */
+
 import labyrinth.*;
 import Dialogue.Dialogue;
+
 
 /*
 import javax.swing.Timer;
@@ -22,17 +24,21 @@ public class main {
 	private Superviseur test;
 	
 	public static void main(String [] args){
-		exploration=new Carte(10);
+		exploration=new Carte(6);
+		//156
+		exploration.rand.setSeed(250);
+		//exploration.randomMaze(0);
 		new main();
 	}
 	
 	public main(){
 		test = new Superviseur(exploration);
-		application = new JFrame();
+		
+		application = new Gui(test.dessinCarte());
 		application.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		application.add(test.dessinCarte());
 		application.pack();
 		application.setVisible(true);
+		
 		try{
 			test.simulate();
 		}

@@ -6,9 +6,9 @@ public class AnimationRobot {
 	 * Attributs
 	 */
 	
-	private static final SpriteSheet robotSheet=new SpriteSheet("So_more_doge.png",32,32);
+	public static final SpriteSheet robotSheet=new SpriteSheet("So_more_doge.png",32,32);
 	
-	private int type;
+	public int type;
 	private int step;
 	private int step_max;
 	private int row;

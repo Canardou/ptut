@@ -3,6 +3,9 @@ import java.awt.* ;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.* ;
+import java.util.concurrent.locks.Condition;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 import javax.swing.JPanel;
 import javax.swing.Timer;
@@ -15,8 +18,10 @@ public class DessinCarte extends JPanel implements ActionListener {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	public static final int largeur=42;
-	public static final int hauteur=42;
+	private static final int largeur=42;
+	private static final int hauteur=42;
+	public final Lock lock = new ReentrantLock();
+	public final Condition step  = lock.newCondition(); 
 	private static final SpriteSheet wallSheet=new SpriteSheet("So_wall.png",25,25);
 	private static final SpriteSheet grass=new SpriteSheet("So_grass.png");
 	private static final SpriteSheet gray=new SpriteSheet("So_gray.png");
@@ -52,6 +57,8 @@ public class DessinCarte extends JPanel implements ActionListener {
 		this.width=(x+1)*DessinCarte.largeur;
 		this.height=(y+1)*DessinCarte.hauteur;
 		this.robots = new VirtualRobots[3];
+		for(int k=0;k<3;k++)
+			this.robots[k]=new VirtualRobots(k);
 		this.img   = new BufferedImage (width, height, BufferedImage.TYPE_4BYTE_ABGR) ;
 		this.setPreferredSize(new Dimension(this.img.getWidth(),this.img.getWidth()));
 		this.gr=this.img.createGraphics() ;
@@ -91,8 +98,8 @@ public class DessinCarte extends JPanel implements ActionListener {
 			}
 	}
 	
-	public VirtualRobots [] getRobots(){
-		return this.robots;
+	public VirtualRobots getRobot(int k){
+		return this.robots[k];
 	}
 	
 	public void showMark(boolean mark){
@@ -114,6 +121,8 @@ public class DessinCarte extends JPanel implements ActionListener {
     }
 	
 	public void update(){
+		lock.lock();
+		try{
 		if(this.dogeMode){
 			for(int i=0;i<=this.x+1;i++){
 				for(int j=0;j<=this.y+1;j++){
@@ -139,6 +148,7 @@ public class DessinCarte extends JPanel implements ActionListener {
 		for(VirtualRobots robot : robots){
 			if(robot!=null){
 				if(robot.isVisible()){
+					//robot.icone();
 					Chemin temp = robot.getPath();
 					if(temp!=null){
 						for(int i=0;i<temp.size();i++){
@@ -153,8 +163,8 @@ public class DessinCarte extends JPanel implements ActionListener {
 			this.drawImageAt(ball.getImage(),this.carte.getMark().getX(),this.carte.getMark().getY());
 		for(VirtualRobots robot : robots){
 			if(robot!=null){
-				robot.update();
 				if(robot.isVisible())
+					robot.update();
 					this.drawImageAt(robot.draw(),robot.getdX(),robot.getdY());
 			}
 		}
@@ -218,6 +228,12 @@ public class DessinCarte extends JPanel implements ActionListener {
 			}
 		}	
 		this.repaint();
+		//synchronized(lock){
+		step.signal();
+		//}
+		}finally{
+			lock.unlock();
+		}
 	}
 	
 	@Override
