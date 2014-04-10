@@ -26,24 +26,24 @@ public class ThreadCom extends Thread {
 	public static final int SENDCASE = 1;
 
 	/**
-	 * Attribut représentant le robot
+	 * Attribut reprï¿½sentant le robot
 	 * 
 	 * @see Robot
 	 */
 	private ThreadRobot robot;
 
 	/**
-	 * Attribut représentant la communication
+	 * Attribut reprï¿½sentant la communication
 	 */
 	private ComBluetooth com;
 
 	/**
-	 * Attribut représentant l'entitée de communication
+	 * Attribut reprï¿½sentant l'entitï¿½e de communication
 	 */
 	private EntiteeBT entitee;
 
 	/**
-	 * Attribut représentant une trame
+	 * Attribut reprï¿½sentant une trame
 	 */
 	private Trame2 trame;
 	
@@ -91,8 +91,21 @@ public class ThreadCom extends Thread {
 				else {
 					System.out.println("tCom:comperdu");
 					this.connected=false;
+					this.close();
+					
 				}*/
 			}
+		}
+	}
+	public void close(){
+		
+		this.connected=true;
+		this.setPriority(MIN_PRIORITY);
+	    try {
+			this.com.fermer();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 	}
 }

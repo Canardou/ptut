@@ -11,6 +11,7 @@ public class ComBluetooth{
 	
 	public EntiteeBT emetteur;
 	public EntiteeBT recepteur;
+	public BTConnection connection;
 //	public Envoie envoie ;
 //	public Reception reception;
 	
@@ -47,7 +48,7 @@ public class ComBluetooth{
 	public void initialisation() throws Exception{
 		//on se met en attende de connexion
 		System.out.println("Wow much wait...");
-		BTConnection connection = Bluetooth.waitForConnection();
+		this.connection = Bluetooth.waitForConnection();
 		if (connection == null)
 			throw new IOException("Epic fail connexion");
 		System.out.println("Wow very connexion !");
@@ -68,7 +69,7 @@ public class ComBluetooth{
 	
 	public Trame2 ecouter()throws Exception{
 				
-		
+		this.connection.openStream();
 		this.recepteur.getOutput().write(0);
 		this.recepteur.getOutput().flush();		
 		
@@ -98,12 +99,12 @@ public class ComBluetooth{
 			Case firstCase= new Case(trameRecue[2],trameRecue[3]);
 			trameR= new Trame2(trameRecue[1],firstCase,trameRecue[4]);
 		}
-		
+		this.connection.closeStream();
 		return trameR;
 	}
 	
 	public void envoyer(Trame2 message) throws Exception{
-		
+		this.connection.openStream();
 		while(this.emetteur.getInput().read()!=0){
 			
 		}
@@ -113,6 +114,7 @@ public class ComBluetooth{
 		this.emetteur.getOutput().writeByte(message.tableauTrame()[i]);}
 			
 		this.emetteur.getOutput().flush();
+		this.connection.closeStream();
 			
 	}
 	
@@ -120,6 +122,7 @@ public class ComBluetooth{
 	
 		this.recepteur.getInput().close();
 		this.recepteur.getOutput().close();
+		this.connection.close();
 	}
 	
 }
