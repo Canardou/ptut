@@ -48,7 +48,7 @@ public class Superviseur {
 			paths[i]=new Chemin(this.carte.getCase(x, y));*/
 		
 		dessin.showMark(true);
-		//dessin.toggleDoge();
+		dessin.toggleDoge();
 		Dialogue.Warning("Lancement d'une simulation");
 		//Dans une simulation dessin est utilisé comme référent pour le superviseur
 		//Dans un cas réel le superviseur devra être cadencé par les appels blutooth

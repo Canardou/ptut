@@ -9,7 +9,7 @@ public class RobotIcone extends JPanel {
 	/**
 	 * 
 	 */
-	private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 2L;
 	private AnimationRobot sheet;
 	
 	/*
@@ -24,11 +24,11 @@ public class RobotIcone extends JPanel {
 	 */
 	
 	public RobotIcone(int type){
-		super();
 		this.sheet=new AnimationRobot(type);
 		this.sheet.setSequence("icone");
 		this.img=new BufferedImage(this.sheet.getImage().getWidth(), this.sheet.getImage().getHeight(), BufferedImage.TYPE_4BYTE_ABGR);
 		this.gr=this.img.createGraphics();
+		this.gr.setBackground(new Color(255,255,255,0));
 		this.setPreferredSize(new Dimension(this.img.getWidth(),this.img.getWidth()));
 	}
 	
@@ -48,7 +48,8 @@ public class RobotIcone extends JPanel {
 	
 	public void update(){
 		this.sheet.nextImage();
-		this.gr.drawImage(this.sheet.getImage(), 0, 0, new Color(255,255,255,255), this);
+		this.gr.clearRect(0, 0, this.img.getWidth(), this.img.getHeight());
+		this.gr.drawImage(this.sheet.getImage(), 0, 0,this);
 		this.repaint();
 	}
 }
