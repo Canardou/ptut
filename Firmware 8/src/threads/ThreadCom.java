@@ -1,5 +1,7 @@
 package threads;
 
+import java.io.IOException;
+
 import communication.*;
 import orders.*;
 
@@ -26,24 +28,24 @@ public class ThreadCom extends Thread {
 	public static final int SENDCASE = 1;
 
 	/**
-	 * Attribut représentant le robot
+	 * Attribut reprï¿½sentant le robot
 	 * 
 	 * @see Robot
 	 */
 	private ThreadRobot robot;
 
 	/**
-	 * Attribut représentant la communication
+	 * Attribut reprï¿½sentant la communication
 	 */
 	private ComBluetooth com;
 
 	/**
-	 * Attribut représentant l'entitée de communication
+	 * Attribut reprï¿½sentant l'entitï¿½e de communication
 	 */
 	private EntiteeBT entitee;
 
 	/**
-	 * Attribut représentant une trame
+	 * Attribut reprï¿½sentant une trame
 	 */
 	private Trame2 trame;
 	
@@ -57,7 +59,7 @@ public class ThreadCom extends Thread {
 	public ThreadCom(ThreadRobot r) {
 		super();
 		this.robot = r;
-		this.entitee = new EntiteeBT("Robot H", (byte) 1, "00:16:53:06:DA:CF");
+		this.entitee = new EntiteeBT("Robot J", (byte) 1, "00:16:53:06:F5:30");
 		this.com = new ComBluetooth(entitee);
 		this.setPriority(5);
 	}
@@ -78,19 +80,37 @@ public class ThreadCom extends Thread {
 						this.robot.getOrder().add(this.trame.getOrdre());
 						System.out.println("tCom-R:"+this.robot.getOrder().print(this.trame.getOrdre()));
 					} else if (this.trame.getTypeTrame() == INITPOSITION) {
-						// this.robot.getEnv().setInitValues(this.trame.getPosX(),this.trame.getPosY(), this.trame.getDirection());
+						 this.robot.getEnv().setInitValues(this.trame.getPosX(),this.trame.getPosY(), this.trame.getDirection());
 						this.robot.getOrder().add(Order.SETPOSITION);
 						System.out.println("tCom-R:"+this.robot.getOrder().print(this.trame.getOrdre()));
 					} else if (this.trame.getTypeTrame() == SENDCASE) {
-						// this.com.send(new Trame2((byte)0,this.robot.getEnv().getListCase()));
+						 //this.com.send(new Trame2((byte)0,this.robot.getEnv().getListCase()));
 						System.out.println("tCom-E:clear");
 					}
 				}
 				else {
 					System.out.println("tCom:comperdu");
 					this.connected=false;
+					
 				}
 			}
+		}
+	}
+	public void close(){
+		try {
+			this.connected=true;
+			this.setPriority(MIN_PRIORITY);
+			this.entitee.getInput().close();
+		    this.entitee.getOutput().close();
+		    try {
+				this.com.fermer();
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		} catch (IOException ioe) {
+		    System.out.println("IOException closing connection:");
+		    System.out.println(ioe.getMessage());
 		}
 	}
 }

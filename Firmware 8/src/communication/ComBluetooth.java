@@ -12,6 +12,7 @@ public class ComBluetooth{
 	public EntiteeBT recepteur;
 	public Envoie envoie ;
 	public Reception reception;
+	public BTConnection connection;
 	
 	public ComBluetooth( EntiteeBT recepteur){
 		this.emetteur=emetteur;
@@ -35,7 +36,7 @@ public class ComBluetooth{
 	public void initialisation() throws Exception{
 		//on se met en attende de connexion
 		System.out.println("Wow much wait...");
-		BTConnection connection = Bluetooth.waitForConnection();
+		this.connection = Bluetooth.waitForConnection();
 		if (connection == null)
 			throw new IOException("Epic fail connexion");
 		System.out.println("Wow very connexion !");
@@ -55,7 +56,8 @@ public class ComBluetooth{
 	}
 	
 	public Trame2 ecouter()throws Exception{
-				
+		
+		this.connection.openStream();
 		this.recepteur.getOutput().write(0);
 		this.recepteur.getOutput().flush();		
 		
@@ -96,7 +98,7 @@ public class ComBluetooth{
 			//return trameR;
 		}
 
-		
+		this.connection.closeStream();
 		return trameR;
 	}
 	
@@ -125,11 +127,13 @@ public class ComBluetooth{
 			}
 			System.out.println("Wow so synchronisation.");
 			Thread.sleep(2000);*/
+			this.connection.openStream();
 			int i;
 			for(i=0;i<message.getTailleTrame();i++){
 			this.emetteur.getOutput().writeByte(message.tableauTrame()[i]);}
 			
 			this.emetteur.getOutput().flush();
+			this.connection.closeStream();
 			/*
 			Trame messageEnvoye=new Trame(message.getID(),message.getPosX(),message.getPosY(),message.getMurHaut(),message.getMurGauche(),message.getMurDroit(),message.getDirection());
 			Trame messageRecu=new Trame(this.emetteur.getInput().read(),this.emetteur.getInput().read(),this.emetteur.getInput().read(),this.emetteur.getInput().readBoolean(),this.emetteur.getInput().readBoolean(),this.emetteur.getInput().readBoolean(),this.emetteur.getInput().read());
@@ -160,6 +164,7 @@ public class ComBluetooth{
 	
 		this.recepteur.getInput().close();
 		this.recepteur.getOutput().close();
+		this.connection.close();
 	}
 	
 }

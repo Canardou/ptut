@@ -189,7 +189,7 @@ public class Tests {
 		this.tRobot.getLightSensor().refresh();
 		while(!Button.ESCAPE.isDown()) {
 			this.tRobot.getLightSensor().refresh();
-			if(this.tRobot.getLightSensor().getMoyData()>580){
+			if(this.tRobot.getLightSensor().getMoyData()>590){
 				Sound.beep();
 			}
 		}
