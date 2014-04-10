@@ -2,8 +2,8 @@ package communication;
 import java.io.*;
 
 import env.Case;
-//import lejos.nxt.comm.NXTConnection;
-//import lejos.nxt.LCD;
+import lejos.nxt.comm.NXTConnection;
+import lejos.nxt.LCD;
 import lejos.nxt.comm.BTConnection;
 import lejos.nxt.comm.Bluetooth;
 
@@ -88,13 +88,13 @@ public class ComBluetooth{
 		
 		
 		Trame2 trameR = null;
-		if (trameRecue[tailleTrameRecue]==5){
+		if (trameRecue[tailleTrameRecue-1]==5){
 			trameR= new Trame2(trameRecue[1],trameRecue[2]);
 		}
-		else if (trameRecue[tailleTrameRecue]==7){
+		else if (trameRecue[tailleTrameRecue-1]==7){
 			trameR= new Trame2(trameRecue[1],trameRecue[2],trameRecue[3]);
 		}
-		else if (trameRecue[tailleTrameRecue]==8){
+		else if (trameRecue[tailleTrameRecue-1]==8){
 			Case firstCase= new Case(trameRecue[2],trameRecue[3]);
 			trameR= new Trame2(trameRecue[1],firstCase,trameRecue[4]);
 		}
