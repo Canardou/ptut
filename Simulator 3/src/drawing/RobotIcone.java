@@ -2,6 +2,7 @@ package drawing;
 import java.awt.* ;
 import java.awt.image.* ;
 
+import javax.swing.BorderFactory;
 import javax.swing.JPanel;
 
 public class RobotIcone extends JPanel {
@@ -9,7 +10,7 @@ public class RobotIcone extends JPanel {
 	/**
 	 * 
 	 */
-	private static final long serialVersionUID = 2L;
+	private static final long serialVersionUID = 1L;
 	private AnimationRobot sheet;
 	
 	/*
@@ -29,7 +30,8 @@ public class RobotIcone extends JPanel {
 		this.img=new BufferedImage(this.sheet.getImage().getWidth(), this.sheet.getImage().getHeight(), BufferedImage.TYPE_4BYTE_ABGR);
 		this.gr=this.img.createGraphics();
 		this.gr.setBackground(new Color(255,255,255,0));
-		this.setPreferredSize(new Dimension(this.img.getWidth(),this.img.getWidth()));
+		this.setPreferredSize(new Dimension(this.sheet.getImage().getWidth(),this.sheet.getImage().getHeight()));
+		this.setMaximumSize(new Dimension(this.sheet.getImage().getWidth(),this.sheet.getImage().getHeight()));
 	}
 	
 	/*
@@ -49,7 +51,7 @@ public class RobotIcone extends JPanel {
 	public void update(){
 		this.sheet.nextImage();
 		this.gr.clearRect(0, 0, this.img.getWidth(), this.img.getHeight());
-		this.gr.drawImage(this.sheet.getImage(), 0, 0,this);
+		this.gr.drawImage(this.sheet.getImage(), 0, 0, this);
 		this.repaint();
 	}
 }

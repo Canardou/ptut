@@ -555,7 +555,7 @@ public class Carte {
 			else if(!stack.isEmpty()){
 				temp=stack.pop();
 			}
-			else
+			else if(recherche.size()>0)
 				temp=recherche.get(rand.nextInt(recherche.size()));
 		}
 		//Ajout de la sortie

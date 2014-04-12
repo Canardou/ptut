@@ -17,21 +17,21 @@ import javax.swing.JFrame;
 import drawing.DessinCarte;
 */
 
-public class main {
+public class mainSimu {
 	
 	private static Carte exploration;
 	private JFrame application;
 	private Superviseur test;
 	
 	public static void main(String [] args){
-		exploration=new Carte(6);
+		exploration=new Carte(4);
 		//156
 		exploration.rand.setSeed(250);
 		//exploration.randomMaze(0);
-		new main();
+		new mainSimu();
 	}
 	
-	public main(){
+	public mainSimu(){
 		test = new Superviseur(exploration);
 		
 		application = new Gui(test.dessinCarte());

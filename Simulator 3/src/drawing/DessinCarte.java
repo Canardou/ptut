@@ -20,6 +20,8 @@ public class DessinCarte extends JPanel implements ActionListener {
 	private static final long serialVersionUID = 1L;
 	private static final int largeur=42;
 	private static final int hauteur=42;
+	private static final int min_width=336;
+	private static final int min_height=336;
 	public final Lock lock = new ReentrantLock();
 	public final Condition step  = lock.newCondition(); 
 	private static final SpriteSheet wallSheet=new SpriteSheet("So_wall.png",25,25);
@@ -60,7 +62,7 @@ public class DessinCarte extends JPanel implements ActionListener {
 		for(int k=0;k<3;k++)
 			this.robots[k]=new VirtualRobots(k);
 		this.img   = new BufferedImage (width, height, BufferedImage.TYPE_4BYTE_ABGR) ;
-		this.setPreferredSize(new Dimension(this.img.getWidth(),this.img.getWidth()));
+		this.setPreferredSize(new Dimension(Math.max(min_width,this.width),Math.max(min_width,this.height)));
 		this.gr=this.img.createGraphics() ;
 		this.showMark=true;
 		
@@ -109,7 +111,7 @@ public class DessinCarte extends JPanel implements ActionListener {
 	//@override
 	protected void paintComponent(Graphics g) {
         super.paintComponent(g);
-        g.drawImage(img, 0, 0, null);
+        g.drawImage(img, Math.max(min_width-this.width,0)/2, Math.max(min_height-this.height,0)/2, null);
     }
 	
 	private void drawImageAt(BufferedImage image, int x, int y) {
@@ -226,11 +228,10 @@ public class DessinCarte extends JPanel implements ActionListener {
 					}
 				}
 			}
-		}	
+		}
+		//this.image=img.getScaledInstance(Math.min(this.img.getWidth(),max_width), Math.min(this.img.getHeight(),max_height), Image.SCALE_SMOOTH);
 		this.repaint();
-		//synchronized(lock){
 		step.signal();
-		//}
 		}finally{
 			lock.unlock();
 		}
