@@ -40,7 +40,7 @@ public class BluetoothCommPC2 extends Thread{
 	
 	
 	
-	/*méthodes*/
+	/*mï¿½thodes*/
 	
 	
 	public void connexion() {
@@ -146,7 +146,7 @@ public class BluetoothCommPC2 extends Thread{
 		 
 		for (int j=1; j <= tailleTrameRecue-1; j++){
 			trameRecue[j]= this.emetteur.getInput().readByte();
-		}
+			}
 		
 	
 		
@@ -167,6 +167,16 @@ public class BluetoothCommPC2 extends Thread{
 			trameR= new Trame2(trameRecue[1],trameRecue[2],trameRecue[3]);
 			
 		}
+		else if (trameRecue[tailleTrameRecue-1]!=7 & trameRecue[tailleTrameRecue-1]!=6){
+			ListCase listCase=new ListCase();
+			int k=2;
+			for (int i=0; i<(tailleTrameRecue-3)/3 ; i++){
+				listCase.addCase2((int)trameRecue[k], (int)trameRecue[k+1], trameRecue[k+2]);
+				k=k+3;
+				//System.out.println(trameRecue[k]+" ; "+trameRecue[k+1]+" ; "+trameRecue[k+2] + " ; ");
+			}
+			trameR= new Trame2(trameRecue[1],listCase);}
+		
 					
 		return trameR;
 					

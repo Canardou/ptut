@@ -8,16 +8,17 @@ import lejos.nxt.Motor;
 import lejos.nxt.NXTRegulatedMotor;
 import lejos.nxt.SensorPort;
 
+
 /**
- * Classe principale du code embarqué sur le robot. Elle contient tout les
- * éléments qui permettent de représenter le robot.
+ * Classe principale du code embarquï¿½ sur le robot. Elle contient tout les
+ * ï¿½lï¿½ments qui permettent de reprï¿½senter le robot.
  * 
  * @author Thomas
  */
 public class ThreadRobot extends Thread {
 	
 	/**
-	 * Diamètre des roues du robot en cm
+	 * Diamï¿½tre des roues du robot en cm
 	 */
  	public static final double DIAMROUE = 5.6;
  	
@@ -27,7 +28,7 @@ public class ThreadRobot extends Thread {
     public static final double DISTROUE = 11.5; 
 
 	/**
-	 * Attribut représentant les mouvements du robot
+	 * Attribut reprï¿½sentant les mouvements du robot
 	 * 
 	 * @see Movement
 	 * @see Robot#getMov()
@@ -35,7 +36,7 @@ public class ThreadRobot extends Thread {
 	private Movement mov;
 
 	/**
-	 * Attribut représentant l'environnement du robot
+	 * Attribut reprï¿½sentant l'environnement du robot
 	 * 
 	 * @see Environment
 	 * @see Robot#getEnv()
@@ -43,7 +44,7 @@ public class ThreadRobot extends Thread {
 	private Environment env;
 
 	/**
-	 * Attribut représentant le moteur du sonar
+	 * Attribut reprï¿½sentant le moteur du sonar
 	 * 
 	 * @see NXTRegulatedMotor
 	 * @see Robot#getSonarMotor
@@ -51,7 +52,7 @@ public class ThreadRobot extends Thread {
 	private NXTRegulatedMotor sonarMotor;
 
 	/**
-	 * Attribut représentant la boussole
+	 * Attribut reprï¿½sentant la boussole
 	 * 
 	 * @see Compass
 	 * @see Robot#getCompass()
@@ -59,7 +60,7 @@ public class ThreadRobot extends Thread {
 	private Compass compass;
 
 	/**
-	 * Attribut représentant le sonar droit
+	 * Attribut reprï¿½sentant le sonar droit
 	 * 
 	 * @see Sonar
 	 * @see Robot#getRightSonar
@@ -67,7 +68,7 @@ public class ThreadRobot extends Thread {
 	private Sonar rightSonar;
 
 	/**
-	 * Attribut représentant le sonar gauche
+	 * Attribut reprï¿½sentant le sonar gauche
 	 * 
 	 * @see Sonar
 	 * @see Robot#getLeftFrontSonar
@@ -75,10 +76,11 @@ public class ThreadRobot extends Thread {
 	private Sonar leftFrontSonar;
 
 	/**
-	 * Attribut représentant la gestion des ordres
+	 * Attribut reprï¿½sentant la gestion des ordres
 	 */
 	private Order order;
 
+	
 	/**
 	 * Constructeur de Robot
 	 */
@@ -90,7 +92,7 @@ public class ThreadRobot extends Thread {
 		this.leftFrontSonar = new Sonar(SensorPort.S2);
 		this.rightSonar = new Sonar(SensorPort.S1);
 		this.order = new Order(this);
-		this.setPriority(5);
+		this.setPriority(NORM_PRIORITY);
 	}
 
 	/**
@@ -101,8 +103,10 @@ public class ThreadRobot extends Thread {
 			this.order.chooseExploration();
 			this.order.execute();
 			if (this.order.getReadyToGo()) {
-				this.env.refreshCoord();
-				this.env.saveCurrentCase(false);
+					this.env.refreshCoord();
+					this.env.saveCurrentCase(false);
+				
+				
 			}
 			//this.env.afficher();
 		}

@@ -5,8 +5,8 @@ import java.util.*;
 
 /**
  * Cette classe contient une liste qui permet de gerer les cases 
- * qui sont explorées par le robot (en FIFO). Elle sert de buffer d'émission,
- * elle doit être régulièrement vidée (émission des cases vers le superviseur).
+ * qui sont explorï¿½es par le robot (en FIFO). Elle sert de buffer d'ï¿½mission,
+ * elle doit ï¿½tre rï¿½guliï¿½rement vidï¿½e (ï¿½mission des cases vers le superviseur).
  * @author Thomas
  * @see ArrayList
  * @see Case
@@ -31,11 +31,11 @@ public class ListCase {
 	}
 	
 	/**
-	 * Compare les coordonées en paramètre avec les coordonées de la dernière case insérée dans la liste
+	 * Compare les coordonï¿½es en paramï¿½tre avec les coordonï¿½es de la derniï¿½re case insï¿½rï¿½e dans la liste
 	 * @param x	  	
-	 * 		Coordonée x de la case à tester	
+	 * 		Coordonï¿½e x de la case ï¿½ tester	
 	 * @param y
-	 * 		Coordonée y de la case à tester
+	 * 		Coordonï¿½e y de la case ï¿½ tester
 	 * @return true s'il ne s'agit pas de la meme case ou si la pile est vide
 	 * @see Case
 	 * @see ListCase#list
@@ -50,23 +50,23 @@ public class ListCase {
 	}
 	
 	/**
-	 * Ajoute une case en fin de liste. Réalise le changement necessaire pour passer du repère relatif au robot 
-	 * au répère absolu du superviseur. Ainsi la case ajoutée est directement utilisable par le superviseur
+	 * Ajoute une case en fin de liste. Rï¿½alise le changement necessaire pour passer du repï¿½re relatif au robot 
+	 * au rï¿½pï¿½re absolu du superviseur. Ainsi la case ajoutï¿½e est directement utilisable par le superviseur
 	 * @param x
-	 * 		Coordonée x de la case
+	 * 		Coordonï¿½e x de la case
 	 * @param y
-	 * 		Coordonée y de la case
+	 * 		Coordonï¿½e y de la case
 	 * @param dir
 	 * 		Orientation du robot 
 	 * @param frontWall
-	 * 		Mur eventuel à l'avant du robot (true si un mur est présent)
+	 * 		Mur eventuel ï¿½ l'avant du robot (true si un mur est prï¿½sent)
 	 * @param leftWall
-	 * 		Mur eventuel à gauche du robot (true si un mur est présent)
+	 * 		Mur eventuel ï¿½ gauche du robot (true si un mur est prï¿½sent)
 	 * @param backWall
-	 * 		Mur eventuel à droite du robot (true si un mur est présent)
+	 * 		Mur eventuel ï¿½ droite du robot (true si un mur est prï¿½sent)
 	 * @param rightWall
-	 * 		Mur eventuel à l'arrière du robot (true si un mur est présent)
-	 * @return 0  si l'opération s'est bien déroulée
+	 * 		Mur eventuel ï¿½ l'arriï¿½re du robot (true si un mur est prï¿½sent)
+	 * @return 0  si l'opï¿½ration s'est bien dï¿½roulï¿½e
 	 * @see Environment#x
 	 * @see Environment#y
 	 * @see Environment#dir
@@ -155,8 +155,8 @@ public class ListCase {
 			
 	}
 	
-	public void addCase2(int x, int y, int dir){
-		Case caseTemp = new Case(x,y);
+	public void addCase2(int x, int y, byte comp){
+		Case caseTemp = new Case(x,y,comp);
 		this.list.add(caseTemp);
 		
 	}
@@ -182,7 +182,7 @@ public class ListCase {
 	}
 	
 	/**
-	 * Vérifie si la liste est vide
+	 * Vï¿½rifie si la liste est vide
 	 * @return true si la liste est vide
 	 */
 	public boolean isEmpty() {

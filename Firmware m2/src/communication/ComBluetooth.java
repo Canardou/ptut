@@ -36,6 +36,14 @@ public class ComBluetooth{
 	public void send(Trame2 trame) {
 		
 		 try{
+			 System.out.println("j'envoie:");
+			 trame.printTrame();
+				try {
+					Thread.sleep(4000);
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			 this.envoyer(trame);
 		 } catch (Exception e) {}
 		 
@@ -56,13 +64,13 @@ public class ComBluetooth{
 		this.entitee1.setInput(connection.openDataInputStream());
 		this.entitee1.setOutput(connection.openDataOutputStream());
 				
-		try {
-			this.entitee1.getOutput().writeByte((byte)0);
-			this.entitee1.getOutput().flush();
-		} catch (IOException e3) {
+		//try {
+			//this.entitee1.getOutput().writeByte((byte)0);  //????????
+			//this.entitee1.getOutput().flush();
+		//} catch (IOException e3) {
 			// TODO Auto-generated catch block
-			e3.printStackTrace();
-		}
+		//	e3.printStackTrace();
+		//}
 				
 	}
 	
@@ -107,12 +115,12 @@ public class ComBluetooth{
 		while(this.entitee1.getInput().read()!=0){
 			
 		}
-		
 		int i;
 		for(i=0;i<message.tableauTrame().length;i++){
 		this.entitee1.getOutput().writeByte(message.tableauTrame()[i]);}
 			
 		this.entitee1.getOutput().flush();
+	
 			
 	}
 	
