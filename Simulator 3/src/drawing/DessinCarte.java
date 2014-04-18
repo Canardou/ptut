@@ -12,12 +12,12 @@ import javax.swing.Timer;
 
 import labyrinth.*;
 
+@SuppressWarnings("serial")
 public class DessinCarte extends JPanel implements ActionListener {
 	
 	/**
 	 * 
 	 */
-	private static final long serialVersionUID = 1L;
 	private static final int largeur=42;
 	private static final int hauteur=42;
 	private static final int min_width=336;
@@ -123,7 +123,7 @@ public class DessinCarte extends JPanel implements ActionListener {
     }
 	
 	public void update(){
-		lock.lock();
+		this.lock.lock();
 		try{
 		if(this.dogeMode){
 			for(int i=0;i<=this.x+1;i++){
@@ -150,7 +150,6 @@ public class DessinCarte extends JPanel implements ActionListener {
 		for(VirtualRobots robot : robots){
 			if(robot!=null){
 				if(robot.isVisible()){
-					//robot.icone();
 					Chemin temp = robot.getPath();
 					if(temp!=null){
 						for(int i=0;i<temp.size();i++){
@@ -165,9 +164,10 @@ public class DessinCarte extends JPanel implements ActionListener {
 			this.drawImageAt(ball.getImage(),this.carte.getMark().getX(),this.carte.getMark().getY());
 		for(VirtualRobots robot : robots){
 			if(robot!=null){
-				if(robot.isVisible())
-					robot.update();
+				robot.update();
+				if(robot.isVisible()){
 					this.drawImageAt(robot.draw(),robot.getdX(),robot.getdY());
+				}
 			}
 		}
 		if(this.dogeMode){
@@ -229,16 +229,15 @@ public class DessinCarte extends JPanel implements ActionListener {
 				}
 			}
 		}
-		//this.image=img.getScaledInstance(Math.min(this.img.getWidth(),max_width), Math.min(this.img.getHeight(),max_height), Image.SCALE_SMOOTH);
 		this.repaint();
-		step.signal();
+		this.step.signal();
 		}finally{
-			lock.unlock();
+			this.lock.unlock();
 		}
 	}
 	
 	@Override
 	public void actionPerformed(ActionEvent e) {
-	    this.update();
+		this.update();
 	}
 }

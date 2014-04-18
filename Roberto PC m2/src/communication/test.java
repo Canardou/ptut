@@ -3,7 +3,6 @@ package communication;
 
 import java.io.IOException;
 import java.util.Scanner;
-
 import env.Case;
 //import robot.Param;
 
@@ -17,14 +16,14 @@ public class test {
 	public static void main(String[] args) throws IOException, InterruptedException{
 		
 	
-		EntiteeBT PC= new EntiteeBT("marion","00:0C:78:33:EB:0C");
-		//EntiteeBT PC= new EntiteeBT("kiwor-0", "00:15:83:0C:BF:EB");
+		//EntiteeBT PC= new EntiteeBT("marion","00:0C:78:33:EB:0C");
+		EntiteeBT PC= new EntiteeBT("kiwor-0", "00:15:83:0C:BF:EB");
 		//EntiteeBT PC= new EntiteeBT("Thomas", "26:0A:64:62:8D:29");
 		
-		EntiteeBT robot1= new EntiteeBT("Robot H",(byte)1,"00:16:53:06:DA:CF");
-		//EntiteeBT robot1= new EntiteeBT("Robot J",(byte)1,"00:16:53:06:F5:30");
+		//EntiteeBT robot1= new EntiteeBT("Robot H",(byte)1,"00:16:53:06:DA:CF");
+		EntiteeBT robot1= new EntiteeBT("Robot J",(byte)1,"00:16:53:06:F5:30");
 		//EntiteeBT robot3= new EntiteeBT("Robot I",(byte)1,"00:16:53:06:DE:F2");
-		
+		EntiteeBT robot4= new EntiteeBT("Robot F",(byte)1,"00:16:53:06:DE:F8");
 
 		
 		System.out.println("entrée robot :");
@@ -65,13 +64,13 @@ public class test {
 						BluetoothCommPC2 bluetoothPC1= new BluetoothCommPC2(PC, robot1);
 						bluetoothPC1.connexion();
 						System.out.println("robot 1 connecté");
-						System.out.println("j'ai recu 0, j'envoie une trame" );
+						//System.out.println("j'ai recu 0, j'envoie une trame" );
 						
 						//sendInfos(ID, message, 0); Calibration
 						//message = 8 -> demande Calibration
 						//message = 4 -> calibration OK
 						//message =2 -> start mission
-						// message =1 -> mission termin�e           � faire, nouvelle classe avec ces parametres
+						// message =1 -> mission termin�e           � faire, nouvelle classe avec ces parametres
 						Trame2 sendInfos= new Trame2((byte)1,(byte)8,(byte)0);
 						sendInfos.printTrame();
 						bluetoothPC1.send(sendInfos);
@@ -86,7 +85,7 @@ public class test {
 						BluetoothCommPC2 bluetoothPC1= new BluetoothCommPC2(PC, robot1);
 						bluetoothPC1.connexion();
 						System.out.println("robot 1 connecté");
-						System.out.println("j'ai reçu 0, j'envoie une trame" );
+						//System.out.println("j'ai reçu 0, j'envoie une trame" );
 	
 						bluetoothPC1.send (sendOrdre);
 						System.out.println("c'est fait" );
@@ -108,7 +107,7 @@ public class test {
 							System.out.println("robot 1 connecté");
 							
 							Trame2 receiveInfos;
-							receiveInfos=bluetoothPC1.receive ();
+							receiveInfos=bluetoothPC1.receive();
 							System.out.println("trame recue :");
 							receiveInfos.printTrame();
 							
@@ -117,17 +116,36 @@ public class test {
 						}
 						
 						else if (strTrame==2){
-							BluetoothCommPC2 bluetoothPC1= new BluetoothCommPC2(robot1, PC);
+							BluetoothCommPC2 bluetoothPC1= new BluetoothCommPC2(PC, robot1);
 							bluetoothPC1.connexion();
-							System.out.println("robot 1 connecté");
-							System.out.println("j'ai recu 0, j'envoie une trame" );
+							System.out.println("robot J connecté");
+
+							BluetoothCommPC2 bluetoothPC4= new BluetoothCommPC2(PC, robot4);
+							bluetoothPC4.connexion();
+							System.out.println("robot F connecté");
 							
+							while(true){
+							bluetoothPC1.openStream();
+							bluetoothPC1.send(new Trame2((byte)1,(byte)12));
 							Trame2 receiveListCase;
-							receiveListCase=bluetoothPC1.receive ();
+							receiveListCase=bluetoothPC1.receive();
 							System.out.println("trame recue :");
-							receiveListCase.printTrame();
+							if(receiveListCase != null){
+							receiveListCase.printTrame();}
+							else{System.out.println(" Rien reçu!");}
+							bluetoothPC1.fermerStream();
 							
-							
+							//System.out.println("j'ai recu 0, j'envoie une trame" );
+							bluetoothPC4.openStream();
+							bluetoothPC4.send(new Trame2((byte)4,(byte)12));
+							Trame2 receiveListCase4;
+							receiveListCase4=bluetoothPC4.receive();
+							System.out.println("trame recue :");
+							if(receiveListCase4 != null){
+							receiveListCase4.printTrame();}
+							else{System.out.println(" Rien reçu!");}
+							bluetoothPC1.fermerStream();
+							}
 						}
 						
 					}

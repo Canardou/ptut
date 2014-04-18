@@ -9,52 +9,52 @@ import threads.ThreadRobot;
 public class Order {
 	
 	/**
-	 * Constante pour déterminer l'ordre stop
+	 * Constante pour dï¿½terminer l'ordre stop
 	 */
 	public static final int STOP = 0;
 	
 	/**
-	 * Constante pour déterminer l'ordre qui demande au robot d'avancer à la case suivante
+	 * Constante pour dï¿½terminer l'ordre qui demande au robot d'avancer ï¿½ la case suivante
 	 */
 	public static final int FORWARD = 1;
 	
 	/**
-	 * Constante pour déterminer l'ordre qui demande au robot de tourner à gauche
+	 * Constante pour dï¿½terminer l'ordre qui demande au robot de tourner ï¿½ gauche
 	 */
 	public static final int TURNL = 2;
 	
 	/**
-	 * Constante pour déterminer l'ordre qui demande au robot de tourner à droite
+	 * Constante pour dï¿½terminer l'ordre qui demande au robot de tourner ï¿½ droite
 	 */
 	public static final int TURNR = 3;
 	
 	/**
-	 * Constante pour déterminer l'ordre qui demande au robot de faire demi-tour
+	 * Constante pour dï¿½terminer l'ordre qui demande au robot de faire demi-tour
 	 */
 	public static final int TURNB = 4;	
 	
 	/**
-	 * Constante pour déterminer l'ordre qui demande la calibration de la boussole (2tours à faible vitesse)
+	 * Constante pour dï¿½terminer l'ordre qui demande la calibration de la boussole (2tours ï¿½ faible vitesse)
 	 */
 	public static final int CALCOMPASS = 5;    
 	
 	/**
-	 * Constante pour déterminer l'ordre qui demande à enregistrer l'angle de référence
+	 * Constante pour dï¿½terminer l'ordre qui demande ï¿½ enregistrer l'angle de rï¿½fï¿½rence
 	 */
 	public static final int SAVEREFANGLE = 6;
 	
 	/**
-	 * Constante pour déterminer l'ordre qui demande à verifier les 4 murs de la case initiale
+	 * Constante pour dï¿½terminer l'ordre qui demande ï¿½ verifier les 4 murs de la case initiale
 	 */
 	public static final int CHECKFIRSTCASE = 7;
 	
 	/**
-	 * Constante pour déterminer l'ordre qui impose la position initiale du robot
+	 * Constante pour dï¿½terminer l'ordre qui impose la position initiale du robot
 	 */
 	public static final int SETPOSITION	= 8;
  	
 	/**
-	 * Ordre : supprimer tout les ordres présents sur le robots et pas encore éxecutés
+	 * Ordre : supprimer tout les ordres prï¿½sents sur le robots et pas encore ï¿½xecutï¿½s
 	 */
 	public static final int CLEARLISTORDER = 9;
 	
@@ -69,31 +69,35 @@ public class Order {
 	public static final int WAIT1SEC = 11;
 
 	/**
-	 * Attribut représentant l'ordre actuel du robot
+	 * Ordre : attendre 1 seconde
+	 */
+	public static final int CASETOSEND = 12;
+	/**
+	 * Attribut reprï¿½sentant l'ordre actuel du robot
 	 * 
 	 * @see Order#getOrder()
 	 */
 	private int currentOrder;
 
 	/**
-	 * Attribut qui fait référence à la tache principale du robot
+	 * Attribut qui fait rï¿½fï¿½rence ï¿½ la tache principale du robot
 	 */
 	private ThreadRobot robot;
 
 	/**
 	 * Attribut permettant de connaitre l'erreur courante sur l'ordre (utile
-	 * lors des vérifications des conditions initiales)
+	 * lors des vï¿½rifications des conditions initiales)
 	 */
 	private int errOrder;
 
 	/**
-	 * Attribut permettant de savoir si le robot à rempli les conditions
-	 * initiales pour commencer a se déplacer
+	 * Attribut permettant de savoir si le robot ï¿½ rempli les conditions
+	 * initiales pour commencer a se dï¿½placer
 	 */
 	private boolean readyToGo;
 
 	/**
-	 * Attribut permettant de savoir si le robot à verifié au moins une fois les
+	 * Attribut permettant de savoir si le robot ï¿½ verifiï¿½ au moins une fois les
 	 * 4 murs de sa case initiale
 	 */
 	private boolean checkFirstCaseDone;
@@ -107,7 +111,7 @@ public class Order {
 	/**
 	 * Constructeur de Order
 	 * @param r
-	 *            objet représentant le thread principal du robot
+	 *            objet reprï¿½sentant le thread principal du robot
 	 */
 	public Order(ThreadRobot r) {
 		this.robot = r;
@@ -119,11 +123,11 @@ public class Order {
 	}
 	
 	/**
-	 * Ajoute un ordre à la fin de liste. Sauf s'il s'agit d'un ordre jugé à haute priorité, 
-	 * auquel cas l'ordre est mis à l'index 0 pour etre le prochain executé
+	 * Ajoute un ordre ï¿½ la fin de liste. Sauf s'il s'agit d'un ordre jugï¿½ ï¿½ haute prioritï¿½, 
+	 * auquel cas l'ordre est mis ï¿½ l'index 0 pour etre le prochain executï¿½
 	 * @param order
-	 * 		Ordre à insérer dans la liste
-	 * @return 0 si l'opération s'est bien déroulée
+	 * 		Ordre ï¿½ insï¿½rer dans la liste
+	 * @return 0 si l'opï¿½ration s'est bien dï¿½roulï¿½e
 	 */
 	public int add(int o)
 	{
@@ -147,7 +151,7 @@ public class Order {
 	}
 	
 	/**
-	 * Retire et renvoit l'ordre le plus ancien présent dans la liste
+	 * Retire et renvoit l'ordre le plus ancien prï¿½sent dans la liste
 	 * @return l'ordre en haut de la pile ou l'ordre STOP si la pile est vide
 	 * @see Param#STOP
 	 * @see Param#FORWARD
@@ -176,7 +180,7 @@ public class Order {
 	}
 	
 	/**
-	 * Vérifie si la liste est vide
+	 * Vï¿½rifie si la liste est vide
 	 * @return true si la liste est vide
 	 */
 	public boolean isEmpty() {
@@ -190,12 +194,12 @@ public class Order {
 
 	/**
 	 * Choisit un ordre en se basant sur la liste d'ordre recu du superviseur On
-	 * vérifie que les conditions initiales soit bonnes si on veut deplacer le
-	 * robot, i.e. : </br> 1 - La boussole a été calibrée (au moins une fois) ->
-	 * ordre CALCOMPASS</br> 2 - L'angle de référence a été enregistré et la
-	 * position du robot a été recu (au moins une fois, peu importe l'ordre) ->
-	 * ordre SAVEREFANGLE et SETPOSITION</br> 3 - La premiere case a été visité
-	 * entièrement (au moins une fois) -> ordre CHECKFIRSTCASE</br>
+	 * vï¿½rifie que les conditions initiales soit bonnes si on veut deplacer le
+	 * robot, i.e. : </br> 1 - La boussole a ï¿½tï¿½ calibrï¿½e (au moins une fois) ->
+	 * ordre CALCOMPASS</br> 2 - L'angle de rï¿½fï¿½rence a ï¿½tï¿½ enregistrï¿½ et la
+	 * position du robot a ï¿½tï¿½ recu (au moins une fois, peu importe l'ordre) ->
+	 * ordre SAVEREFANGLE et SETPOSITION</br> 3 - La premiere case a ï¿½tï¿½ visitï¿½
+	 * entiï¿½rement (au moins une fois) -> ordre CHECKFIRSTCASE</br>
 	 * 
 	 * @see ListOrder
 	 * @see Robot#order
@@ -240,7 +244,7 @@ public class Order {
 	}
 
 	/**
-	 * Méthode de test, algorithme d'exploration basique
+	 * Mï¿½thode de test, algorithme d'exploration basique
 	 */
 	public void chooseExploration() {
 		if (!this.readyToGo) {
@@ -259,7 +263,7 @@ public class Order {
 	}
 
 	/**
-	 * Méthode de test, permet d'executer n'importe quel ordre sans verifier les
+	 * Mï¿½thode de test, permet d'executer n'importe quel ordre sans verifier les
 	 * conditions initiales
 	 */
 	public void chooseInsecurely() {
@@ -270,7 +274,7 @@ public class Order {
 	}
 
 	/**
-	 * Execute l'ordre demandé
+	 * Execute l'ordre demandï¿½
 	 * 
 	 * @see Robot#chooseOrder()
 	 * @see Robot#order
@@ -359,7 +363,7 @@ public class Order {
 	/**
 	 * Pause en ms 
 	 * @param ms
-	 *            Temps à attendre en ms
+	 *            Temps ï¿½ attendre en ms
 	 */
 	public void pauseTime(int ms) {
 		long initTime = System.currentTimeMillis();

@@ -17,7 +17,7 @@ public class Case {
 	
 	//murs & decouverte
 	private byte composition;
-	//Possibilitée d'utiliser un mask
+	//Possibilitï¿½e d'utiliser un mask
 	private int x;
 	private int y;
 	
@@ -38,7 +38,7 @@ public class Case {
 	}
 	
 	/*
-	 * Méthodes
+	 * Mï¿½thodes
 	 */
 	
 	/**
@@ -185,5 +185,9 @@ public class Case {
 	
 	public byte getCompo(){
 		return this.composition;
+	}
+	
+	public void setCompo(byte compo){
+		this.composition=compo;
 	}
 }

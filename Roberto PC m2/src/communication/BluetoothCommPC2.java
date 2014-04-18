@@ -29,6 +29,7 @@ public class BluetoothCommPC2 extends Thread{
 	private NXTComm nxtComm; 
 	
 	
+	
 	/*constructeur*/
 	
 	public BluetoothCommPC2 (EntiteeBT emetteur, EntiteeBT recepteur) {
@@ -40,7 +41,7 @@ public class BluetoothCommPC2 extends Thread{
 	
 	
 	
-	/*méthodes*/
+	/*mï¿½thodes*/
 	
 	
 	public void connexion() {
@@ -122,7 +123,7 @@ public class BluetoothCommPC2 extends Thread{
 		
 		for (int i=0; i<tailleTrame;i++){
 			this.emetteur.getOutput().writeByte(trameEnvoyee.tableauTrame()[i]);
-			System.out.println("j'envoie: "+trameEnvoyee.tableauTrame()[i]);
+			//System.out.println("j'envoie: "+trameEnvoyee.tableauTrame()[i]);
 		}
 		this.emetteur.getOutput().flush();
 		 
@@ -146,7 +147,7 @@ public class BluetoothCommPC2 extends Thread{
 		 
 		for (int j=1; j <= tailleTrameRecue-1; j++){
 			trameRecue[j]= this.emetteur.getInput().readByte();
-		}
+			}
 		
 	
 		
@@ -167,6 +168,16 @@ public class BluetoothCommPC2 extends Thread{
 			trameR= new Trame2(trameRecue[1],trameRecue[2],trameRecue[3]);
 			
 		}
+		else if (trameRecue[tailleTrameRecue-1]!=7 & trameRecue[tailleTrameRecue-1]!=6){
+			ListCase listCase=new ListCase();
+			int k=2;
+			for (int i=0; i<(tailleTrameRecue-3)/3 ; i++){
+				listCase.addCase2((int)trameRecue[k], (int)trameRecue[k+1], trameRecue[k+2]);
+				k=k+3;
+				//System.out.println(trameRecue[k]+" ; "+trameRecue[k+1]+" ; "+trameRecue[k+2] + " ; ");
+			}
+			trameR= new Trame2(trameRecue[1],listCase);}
+		
 					
 		return trameR;
 					
@@ -175,6 +186,22 @@ public class BluetoothCommPC2 extends Thread{
 	
 	}
 
+	public void openStream()throws IOException {
+		
+		this.in = this.nxtComm.getInputStream();  
+		this.out = this.nxtComm.getOutputStream(); 
+		
+		this.dis = new DataInputStream(this.in);
+		this.dos = new DataOutputStream(this.out);
+		
+		this.emetteur.setInput(this.dis);
+		this.emetteur.setOutput(this.dos);
+	}
+	
+	public void fermerStream()throws IOException {
+		this.in.close();
+		this.out.close();
+	}
 
 public void fermerCommunication() throws IOException{
 

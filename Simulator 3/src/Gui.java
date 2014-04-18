@@ -1,147 +1,141 @@
-import java.awt.Color;
-import java.awt.EventQueue;
+import java.awt.Dimension;
 import java.awt.Font;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
+import javax.swing.Box;
+import javax.swing.JButton;
+import javax.swing.JTextField;
+import javax.swing.SwingWorker;
 
 import java.awt.BorderLayout;
 
-import javax.swing.JTextField;
-import javax.swing.JLabel;
-import javax.swing.border.TitledBorder;
-import javax.swing.BorderFactory;
-import javax.swing.Box;
-import javax.swing.ImageIcon;
-import javax.swing.JComboBox;
-import javax.swing.JSplitPane;
-import javax.swing.JButton;
-
-import drawing.AnimationRobot;
 import drawing.DessinCarte;
 import drawing.FontImport;
-import drawing.VirtualRobots;
 
-import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-
+@SuppressWarnings("serial")
 public class Gui extends JFrame implements ActionListener {
 
-	private JFrame frame;
-	private JTextField nomR1;
-	private JTextField adR1;
-	private JTextField nomR2;
-	private JTextField adR2;
-	private JTextField nomR3;
-	private JTextField adR3;
+	private RobotPanel [] robots;
 	
 	private Font comic = FontImport.getFont("ComicRelief.ttf");
 	private Font bcomic = FontImport.getFont("ComicRelief-Bold.ttf");
+	
+	private Superviseur superviseur;
+	private DessinCarte laby;
+	private SwingWorker<String,Object> thread;
+	private JButton start;
+	private JButton stop;
+	private JButton simuler;
+	private JTextField seed;
 
-	/**
-	 * Launch the application.
-	 */
-	/*public static void main(String[] args) {
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try {
-					Gui window = new Gui();
-					window.frame.setVisible(true);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});
-	}*/
-
-	/**
-	 * Create the application.
-	 */
-	public Gui(DessinCarte carte){
-		
-		JPanel Laby = carte;
+	public Gui(Superviseur superviseur){
+		this.superviseur=superviseur;
+		//Labyrinth sur le côté gauche
+		this.laby = superviseur.dessinCarte();
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		this.getContentPane().add(Laby, BorderLayout.WEST);
+		this.getContentPane().add(this.laby, BorderLayout.WEST);
 		
+		//Robots sur le côté droit
 		JPanel panel = new JPanel();
 		this.getContentPane().add(panel, BorderLayout.EAST);
 		
+			//Aligne verticalement les boites robots
+		Box tempBox = Box.createVerticalBox();
+		tempBox.setEnabled(false);
+		panel.add(tempBox);
+		
+		robots = new RobotPanel[3];
+		for(int i=0;i<3;i++){
+			robots[i]=new RobotPanel(laby,i);
+			tempBox.add(robots[i]);
+		}
+		
 		JPanel panel2 = new JPanel();
 		this.getContentPane().add(panel2, BorderLayout.SOUTH);
+
+		Box tempHoriBox = Box.createHorizontalBox();
+		panel2.add(tempHoriBox);
 		
-		JLabel nom2 = new JLabel("x");
-		nom2.setFont(this.comic.deriveFont(12f));
-		panel2.add(nom2);
+		start = new JButton("Commencer");
+		start.setFont(this.bcomic.deriveFont(12f));
+		start.addActionListener(this);
+		tempHoriBox.add(start);
 		
-		Box verticalBox = Box.createVerticalBox();
-		verticalBox.setEnabled(false);
-		panel.add(verticalBox);
+		tempHoriBox.add(Box.createRigidArea(new Dimension(5,0)));
 		
-		JPanel panel_4 = new JPanel();
-		panel_4.setBorder(new TitledBorder(BorderFactory.createLineBorder(Color.black, 1, true), "Robot 1", TitledBorder.LEADING, TitledBorder.TOP, this.bcomic.deriveFont(15f)));
-		verticalBox.add(panel_4);
+		stop = new JButton("Arrêter");
+		stop.setFont(this.bcomic.deriveFont(12f));
+		stop.addActionListener(this);
+		stop.setVisible(false);
+		tempHoriBox.add(stop);
 		
-		Box verticalBox_1 = Box.createVerticalBox();
-		verticalBox.setEnabled(false);
-		panel_4.add(verticalBox_1);
+		simuler = new JButton("Simulation");
+		simuler.setFont(this.bcomic.deriveFont(12f));
+		simuler.addActionListener(this);
+		tempHoriBox.add(simuler);
 		
-		Box horizontalBox_1 = Box.createHorizontalBox();
-		horizontalBox_1.setEnabled(false);
-		verticalBox_1.add(horizontalBox_1);
+		tempHoriBox.add(Box.createRigidArea(new Dimension(5,0)));
 		
-		JLabel nom = new JLabel("x");
-		nom.setFont(this.comic.deriveFont(12f));
-		horizontalBox_1.add(nom);
-		
-		nomR1 = new JTextField();
-		nomR1.setFont(this.comic.deriveFont(12f));
-		horizontalBox_1.add(nomR1);
-		nomR1.setColumns(2);
-		
-		Component verticalStrut = Box.createHorizontalStrut(2);
-		horizontalBox_1.add(verticalStrut);
-		
-		JLabel adR = new JLabel("y");
-		adR.setFont(this.comic.deriveFont(12f));
-		horizontalBox_1.add(adR);
-		
-		adR1 = new JTextField();
-		adR1.setFont(this.comic.deriveFont(12f));
-		horizontalBox_1.add(adR1);
-		adR1.setColumns(2);
-		
-		Component verticalStrut2 = Box.createHorizontalStrut(2);
-		horizontalBox_1.add(verticalStrut2);
-		
-		String[] directions = { "Haut","Gauche","Bas","Droite"};
-		JComboBox<String> direction = new JComboBox<String>(directions);
-		direction.setFont(this.comic.deriveFont(12f));
-		horizontalBox_1.add(direction);
-		
-		Box horizontalBox_2 = Box.createHorizontalBox();
-		horizontalBox_1.setEnabled(false);
-		verticalBox_1.add(horizontalBox_2);
-		
-		horizontalBox_2.add(carte.getRobot(0).getIcone());
-		
-		
-		JButton valid1 = new JButton("Envoyer");
-		valid1.setFont(this.comic.deriveFont(12f));
-		horizontalBox_2.add(valid1);
+		seed = new JTextField();
+		seed.setText("100");
+		seed.setFont(this.comic.deriveFont(12f));
+		tempHoriBox.add(seed);
+		seed.setColumns(5);
 		
 		this.pack();
 		this.setVisible(true);
 	}
-
-	/**
-	 * Initialize the contents of the frame.
-	 */
 	
-	@Override
-	public void actionPerformed(ActionEvent e) {
-	    ;
+	public void updatePanel(){
+		for(int i=0;i<3;i++){
+			robots[i].setPanel(laby.getRobot(i).getX(), laby.getRobot(i).getY(), laby.getRobot(i).getDir());
+		}
 	}
 
+	@Override
+	public void actionPerformed(ActionEvent e) {
+		System.out.println(e.getActionCommand());
+		if(e.getActionCommand().compareTo("Simulation")==0){
+			this.start.setVisible(false);
+			this.stop.setVisible(true);
+			this.simuler.setVisible(false);
+			this.seed.setEnabled(false);
+			for(int i=0;i<3;i++){
+				robots[i].freeze();
+			}
+			class YOLO extends SwingWorker<String, Object> {//I HAVE NO IDEA WHAT IM DOING RIGHT NOW
+			       @Override
+			       public String doInBackground() {
+			    	   superviseur.simulate(Integer.parseInt(seed.getText()));
+			    	   return null;
+			       }
+
+			       @Override
+			       protected void done() {
+			       }
+			   }
+			(thread=new YOLO()).execute();
+		}
+		if(e.getActionCommand().compareTo("Arrêter")==0){
+			this.thread.cancel(true);
+			for(int i=0;i<3;i++){
+				robots[i].unfreeze();
+			}
+			this.start.setVisible(true);
+			this.stop.setVisible(false);
+			this.simuler.setVisible(true);
+			this.seed.setVisible(true);
+			this.seed.setEnabled(true);
+		}
+		if(e.getActionCommand().compareTo("Commencer")==0){
+			this.start.setVisible(false);
+			this.stop.setVisible(true);
+			this.simuler.setVisible(false);
+			this.seed.setVisible(false);
+		}
+	}
 }

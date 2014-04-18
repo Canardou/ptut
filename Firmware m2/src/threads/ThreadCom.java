@@ -26,27 +26,30 @@ public class ThreadCom extends Thread {
 	public static final int SENDCASE = 1;
 
 	/**
-	 * Attribut représentant le robot
+	 * Attribut reprï¿½sentant le robot
 	 * 
 	 * @see Robot
 	 */
 	private ThreadRobot robot;
 
 	/**
-	 * Attribut représentant la communication
+	 * Attribut reprï¿½sentant la communication
 	 */
 	private ComBluetooth com;
 
 	/**
-	 * Attribut représentant l'entitée de communication
+	 * Attribut reprï¿½sentant l'entitï¿½e de communication
 	 */
 	private EntiteeBT entitee;
 
 	/**
-	 * Attribut représentant une trame
+	 * Attribut reprï¿½sentant une trame
 	 */
 	private Trame2 trame;
 	
+
+
+		
 	private boolean connected;
 
 	/**
@@ -57,11 +60,12 @@ public class ThreadCom extends Thread {
 	public ThreadCom(ThreadRobot r) {
 		super();
 		this.robot = r;
-		this.entitee = new EntiteeBT("Robot H", (byte) 1, "00:16:53:06:DA:CF");
-		//this.entitee = new EntiteeBT("Robot J", (byte) 1, "00:16:53:06:F5:30");
+		//this.entitee = new EntiteeBT("Robot H", (byte) 1, "00:16:53:06:DA:CF");
+		this.entitee = new EntiteeBT("Robot J", (byte) 1, "00:16:53:06:F5:30");
 		
 		this.com = new ComBluetooth(entitee);
-		this.setPriority(5);
+		this.setPriority(NORM_PRIORITY);
+		
 	}
 
 	/**
@@ -72,27 +76,53 @@ public class ThreadCom extends Thread {
 		while(true) {
 			this.com.connexion();
 			this.connected=true;
-			
 			while (this.connected) {	
-				/*this.trame = this.com.receive();
+				this.trame = this.com.receive();
 				if (this.trame != null) {
+					
 					if (this.trame.getTypeTrame() == ORDRE) {
+						if(this.trame.getOrdre()!= Order.CASETOSEND){
+						System.out.println(this.trame.getTypeTrame());
 						this.robot.getOrder().add(this.trame.getOrdre());
-						System.out.println("tCom-R:"+this.robot.getOrder().print(this.trame.getOrdre()));
+						System.out.println("tCom-R:"+this.robot.getOrder().print(this.trame.getOrdre()));}
+						else{
+							this.setPriority(MAX_PRIORITY);
+							Trame2 cases = new Trame2((byte)0,this.robot.getEnv().getListCase());
+							this.setPriority(NORM_PRIORITY);
+							this.com.send(cases);
+						System.out.println("tCom-E:clear");}
 					} else if (this.trame.getTypeTrame() == INITPOSITION) {
 						// this.robot.getEnv().setInitValues(this.trame.getPosX(),this.trame.getPosY(), this.trame.getDirection());
 						this.robot.getOrder().add(Order.SETPOSITION);
 						System.out.println("tCom-R:"+this.robot.getOrder().print(this.trame.getOrdre()));
-					} else if (this.trame.getTypeTrame() == SENDCASE) {
-						*/ this.com.send(new Trame2((byte)0,this.robot.getEnv().getListCase()));
+					}/* else if (this.trame.getTypeTrame() == SENDCASE) {
+						Trame2 cases = new Trame2((byte)0,this.robot.getEnv().getListCase());
+						this.com.send(cases);
+						try {
+							cases.printTrame();
+						} catch (InterruptedException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
 						System.out.println("tCom-E:clear");
-				/*	}
+					}*/
 				}
 				else {
 					System.out.println("tCom:comperdu");
 					this.connected=false;
-				}*/
+					this.close();
+				}
 			}
+		}
+	}
+public void close(){
+		
+		this.setPriority(MIN_PRIORITY);
+	    try {
+			this.com.fermer();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 	}
 }
