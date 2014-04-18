@@ -1,7 +1,6 @@
 package sensors;
 
 import env.*;
-//import lejos.nxt.I2CPort;
 import lejos.nxt.LCD;
 import lejos.nxt.LightSensor;
 import lejos.nxt.SensorPort;
