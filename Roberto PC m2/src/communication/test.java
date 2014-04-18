@@ -23,7 +23,7 @@ public class test {
 		//EntiteeBT robot1= new EntiteeBT("Robot H",(byte)1,"00:16:53:06:DA:CF");
 		EntiteeBT robot1= new EntiteeBT("Robot J",(byte)1,"00:16:53:06:F5:30");
 		//EntiteeBT robot3= new EntiteeBT("Robot I",(byte)1,"00:16:53:06:DE:F2");
-		
+		EntiteeBT robot4= new EntiteeBT("Robot F",(byte)1,"00:16:53:06:DE:F8");
 
 		
 		System.out.println("entrée robot :");
@@ -118,8 +118,14 @@ public class test {
 						else if (strTrame==2){
 							BluetoothCommPC2 bluetoothPC1= new BluetoothCommPC2(PC, robot1);
 							bluetoothPC1.connexion();
-							System.out.println("robot 1 connecté");
-							//System.out.println("j'ai recu 0, j'envoie une trame" );
+							System.out.println("robot J connecté");
+
+							BluetoothCommPC2 bluetoothPC4= new BluetoothCommPC2(PC, robot4);
+							bluetoothPC4.connexion();
+							System.out.println("robot F connecté");
+							
+							while(true){
+							bluetoothPC1.openStream();
 							bluetoothPC1.send(new Trame2((byte)1,(byte)12));
 							Trame2 receiveListCase;
 							receiveListCase=bluetoothPC1.receive();
@@ -127,8 +133,19 @@ public class test {
 							if(receiveListCase != null){
 							receiveListCase.printTrame();}
 							else{System.out.println(" Rien reçu!");}
+							bluetoothPC1.fermerStream();
 							
-							
+							//System.out.println("j'ai recu 0, j'envoie une trame" );
+							bluetoothPC4.openStream();
+							bluetoothPC4.send(new Trame2((byte)4,(byte)12));
+							Trame2 receiveListCase4;
+							receiveListCase4=bluetoothPC4.receive();
+							System.out.println("trame recue :");
+							if(receiveListCase4 != null){
+							receiveListCase4.printTrame();}
+							else{System.out.println(" Rien reçu!");}
+							bluetoothPC1.fermerStream();
+							}
 						}
 						
 					}

@@ -36,14 +36,6 @@ public class ComBluetooth{
 	public void send(Trame2 trame) {
 		
 		 try{
-			 System.out.println("j'envoie:");
-			 trame.printTrame();
-				try {
-					Thread.sleep(4000);
-				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
 			 this.envoyer(trame);
 		 } catch (Exception e) {}
 		 
