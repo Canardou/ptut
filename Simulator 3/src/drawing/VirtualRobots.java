@@ -102,6 +102,10 @@ public class VirtualRobots {
 			return this.y;
 	}
 	
+	public int getDir(){
+		return this.direction;
+	}
+	
 	public int getAX(){
 		return this.ax;
 	}

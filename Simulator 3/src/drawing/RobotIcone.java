@@ -2,7 +2,6 @@ package drawing;
 import java.awt.* ;
 import java.awt.image.* ;
 
-import javax.swing.BorderFactory;
 import javax.swing.JPanel;
 
 public class RobotIcone extends JPanel {

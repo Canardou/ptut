@@ -1,15 +1,16 @@
-import java.awt.Point;
-import java.util.ArrayList;
-import java.util.Random;
 
-import javax.swing.ImageIcon;
-import javax.swing.JLabel;
+import java.util.ArrayList;
+
+import javax.swing.JFrame;
 
 import Dialogue.Dialogue;
 import labyrinth.*;
 import drawing.*;
 
 public class Superviseur {
+	
+	private static int agent=3;
+	
 	private Carte carte;
 	private DessinCarte dessin;
 	private Chemin [] current_paths;
@@ -17,16 +18,27 @@ public class Superviseur {
 	private ArrayList<Chemin> next_paths;
 	private int step;
 	private int current;
-	
+	private Gui application;
 	
 	public Superviseur(Carte carte){
-		this.current_paths=new Chemin[3];
+
+		this.current_paths=new Chemin[agent];
+		this.priority=new int[agent];
+		this.next_paths=new ArrayList<Chemin>();
 		this.carte=carte;
 		this.dessin=new DessinCarte(carte);
 		this.dessin.launch();
+		//dessin.toggleDoge();
+		
+		application = new Gui(this);
+		application.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		application.pack();
+		application.setVisible(true);
 	}
 	
-	public void simulate() throws InterruptedException {
+	public void simulate(int seed) {
+		Dialogue.Warning("Lancement d'une simulation");
+		this.carte.rand.setSeed(seed);
 		Carte labyrinth=new Carte(this.carte.getWidth(),this.carte.getHeight());
 		labyrinth.rand.setSeed(carte.rand.nextInt());
 		labyrinth.randomMaze(0.35);
@@ -47,9 +59,9 @@ public class Superviseur {
 			this.carte.reveal(x, y);
 			paths[i]=new Chemin(this.carte.getCase(x, y));*/
 		
-		dessin.showMark(true);
-		dessin.toggleDoge();
-		Dialogue.Warning("Lancement d'une simulation");
+		
+		
+		
 		//Dans une simulation dessin est utilisé comme référent pour le superviseur
 		//Dans un cas réel le superviseur devra être cadencé par les appels blutooth
 		
@@ -126,23 +138,28 @@ public class Superviseur {
 				if(test.getValue()<test2.getValue())
 					;
 			}*/
-			
+			this.application.updatePanel();
 			int steps=0;
 			while(steps<50){
-				dessin.step.await();
+				try{
+				this.dessin.step.await();
+				}catch(InterruptedException ie){
+					dessin.lock.unlock();
+					Dialogue.Warning("Simulation Interrompue");
+				}
 				steps++;
 			}
 			temps+=5;
-			System.out.println(temps/60+":"+temps%60);
+			System.out.println(temps);
 			}finally{
 				dessin.lock.unlock();
 			}
 		}
+		
 	}
 	
 	public void initialisation(){
-		this.priority=new int[3];
-		for(int k=0;k<3;k++)
+		for(int k=0;k<this.priority.length;k++)
 			this.priority[k]=k;
 		this.step=0;
 	}
