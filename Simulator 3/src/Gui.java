@@ -34,12 +34,12 @@ public class Gui extends JFrame implements ActionListener {
 
 	public Gui(Superviseur superviseur){
 		this.superviseur=superviseur;
-		//Labyrinth sur le côté gauche
+		//Labyrinth sur le cï¿½tï¿½ gauche
 		this.laby = superviseur.dessinCarte();
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		this.getContentPane().add(this.laby, BorderLayout.WEST);
 		
-		//Robots sur le côté droit
+		//Robots sur le cï¿½tï¿½ droit
 		JPanel panel = new JPanel();
 		this.getContentPane().add(panel, BorderLayout.EAST);
 		
@@ -67,7 +67,7 @@ public class Gui extends JFrame implements ActionListener {
 		
 		tempHoriBox.add(Box.createRigidArea(new Dimension(5,0)));
 		
-		stop = new JButton("Arrêter");
+		stop = new JButton("Arrï¿½ter");
 		stop.setFont(this.bcomic.deriveFont(12f));
 		stop.addActionListener(this);
 		stop.setVisible(false);
@@ -98,7 +98,6 @@ public class Gui extends JFrame implements ActionListener {
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		System.out.println(e.getActionCommand());
 		if(e.getActionCommand().compareTo("Simulation")==0){
 			this.start.setVisible(false);
 			this.stop.setVisible(true);
@@ -120,8 +119,9 @@ public class Gui extends JFrame implements ActionListener {
 			   }
 			(thread=new YOLO()).execute();
 		}
-		if(e.getActionCommand().compareTo("Arrêter")==0){
-			this.thread.cancel(true);
+		if(e.getActionCommand().compareTo("Arrï¿½ter")==0){
+			if(this.thread!=null)
+				this.thread.cancel(true);
 			for(int i=0;i<3;i++){
 				robots[i].unfreeze();
 			}
@@ -136,6 +136,9 @@ public class Gui extends JFrame implements ActionListener {
 			this.stop.setVisible(true);
 			this.simuler.setVisible(false);
 			this.seed.setVisible(false);
+			for(int i=0;i<3;i++){
+				robots[i].freeze();
+			}
 		}
 	}
 }

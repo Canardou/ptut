@@ -108,6 +108,14 @@ public class DessinCarte extends JPanel implements ActionListener {
 		this.showMark=mark;
 	}
 	
+	public int labyX(){
+		return x;
+	}
+	
+	public int labyY(){
+		return y;
+	}
+	
 	//@override
 	protected void paintComponent(Graphics g) {
         super.paintComponent(g);

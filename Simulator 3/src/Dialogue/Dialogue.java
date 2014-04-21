@@ -14,4 +14,8 @@ public class Dialogue {
 	public static void Warning(String s){
 		JOptionPane.showMessageDialog(null, s, "Avertissement", JOptionPane.WARNING_MESSAGE);
 	}
+	
+	public static void Success(String s){
+		JOptionPane.showMessageDialog(null, s, "Succes", JOptionPane.INFORMATION_MESSAGE);
+	}
 }

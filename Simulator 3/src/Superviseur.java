@@ -21,7 +21,7 @@ public class Superviseur {
 	private Gui application;
 	
 	public Superviseur(Carte carte){
-
+		Dialogue.Success("LOL");
 		this.current_paths=new Chemin[agent];
 		this.priority=new int[agent];
 		this.next_paths=new ArrayList<Chemin>();
@@ -62,8 +62,8 @@ public class Superviseur {
 		
 		
 		
-		//Dans une simulation dessin est utilisé comme référent pour le superviseur
-		//Dans un cas réel le superviseur devra être cadencé par les appels blutooth
+		//Dans une simulation dessin est utilisï¿½ comme rï¿½fï¿½rent pour le superviseur
+		//Dans un cas rï¿½el le superviseur devra ï¿½tre cadencï¿½ par les appels blutooth
 		
 		//int numero=labyrinth.rand.nextInt(3);
 		int temps=0;
@@ -73,7 +73,7 @@ public class Superviseur {
 			/*
 			//Choix du robot et import des informations
 			if(!dessin.getRobots()[numero].busy()){
-				//Résolution
+				//Rï¿½solution
 				int x= dessin.getRobots()[numero].getX();
 				int y= dessin.getRobots()[numero].getY();
 				this.carte.update(x, y, labyrinth.getCase(x, y).getCompo());
@@ -83,7 +83,7 @@ public class Superviseur {
 				//DEBUT SUPERVISEUR
 				int k=1;
 				boolean retry=false;
-				if(carte.closestDiscover(x, y, k)!=null){//Comportement de closest discover lorsque plus de cases à visiter peut être problématique
+				if(carte.closestDiscover(x, y, k)!=null){//Comportement de closest discover lorsque plus de cases ï¿½ visiter peut ï¿½tre problï¿½matique
 					do{
 					retry=false;
 					if(carte.closestDiscover(x, y, k)!=null)
@@ -133,8 +133,8 @@ public class Superviseur {
 				dessin.getRobots()[1].walkPath(carte.closestDiscover(dessin.getRobots()[1].getX(), dessin.getRobots()[1].getY(), 1, test3, blocked,false));
 				/*if(test2.isCollision(carte, current_paths[1], true))
 					;
-					//Faire bouger robot 1 de façon à libérer le chemin -> Noter qu'il faut qu'il sorte totalement du chemin prévu.
-					//Comparer cette solution à l'évitement en terme de cout
+					//Faire bouger robot 1 de faï¿½on ï¿½ libï¿½rer le chemin -> Noter qu'il faut qu'il sorte totalement du chemin prï¿½vu.
+					//Comparer cette solution ï¿½ l'ï¿½vitement en terme de cout
 				if(test.getValue()<test2.getValue())
 					;
 			}*/
@@ -156,6 +156,12 @@ public class Superviseur {
 			}
 		}
 		
+	}
+	
+	public void destin(){
+		while(true){   //tant que marque pas trouvÃ©e
+			//creer ThreadCommPC pour chaque robot
+		}
 	}
 	
 	public void initialisation(){
