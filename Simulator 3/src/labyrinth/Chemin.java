@@ -43,6 +43,10 @@ public class Chemin {
 		this.route.add(nouvelle);
 	}
 	
+	public void add(Chemin autre){
+		this.route.addAll(autre.route);
+	}
+	
 	public int direction(int k){
 		if(k+1>this.route.size())
 			return -1;
@@ -153,7 +157,7 @@ public class Chemin {
 	}
 	
 	public boolean concatenation(Chemin autre){
-		if (autre!=null){
+		if (autre!=null && this.route!=null){
 			if(autre.get(0)==this.get(this.size()-1)){
 				autre.removeTop();
 				this.route.addAll(autre.get());

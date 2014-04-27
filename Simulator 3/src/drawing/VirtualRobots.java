@@ -25,7 +25,6 @@ public class VirtualRobots {
 	private AnimationRobot sheet;
 	private RobotIcone icone;
 	private boolean visible;
-	private boolean wait;
 	
 	/*
 	 * Constructeurs
@@ -126,6 +125,10 @@ public class VirtualRobots {
 		this.path=null;
 		this.x=x;
 		this.y=y;
+		this.ax=x;
+		this.ay=y;
+		this.mouvement=0;
+		this.objectif=0;
 		this.direction=direction;
 	}
 	
@@ -143,14 +146,6 @@ public class VirtualRobots {
 		return this.id;
 	}
 	
-	public void setWait(boolean wait){
-		this.wait=wait;
-	}
-	
-	public boolean isWaiting(){
-		return this.wait;
-	}
-	
 	public void update(){
 		if(exposition<5){
 			this.exposition++;
@@ -161,7 +156,7 @@ public class VirtualRobots {
 			this.exposition=0;
 		}
 		if(this.path!=null){
-			if((this.path.size()>1 && !isWaiting()) || this.mouvement<this.objectif){
+			if(this.path.size()>1 || this.mouvement<this.objectif){
 				if(this.mouvement>=this.objectif){
 					this.x=this.path.getX(0);
 					this.y=this.path.getY(0);
@@ -230,7 +225,7 @@ public class VirtualRobots {
 			break;
 		default :
 			this.sheet.setSequence("stand");
-	}
+		}
 	}
 	
 	public BufferedImage draw(){

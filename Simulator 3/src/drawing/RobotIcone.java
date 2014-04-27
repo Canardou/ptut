@@ -4,12 +4,9 @@ import java.awt.image.* ;
 
 import javax.swing.JPanel;
 
+@SuppressWarnings("serial")
 public class RobotIcone extends JPanel {
 	
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
 	private AnimationRobot sheet;
 	
 	/*
