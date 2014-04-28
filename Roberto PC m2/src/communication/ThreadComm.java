@@ -70,14 +70,14 @@ public class ThreadComm extends Thread{
 				System.out.println("Detection murs case1 OK" );
 				
 				// Demande au robot s'il est occupé et reception
-				/*Trame2 sendIsBusy= new Trame2((byte)1,(byte)Order.isBusy);  // ajouter dans Ordre et gérer cette commande dans robot
+				Trame2 sendIsBusy= new Trame2((byte)1,(byte)Order.SENDBUSY);  // ajouter dans Ordre et gérer cette commande dans robot
 				this.com.send (sendIsBusy);
 				System.out.println("Demande isBusy OK" );
 				Trame2 receiveIsBusy = this.com.receive();
 				int Busy=receiveIsBusy.getBusy();
 				
 				
-				if (Busy!=1){*/
+				if (Busy!=1){
 					
 					// demande et reception de la liste des cases explorées
 					this.com.send (new Trame2((byte)1,(byte)Order.CASETOSEND));
@@ -109,7 +109,7 @@ public class ThreadComm extends Thread{
 		
 		
 		
-		
+	}	
 		
 	}
 	

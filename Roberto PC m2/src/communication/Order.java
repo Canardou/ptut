@@ -68,6 +68,12 @@ public class Order {
 	 * Ordre : attendre 1 seconde
 	 */
 	public static final int CASETOSEND = 12;
+	
+	/**
+	 * Ordre : Envoyer l'état du robot.</br> Attention cette ordre est executé
+	 * immédiatement à sa reception.
+	 */
+	public static final int SENDBUSY = 16;
 	/**
 	 * Attribut reprï¿½sentant l'ordre actuel du robot
 	 * 

@@ -3,6 +3,7 @@ package communication;
 import java.util.ArrayList;
 
 
+
 //import threads.ThreadRobot;
 import env.Case;
 //import env.Environment;
@@ -18,13 +19,14 @@ public class Trame2 {
 	
 	private byte tailleTrame; 
 	private byte ID;
-	private byte direction;
+	private int direction;
 	private byte ordre;
 	private int typeTrame;
-	private int orientation;
 	private byte message;
 	private int typeMessage;
 	private int isBusy;
+	private int X;
+	private int Y;
 
 	private ArrayList<Case> pile;
 
@@ -55,7 +57,7 @@ public class Trame2 {
 	
 	//trame qui contient une liste de cases � envoyer 
 	
-public Trame2(byte ID, ListCase listCase ){
+	public Trame2(byte ID, ListCase listCase ){
 
 		
 		
@@ -65,13 +67,12 @@ public Trame2(byte ID, ListCase listCase ){
 		this.ID=ID;
 		this.pile=listCase.getArrayList();
 		
-		
 		this.typeTrame=1;
 		
 		
 		
-		this.contenuT= new byte[(byte)(this.pile.size()*3+3)];  
-		
+		this.contenuT= new byte[(byte)(this.pile.size()*3+3)];  //on récupère la taille du tab, chaque case contient 3 infos + taille trame, type et ID
+	
 		this.contenuT[0]=(byte)(this.pile.size()*3+3);
 		this.contenuT[1]=this.ID;
 
@@ -87,7 +88,7 @@ public Trame2(byte ID, ListCase listCase ){
 		
 		this.contenuT[i]=(byte)this.typeTrame;
 		
-	
+		
 	}
 	
 	
@@ -111,36 +112,41 @@ public Trame2(byte ID, ListCase listCase ){
 	
 	}
 	
-	//trame avec position initiale du robot (x/y/orientation(0.1.2.3))
-	public Trame2(byte ID, Case firstCase, int orientation){
+	//trame avec position initiale du robot (x/y/orientation)
+	public Trame2(byte ID, Case firstCase, int direction){
 		this.ID=ID;
-		this.orientation=orientation;
+		this.direction=direction;
 		this.typeTrame=8;
+		this.X=firstCase.getX();
+		this.Y=firstCase.getY();
+		
 		
 		this.contenuT= new byte[6];
 		
 		this.contenuT[0]=6;
 		this.contenuT[1]=this.ID;
-		this.contenuT[2]=(byte)firstCase.getX();
-		this.contenuT[3]=(byte)firstCase.getY();
-		this.contenuT[4]=(byte)this.orientation;
+		this.contenuT[2]=(byte)this.X;
+		this.contenuT[3]=(byte)this.Y;
+		this.contenuT[4]=(byte)this.direction;
 		this.contenuT[5]=(byte)this.typeTrame;
 		
 	}
-
+	
 	// trame robot busy
-	public Trame2(byte ID, int isBusy){
-		this.ID=ID;
-		this.isBusy=isBusy;
-		this.typeTrame=9;
+		public Trame2(byte ID, int isBusy){
+			this.ID=ID;
+			this.isBusy=isBusy;
+			this.typeTrame=9;
+			
+			this.contenuT= new byte[3];
+			
+			this.contenuT[0]=3;
+			this.contenuT[1]=this.ID;
+			this.contenuT[2]=(byte)this.isBusy;
+			
+		}
 		
-		this.contenuT= new byte[3];
-		
-		this.contenuT[0]=3;
-		this.contenuT[1]=this.ID;
-		this.contenuT[2]=(byte)this.isBusy;
-		
-	}
+
 	
 	//methodes
 	
@@ -169,9 +175,17 @@ public Trame2(byte ID, ListCase listCase ){
 	public int getTypeTrame(){
 		return this.typeTrame;
 	}
+	public int getPosX(){
+		return this.X;
+	}
+	public int getPosY(){
+		return this.Y;
+	}
 	public int getBusy(){
 		return this.isBusy;
 	}
+	
+	
 	
 	public void printTrame() throws InterruptedException{
 		//Thread thread=new Thread();
@@ -184,6 +198,4 @@ public Trame2(byte ID, ListCase listCase ){
 		System.out.println(message);
 		Thread.sleep(4000);
 	}
-
-	
 }
