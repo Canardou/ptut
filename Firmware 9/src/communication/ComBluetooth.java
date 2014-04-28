@@ -9,14 +9,14 @@ import lejos.nxt.comm.Bluetooth;
 
 public class ComBluetooth{
 	
-	public EntiteeBT emetteur;
-	public EntiteeBT recepteur;
+	public EntiteeBT entitee1;
+	//public EntiteeBT entitee1;
 //	public Envoie envoie ;
 //	public Reception reception;
 	
-	public ComBluetooth( EntiteeBT recepteur){
-		this.emetteur=emetteur;
-		this.recepteur=recepteur;
+	public ComBluetooth( EntiteeBT entitee1){
+		this.entitee1=entitee1;
+	//	this.entitee1=entitee1;
 	}
 	
 	public void connexion() {
@@ -53,27 +53,27 @@ public class ComBluetooth{
 		System.out.println("Wow very connexion !");
 				
 		//si pas d'échec, on active les I/O bluetooth
-		this.recepteur.setInput(connection.openDataInputStream());
-		this.recepteur.setOutput(connection.openDataOutputStream());
+		this.entitee1.setInput(connection.openDataInputStream());
+		this.entitee1.setOutput(connection.openDataOutputStream());
 				
-		try {
-			this.recepteur.getOutput().writeByte((byte)0);
-			this.recepteur.getOutput().flush();
-		} catch (IOException e3) {
+		//try {
+			//this.entitee1.getOutput().writeByte((byte)0);  //????????
+			//this.entitee1.getOutput().flush();
+		//} catch (IOException e3) {
 			// TODO Auto-generated catch block
-			e3.printStackTrace();
-		}
+		//	e3.printStackTrace();
+		//}
 				
 	}
 	
 	public Trame2 ecouter()throws Exception{
 				
 		
-		this.recepteur.getOutput().write(0);
-		this.recepteur.getOutput().flush();		
+		this.entitee1.getOutput().write(0);
+		this.entitee1.getOutput().flush();		
 		
 		//on lit les données sur le flux d'entrée
-		int tailleTrameRecue = (int)this.recepteur.getInput().read();
+		int tailleTrameRecue = (int)this.entitee1.getInput().read();
 		//System.out.println("j'ai lu: "+ tailleTrameRecue);
 		
 		byte[] trameRecue= new byte[tailleTrameRecue];   //tailleTrameRecue+2 ?
@@ -82,7 +82,7 @@ public class ComBluetooth{
 
 		int j;
 		for (j=1; j < tailleTrameRecue; j++){
-			trameRecue[j]= this.recepteur.getInput().readByte();
+			trameRecue[j]= this.entitee1.getInput().readByte();
 			//System.out.println("trame["+j+"]: "+trameRecue[j]);
 		}
 		
@@ -104,22 +104,22 @@ public class ComBluetooth{
 	
 	public void envoyer(Trame2 message) throws Exception{
 		
-		while(this.emetteur.getInput().read()!=0){
+		while(this.entitee1.getInput().read()!=0){
 			
 		}
-		
 		int i;
 		for(i=0;i<message.tableauTrame().length;i++){
-		this.emetteur.getOutput().writeByte(message.tableauTrame()[i]);}
+		this.entitee1.getOutput().writeByte(message.tableauTrame()[i]);}
 			
-		this.emetteur.getOutput().flush();
+		this.entitee1.getOutput().flush();
+	
 			
 	}
 	
 	public void fermer() throws Exception{
 	
-		this.recepteur.getInput().close();
-		this.recepteur.getOutput().close();
+		this.entitee1.getInput().close();
+		this.entitee1.getOutput().close();
 	}
 	
 }
