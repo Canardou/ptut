@@ -115,7 +115,7 @@ public class test {
 							
 						}
 						
-						else if (strTrame==2){
+						else if (strTrame==2){   ///////// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 							BluetoothCommPC2 bluetoothPC1= new BluetoothCommPC2(PC, robot1);
 							bluetoothPC1.connexion();
 							System.out.println("robot J connecté");
