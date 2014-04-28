@@ -13,7 +13,7 @@ public class AnimationRobot {
 	private int step_max;
 	private int row;
 	private int col;
-	private String current;
+	private String animation;
 	
 	/*
 	 * Constructeur
@@ -24,8 +24,8 @@ public class AnimationRobot {
 		this.step_max=0;
 		this.row=0;
 		this.col=0;
-		this.current="";
-		this.changeType(type);
+		this.animation=new String();
+		this.setSequence("stand",type);
 	}
 	
 	/*
@@ -55,9 +55,14 @@ public class AnimationRobot {
 		this.setSequence(animation,this.type);
 	}
 	
+	public void changeType(int type){
+		this.setSequence(this.animation,type);
+	}
+	
 	public void setSequence(String animation, int type){
-		if(!animation.contentEquals(this.current) || this.type!=type){
-			this.current=animation;
+		if(!(this.animation.compareTo(animation)==0) || this.type!=type){
+			this.type=type;
+			this.animation=animation;
 			if(type>=4){
 				this.step_max=3;
 				this.col=(type-4)*3;
@@ -134,14 +139,4 @@ public class AnimationRobot {
 			this.step=this.col;
 		}
 	}
-	
-	public void changeType(int type){
-		if(type>=0 && type<=7)
-			this.type=type;
-		else
-			this.type=0;
-		setSequence(this.current,this.type);
-		this.nextImage();
-	}
-
 }

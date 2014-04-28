@@ -96,7 +96,7 @@ public class DessinCarte extends JPanel implements ActionListener {
 			if(robot.getType()<4)
 				robot.changeType(robot.getType()+4);
 			else
-				robot.changeType(robot.getType()%4);
+				robot.changeType(robot.getType()-4);
 			}
 	}
 	

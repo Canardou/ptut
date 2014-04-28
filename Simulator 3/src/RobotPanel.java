@@ -76,7 +76,6 @@ public class RobotPanel extends JPanel implements ActionListener {
 		direction = new JComboBox<String>(directions);
 		direction.setFont(this.comic.deriveFont(12f));
 		horizontalBox_1.add(direction);
-		direction.addActionListener(this);
 		
 		Box horizontalBox_2 = Box.createHorizontalBox();
 		horizontalBox_1.setEnabled(false);
@@ -86,7 +85,7 @@ public class RobotPanel extends JPanel implements ActionListener {
 		
 		horizontalBox_2.add(Box.createRigidArea(new Dimension(5,0)));
 		
-		envoyer = new JButton("M�J");
+		envoyer = new JButton("MaJ");
 		envoyer.setFont(this.comic.deriveFont(12f));
 		horizontalBox_2.add(envoyer);
 		envoyer.addActionListener(this);
@@ -122,16 +121,21 @@ public class RobotPanel extends JPanel implements ActionListener {
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		try {
-			int x = Integer.parseInt(this.x.getText());
-			int y = Integer.parseInt(this.y.getText());
-			if(x>=0 && x<this.carte.labyX() && y>=0 && y<this.carte.labyY()){
-		this.carte.getRobot(this.id).moveTo(Integer.parseInt(this.x.getText()), Integer.parseInt(this.y.getText()),direction.getSelectedIndex());
-		this.carte.getRobot(this.id).setVisible(true);}
-			else{Dialogue.Warning(this.x.getText() +";"+this.y.getText() + " n'est pas une case du labyrinthe." );
- }}
-		catch(Exception exept){
-			Dialogue.Warning("Idiot ! " + this.x.getText() +";"+this.y.getText() + " ne sont pas des coordonnées valides." );
+		if(e.getActionCommand().compareTo("MaJ")==0){
+			try {
+				int x = Integer.parseInt(this.x.getText());
+				int y = Integer.parseInt(this.y.getText());
+				if(x>=0 && x<this.carte.labyX() && y>=0 && y<this.carte.labyY()){
+					this.carte.getRobot(this.id).moveTo(Integer.parseInt(this.x.getText()), Integer.parseInt(this.y.getText()),direction.getSelectedIndex());
+					this.carte.getRobot(this.id).setVisible(true);
+				}
+				else{
+					Dialogue.Warning(this.x.getText() +";"+this.y.getText() + " n'est pas une case du labyrinthe." );
+				}
+			}
+			catch(Exception exept){
+				Dialogue.Warning("Idiot ! " + this.x.getText() +";"+this.y.getText() + " ne sont pas des coordonnees valides." );
+			}
 		}
 	}
 	

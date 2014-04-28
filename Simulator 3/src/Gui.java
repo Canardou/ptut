@@ -1,12 +1,15 @@
 import java.awt.Dimension;
 import java.awt.Font;
 
+import javax.swing.JCheckBox;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.Box;
 import javax.swing.JButton;
 import javax.swing.JTextField;
 import javax.swing.SwingWorker;
+
+import Dialogue.Dialogue;
 
 import java.awt.BorderLayout;
 
@@ -26,20 +29,22 @@ public class Gui extends JFrame implements ActionListener {
 	
 	private Superviseur superviseur;
 	private DessinCarte laby;
-	private SwingWorker<String,Object> thread;
 	private JButton start;
 	private JButton stop;
 	private JButton simuler;
 	private JTextField seed;
+	private JCheckBox doge;
+	
+	private SwingWorker<String, Object> thread;
 
 	public Gui(Superviseur superviseur){
 		this.superviseur=superviseur;
-		//Labyrinth sur le c�t� gauche
+		//Labyrinth sur le cote gauche
 		this.laby = superviseur.dessinCarte();
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		this.getContentPane().add(this.laby, BorderLayout.WEST);
 		
-		//Robots sur le c�t� droit
+		//Robots sur le cote droit
 		JPanel panel = new JPanel();
 		this.getContentPane().add(panel, BorderLayout.EAST);
 		
@@ -67,7 +72,7 @@ public class Gui extends JFrame implements ActionListener {
 		
 		tempHoriBox.add(Box.createRigidArea(new Dimension(5,0)));
 		
-		stop = new JButton("Arr�ter");
+		stop = new JButton("Arreter");
 		stop.setFont(this.bcomic.deriveFont(12f));
 		stop.addActionListener(this);
 		stop.setVisible(false);
@@ -85,6 +90,12 @@ public class Gui extends JFrame implements ActionListener {
 		seed.setFont(this.comic.deriveFont(12f));
 		tempHoriBox.add(seed);
 		seed.setColumns(5);
+		
+		tempHoriBox.add(Box.createRigidArea(new Dimension(5,0)));
+		
+		doge = new JCheckBox("Doge");
+		doge.addActionListener(this);
+		tempHoriBox.add(doge);
 		
 		this.pack();
 		this.setVisible(true);
@@ -107,21 +118,26 @@ public class Gui extends JFrame implements ActionListener {
 				robots[i].freeze();
 			}
 			class YOLO extends SwingWorker<String, Object> {//I HAVE NO IDEA WHAT IM DOING RIGHT NOW
-			       @Override
-			       public String doInBackground() {
-			    	   superviseur.simulate(Integer.parseInt(seed.getText()));
-			    	   return null;
-			       }
+				@Override
+				public String doInBackground() {
+					try{
+						Gui.this.superviseur.simulation(Integer.parseInt(seed.getText()));
+					}catch(InterruptedException ie){
+						Dialogue.Warning("Arret de la simulation");
+					}
+					return null;
+				}
 
-			       @Override
-			       protected void done() {
-			       }
-			   }
+				@Override
+				protected void done() {
+				}
+			}
 			(thread=new YOLO()).execute();
+			//this.superviseur.simulate();
 		}
-		if(e.getActionCommand().compareTo("Arr�ter")==0){
-			if(this.thread!=null)
-				this.thread.cancel(true);
+		if(e.getActionCommand().compareTo("Arreter")==0){
+			//this.superviseur.end();
+			this.thread.cancel(true);
 			for(int i=0;i<3;i++){
 				robots[i].unfreeze();
 			}
@@ -139,6 +155,26 @@ public class Gui extends JFrame implements ActionListener {
 			for(int i=0;i<3;i++){
 				robots[i].freeze();
 			}
+			class YOLO extends SwingWorker<String, Object> {//I HAVE NO IDEA WHAT IM DOING RIGHT NOW
+				@Override
+				public String doInBackground() {
+					try{
+					Gui.this.superviseur.destin();
+					}catch(InterruptedException ie){
+						Dialogue.Warning("Arret de la supervision");
+					}
+					return null;
+				}
+
+				@Override
+				protected void done() {
+				}
+			}
+			(thread=new YOLO()).execute();
 		}
+		if(e.getActionCommand().compareTo("Doge")==0){
+			this.laby.toggleDoge();
+		}
+		
 	}
 }
