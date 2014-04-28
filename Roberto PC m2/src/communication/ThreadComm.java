@@ -24,13 +24,9 @@ public class ThreadComm extends Thread{
 	//constructeur
 	public ThreadComm(EntiteeBT robot) { 
 		this.recepteur= robot;
-		this.com= new BluetoothCommPC2(InfoEntitee.PCmarion, this.recepteur);
-		try {
-			this.com.openStream();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		InfoEntitee IE = new InfoEntitee() ;
+		this.com= new BluetoothCommPC2(IE.PCthomas, this.recepteur);
+		
 	
 	}
 	
@@ -45,7 +41,7 @@ public class ThreadComm extends Thread{
 			
 			this.com.connexion();
 			this.connected=true;
-			while(this.connected){
+			
 				System.out.println("robot connect√© : ");
 				
 				//
@@ -76,42 +72,38 @@ public class ThreadComm extends Thread{
 				Trame2 receiveIsBusy = this.com.receive();
 				int Busy=receiveIsBusy.getBusy();
 				
+				while(this.connected){
 				
-				if (Busy!=1){
-					
-					// demande et reception de la liste des cases explorÈes
-					this.com.send (new Trame2((byte)1,(byte)Order.CASETOSEND));
-					Trame2 receiveListCase=this.com.receive();
-					System.out.println("trame recue :");
-					if(receiveListCase != null){
-					try {
-						receiveListCase.printTrame();
-					} catch (InterruptedException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-					}
-					else{System.out.println(" Rien re√ßu!");}
-					
-					
-					
-					//gestion de la cartographie et envoie d'ordres
-					
+					if (Busy!=1){
 						
-					
+						// demande et reception de la liste des cases explorÈes
+						this.com.send (new Trame2((byte)1,(byte)Order.CASETOSEND));
+						Trame2 receiveListCase=this.com.receive();
+						System.out.println("trame recue :");
+						if(receiveListCase != null){
+						try {
+							receiveListCase.printTrame();
+						} catch (InterruptedException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+						}
+						else{System.out.println(" Rien re√ßu!");}
+						
+						// Pour tester 
+						if(this.recepteur.getID()==0) {
+							this.com.send (new Trame2((byte)0,(byte)Order.TURNR));
+						} else if (this.recepteur.getID()==1) {
+							this.com.send (new Trame2((byte)1,(byte)Order.FORWARD));
+						} else if (this.recepteur.getID()==2) {
+							this.com.send (new Trame2((byte)1,(byte)Order.TURNL));							
+						}
+					}
 				}
-			}
+			}		
 			
-				
-			
-		}
-		
-		
-		
-		
 	}	
-		
-	}
+}
 	
 	
 	

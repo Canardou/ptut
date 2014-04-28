@@ -7,25 +7,23 @@ public class InitPC {
 	ThreadComm tComJ;
 	ThreadComm tComI;
 	ThreadComm tComF;
+	InfoEntitee IE;
 	
 	public InitPC(){
-		this.tComH = new ThreadComm(InfoEntitee.robotH);
-		this.tComJ = new ThreadComm(InfoEntitee.robotJ);
-		this.tComI = new ThreadComm(InfoEntitee.robotI);
-		this.tComF = new ThreadComm(InfoEntitee.robotF);
+		this.IE = new InfoEntitee();
+		this.tComH = new ThreadComm(this.IE.robotH);
+		this.tComJ = new ThreadComm(this.IE.robotJ);
+		this.tComF = new ThreadComm(this.IE.robotF);
 		this.tComH.start();
 		this.tComJ.start();
-		this.tComI.start();
 		this.tComF.start();
 		
 	
 	}
 	
 
-/*	public static void main(String[] args) {
-		
+	public static void main(String[] args) {
 		new InitPC();
 		
-	}*/
-
+	}
 }
