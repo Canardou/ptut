@@ -54,6 +54,11 @@ public class Order {
 	 * Ordre : verifier les 4 murs de la case et l'ajouter à la liste de cases.
 	 */
 	public static final int CHECKFIRSTCASE = 7;
+	
+	/**
+	 * Ordre : fixer les coordonnées du robot.
+	 */
+	public static final int SETPOSITION = 8;
 
 	/**
 	 * Ordre : attendre que l'utilisateur appuie sur le bouton ENTER du robot.
@@ -157,12 +162,12 @@ public class Order {
 	 * @return 0 si l'opération s'est bien déroulée.
 	 */
 	public synchronized int add(int o) {
-		if (o == Order.STOP || o == Order.FORWARD || o == Order.TURNL
-				|| o == Order.TURNR || o == Order.TURNB
-				|| o == Order.CALCOMPASS || o == Order.SAVEREFANGLE
-				|| o == Order.CHECKFIRSTCASE || o == Order.WAIT1SEC 
-				|| o == Order.WAITBUTTON || o == Order.FASTMODE 
-				|| o == Order.NORMALMODE) {
+		if (o == STOP || o == FORWARD || o == TURNL
+				|| o == TURNR || o == TURNB
+				|| o == CALCOMPASS || o == SAVEREFANGLE
+				|| o == CHECKFIRSTCASE || o == WAIT1SEC 
+				|| o == WAITBUTTON || o == FASTMODE 
+				|| o == NORMALMODE || o == SETPOSITION) {
 			this.list.add(o);
 			return 0;
 		} else {
@@ -342,6 +347,8 @@ public class Order {
 			this.tRobot.getMov().setFastMode(true);
 		} else if (this.currentOrder == NORMALMODE) {
 			this.tRobot.getMov().setFastMode(false);
+		} else if (this.currentOrder == SETPOSITION) {
+			this.tRobot.getEnv().setPosition();
 		}
 		
 	}
@@ -370,17 +377,19 @@ public class Order {
 		} else if (o == CHECKFIRSTCASE) {
 			return "check1case";
 		} else if (o == CLEARLISTORDER) {
-			return "vider liste ordres";
+			return "clear orders";
 		} else if (o == WAITBUTTON) {
-			return "attente bouton";
+			return "wait bouton";
 		} else if (o == WAIT1SEC) {
-			return "attente 1sec";
+			return "wait 1sec";
 		} else if (o == FASTMODE) {
 			return "fast mode";
 		} else if (o == NORMALMODE) {
 			return "normal mode";
+		} else if (o == SETPOSITION) {
+			return "setPos";
 		} else {
-			return "";
+			return String.valueOf(o);
 		}
 	}
 
@@ -400,14 +409,7 @@ public class Order {
 	 */
 	public void pauseTime(int ms) {
 		long initTime = System.currentTimeMillis();
-		long beepTime = initTime;
-		Sound.beep();
-		while ((System.currentTimeMillis() - initTime) < ms) {
-			if ((System.currentTimeMillis() - beepTime) > 1000) {
-				Sound.beep();
-				beepTime = System.currentTimeMillis();
-			}
-		}
+		while ((System.currentTimeMillis() - initTime) < ms) {}
 	}
 
 	/**

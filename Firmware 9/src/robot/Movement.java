@@ -101,13 +101,13 @@ public class Movement {
 	 * Gain de la régulation par retour d'état. Gain appliqué à l'erreur
 	 * d'angle. Utilisé lorsque le robot avance.
 	 */
-	public static final double K_TETA = 0.0030;
+	public static final double K_TETA = 0.0022;
 	
 	/**
 	 * Gain de la régulation par retour d'état. Gain appliqué à l'erreur de
 	 * distance. Utilisé lorsque le robot avance.
 	 */
-	public static final double K_DIST = 0.015;
+	public static final double K_DIST = 0.011;
 
 	/**
 	 * Attribut représentant les 2 moteurs qui permettent de déplacer le robot.
@@ -190,6 +190,7 @@ public class Movement {
 		double commande = 0;
 		double distTraveled = 0;
 		boolean finish = false;
+		boolean frontWall = false ;
 
 		this.diffPilot.reset();
 		this.diffPilot.setTravelSpeed(SPEED_CRUISE);	
@@ -235,13 +236,17 @@ public class Movement {
 				// Si on est en fin de mouvement (sonar tourné vers l'avant)
 				if (this.tRobot.getEnv().getSonarIsFront()) {
 					// S'il y a un mur devant on va se caller à bonne distance
-					if (this.tRobot.getLeftFrontSonar().getMoyData() < Environment.FRONTWALL_DANGER) {
-						if (this.tRobot.getLeftFrontSonar().getMoyData() < Environment.LIMFRONTWALL) {
+					if (this.tRobot.getLeftFrontSonar().getMoyData() < Environment.FRONTWALL_DANGER || frontWall) {
+						if(!frontWall) {
+							frontWall=true;
+						}						
+						if (this.tRobot.getLeftFrontSonar().getMoyData() < Environment.FRONTWALL_REG) {
 							finish = true;
 							this.stop();
 							this.turn(-errAngle);
 							this.tRobot.getEnv().sonarLeft();
-							this.diffPilot.setTravelSpeed(SPEED_CRUISE);		
+							this.diffPilot.setTravelSpeed(SPEED_CRUISE);
+							
 						}
 					// Sinon on s'arrete au bout de 30cm
 					} else {

@@ -91,7 +91,7 @@ public class ThreadRobot extends Thread {
 		this.env = new Environment(this);
 		this.sonarMotor = Motor.C;
 		this.compass = new Compass(SensorPort.S4, this);
-		//this.lightSensor =new Light(SensorPort.S3);
+		this.lightSensor = new Light(SensorPort.S3);
 		this.leftFrontSonar = new Sonar(SensorPort.S2);
 		this.rightSonar = new Sonar(SensorPort.S1);
 		this.order = new Order(this);

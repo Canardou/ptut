@@ -15,7 +15,7 @@ public class Init {
 	/**
 	 * Volume sonore du robot. De 0 à 100
 	 */
-	public static final int VOLUME = 0; 
+	public static final int VOLUME = 70; 
 
 	/**
 	 * Constructeur de Init
@@ -23,7 +23,8 @@ public class Init {
 	public Init() {
 		ThreadRobot tRobot = new ThreadRobot();
 		ThreadCom tCom = new ThreadCom(tRobot);
-		this.initTest(tRobot);
+		this.init(tRobot);
+		this.initTest(tRobot); // A VIRER //////////////////////////////////////////////////////////////////////////////////////////
 		tRobot.start();
 		tCom.start();
 	}
@@ -33,8 +34,8 @@ public class Init {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		//new Init();
-		new Tests(12);
+		new Init();
+		//new Tests(15);
 	}
 
 	/**
@@ -45,8 +46,6 @@ public class Init {
 		tRobot.getMov().getDiffPilot().setTravelSpeed(Movement.SPEED_CRUISE);
 		tRobot.getMov().getDiffPilot().setRotateSpeed(Movement.RSPEED_CRUISE);
 		tRobot.getSonarMotor().setSpeed(Movement.RSPEED_SONARMOTOR);
-
-		tRobot.getEnv().setPosition(10, 10, 0); // A faire depuis la com
 	}
 
 	/**
@@ -58,8 +57,10 @@ public class Init {
 		tRobot.getMov().getDiffPilot().setRotateSpeed(Movement.RSPEED_CRUISE);
 		tRobot.getSonarMotor().setSpeed(Movement.RSPEED_SONARMOTOR);
 
-		tRobot.getEnv().setPosition(10, 10, 0);
-		
+		tRobot.getEnv().setInitPos(3, 3, 1);
+		tRobot.getOrder().add(Order.SETPOSITION);
+		tRobot.getOrder().chooseInsecurely();
+		tRobot.getOrder().execute();
 		tRobot.getOrder().add(Order.WAITBUTTON);
 		tRobot.getOrder().chooseInsecurely();
 		tRobot.getOrder().execute();

@@ -6,6 +6,7 @@ import communication.*;
 import robot.*;
 import sensors.*;
 import threads.*;
+import lejos.nxt.comm.Bluetooth;
 
 /**
  * Méthodes de tests
@@ -60,6 +61,8 @@ public class Tests {
 			this.test13();
 		} else if (test == 14) {
 			this.test14();
+		} else if (test == 15) {
+			this.test15();
 		}
 	}
 
@@ -293,6 +296,16 @@ public class Tests {
 		while (!Button.ESCAPE.isDown()) {
 			this.tRobot.getMov().moveForward();
 		}
+	}
+	
+	/**
+	 * Test pour le bluetooth.
+	 */
+	public void test15() {
+		System.out.println("test15:demarrage");
+		System.out.println(Bluetooth.getFriendlyName());
+		System.out.println(Bluetooth.getLocalAddress());
+		while (!Button.ESCAPE.isDown()) {}
 	}
 
 	/**

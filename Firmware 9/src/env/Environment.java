@@ -35,10 +35,15 @@ public class Environment {
 	public static final double LIMRIGHTWALL = 19;
 
 	/**
+	 * Distance d'arret par rapport au mur d'en face.
+	 */
+	public static final double FRONTWALL_REG = 11;
+	
+	/**
 	 * Limite en dessous de laquelle on considère qu'il y a un mur en face. En
 	 * cm.
 	 */
-	public static final double LIMFRONTWALL = 13;
+	public static final double LIMFRONTWALL = 17;
 
 	/**
 	 * Limite en dessous de laquelle on considère qu'on est à proximité d'un mur
@@ -102,6 +107,21 @@ public class Environment {
 	private int dir;
 
 	/**
+	 * Coordonée x du robot.
+	 */
+	private int xinit=0;
+
+	/**
+	 * Coordonée y du robot.
+	 */
+	private int yinit=0;
+
+	/**
+	 * Direction du robot.
+	 */
+	private int dirinit=0;
+
+	/**
 	 * Liste contenant les cases récemment explorées, à envoyer régulierement au
 	 * superviseur.
 	 * 
@@ -152,7 +172,7 @@ public class Environment {
 	}
 
 	/**
-	 * Tourne le sonarrot rotatif en position avant.
+	 * Tourne le sonar rotatif en position avant.
 	 */
 	public void sonarFront() {
 		this.tRobot.getSonarMotor().rotateTo(-90);
@@ -182,12 +202,24 @@ public class Environment {
 	 * @param yi
 	 * @param diri
 	 */
-	public synchronized void setPosition(int xi, int yi, int diri) {
-		this.x = xi;
-		this.y = yi;
-		this.dir = diri;
+	public synchronized void setPosition() {
+		this.x = this.xinit;
+		this.y = this.yinit;
+		this.dir = this.dirinit;
 		this.initPositionDone = true;
 		System.out.println("SetPx=" + this.x + "y=" + this.y + "d=" + this.dir);
+	}
+	
+	/**
+	 * Met à jour les variables d'intiialisation de la position à partir des valeurs passées en arguments.
+	 * @param xi
+	 * @param yi
+	 * @param diri
+	 */
+	public synchronized void setInitPos(int xi, int yi, int diri) {
+		this.xinit = xi;
+		this.yinit = yi;
+		this.dirinit = diri;
 	}
 
 	/**
@@ -337,15 +369,15 @@ public class Environment {
 	}
 
 	/**
-	 * Met à jour les données issues des 2 sonars et de la boussole plusieurs
-	 * fois de manière à remplir leurs filtres.
+	 * Met à jour les données issues des 2 sonars, du capteur de lumière et de
+	 * la boussole plusieurs fois de manière à remplir leurs filtres.
 	 */
 	public void checkSensorsFull() {
 		for (int i = 0; i < TAB_NBDATA; i++) {
 			this.tRobot.getLeftFrontSonar().refresh();
 			this.tRobot.getRightSonar().refresh();
 			this.tRobot.getCompass().refresh();
-			//this.tRobot.getLight().refresh();
+			this.tRobot.getLightSensor().refresh();
 		}
 		if (this.sonarIsFront) {
 			this.checkFrontWall();
@@ -353,7 +385,7 @@ public class Environment {
 			this.checkLeftWall();
 		}
 		this.checkRightWall();
-		//this.checkLight();
+		this.checkLight();
 	}
 
 	/**

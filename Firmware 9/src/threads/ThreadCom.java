@@ -61,7 +61,7 @@ public class ThreadCom extends Thread {
 
 		while(true) {
 			this.com.connexion();
-			System.out.println("CONNEXION");
+			System.out.println("tCom:connexion");
 			this.connected=true;
 			
 			while (this.connected) {	
@@ -74,22 +74,20 @@ public class ThreadCom extends Thread {
 						if (this.trame.getOrdre() == Order.CLEARLISTORDER) {
 							this.tRobot.getOrder().clear();
 						} else if(this.trame.getOrdre() == Order.SENDCASE) {
-							System.out.println("tcom-E:cases ?");
+							System.out.println("tcom-E:cases");
 							// Ici il faut faire un send de la liste de case : this.tRobot.getEnv().getListCase();
-							this.tRobot.getEnv().getListCase().clear();
-							System.out.println("tCom-E:cases envoyées!");
-							
+							this.tRobot.getEnv().getListCase().clear();						
 						} else if(this.trame.getOrdre() == Order.SENDBUSY) {
-							System.out.println("tcom-E:isbusy ?");
+							System.out.println("tcom-E:isbusy");
 							// ici faut faire un send de la valeur this.tRobot.getOrder().getIsBusy()
-							System.out.println("tcom-E:isbusy ?");
 						} else {
 							this.tRobot.getOrder().add(this.trame.getOrdre());							
 						}
 						
 					} else if (this.trame.getTypeTrame() == INITPOSITION) {
-						//this.robot.getEnv().setPosition(this.trame.getPosX(),this.trame.getPosY(), this.trame.getDirection());
-						System.out.println("tCom-R:init pos");
+						//this.robot.getEnv().setInitPos(this.trame.getPosX(),this.trame.getPosY(), this.trame.getDirection());
+						this.tRobot.getOrder().add(Order.SETPOSITION);
+						System.out.println("tCom-R:setPos");
 					}
 				}
 				else {
