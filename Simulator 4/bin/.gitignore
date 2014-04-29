@@ -4,5 +4,8 @@
 /Gui.class
 /RobotPanel.class
 /Superviseur.class
+/communication
 /drawing
+/env
 /labyrinth
+/mainSimu.class

@@ -15,8 +15,8 @@ public class Chemin {
 	
 	public Chemin(Chemin copie){
 		this();
-		this.value=copie.value;
 		if(copie!=null){
+			this.value=copie.value;
 			for(Case copy : copie.route)
 			this.route.add(copy);
 		}

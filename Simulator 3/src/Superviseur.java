@@ -42,7 +42,7 @@ public class Superviseur {
 		Carte labyrinth=new Carte(this.carte.getWidth(),this.carte.getHeight());
 		labyrinth.rand.setSeed(carte.rand.nextInt());
 		labyrinth.randomMaze(0.35);
-		//Carte labyrinth=carte;
+		this.carte.update(labyrinth.export());
 		for(int i=0;i<3;i++){
 			this.dessin.getRobot(i).moveTo(carte.rand.nextInt(this.carte.getWidth()),this.carte.rand.nextInt(this.carte.getHeight()),this.carte.rand.nextInt(4));
 			this.dessin.getRobot(i).setVisible(true);
@@ -129,13 +129,17 @@ public class Superviseur {
 					
 					//Chemin test =carte.createPath(this.dessin.getRobot(0).getX(), this.dessin.getRobot(0).getY(), carte.getMark().getX(), carte.getMark().getY(), aux);
 					//Chemin test2=carte.createPath(this.dessin.getRobot(0).getX(), this.dessin.getRobot(0).getY(), carte.getMark().getX(), carte.getMark().getY());
-					Chemin test3=carte.createPath(this.dessin.getRobot(0).getX(), this.dessin.getRobot(0).getY(), carte.rand.nextInt(carte.getWidth()), carte.rand.nextInt(carte.getHeight()));
-					this.dessin.getRobot(0).walkPath(new Chemin(test3));
 					Chemin blocked = new Chemin();
+					blocked.add(current_paths[2]);
+					
+					Chemin test3=carte.createPath(this.dessin.getRobot(0).getX(), this.dessin.getRobot(0).getY(), carte.rand.nextInt(carte.getWidth()), carte.rand.nextInt(carte.getHeight()), blocked);
+					this.dessin.getRobot(0).walkPath(new Chemin(test3));
+					blocked = new Chemin();
 					
 					
 					blocked.add(current_paths[2]);
-					blocked.get().add(test3.get(0));
+					if(test3!=null)
+						blocked.get().add(test3.get(0));
 					this.dessin.getRobot(1).walkPath(carte.closestDiscover(this.dessin.getRobot(1).getX(), this.dessin.getRobot(1).getY(), 1, test3, blocked,false));
 					/*if(test2.isCollision(carte, current_paths[1], true))
 						;

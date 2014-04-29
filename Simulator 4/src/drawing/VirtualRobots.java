@@ -9,7 +9,7 @@ public class VirtualRobots {
 	 * Attributs
 	 */
 	
-	public static int speed=50;
+	public static int speed=10;
 
 	private int id;
 	private int type;
@@ -60,11 +60,10 @@ public class VirtualRobots {
 				this.path = path;
 				return true;
 			}
-			else
+			else if (this.path!=null)
 				return this.path.concatenation(path);
 		}
-		else
-			return false;
+		return false;
 	}
 	
 	public void stop(){

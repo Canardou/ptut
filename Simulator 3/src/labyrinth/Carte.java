@@ -49,9 +49,9 @@ public class Carte {
 		}
 	}
 	
-	/*public Carte(byte[] importation){
+	public Carte(byte[] importation){
 		this.update(importation);
-	}*/
+	}
 	
 	public Carte(int side){
 		this(side,side);
@@ -578,7 +578,7 @@ public class Carte {
 		this.getMark().setMark();
 	}
 	
-	/*	
+	//Fct de tests
 	public byte[] export(){
 		byte [] tableau = new byte[this.width*this.height+2];
 		if(this.getMark()!=null){
@@ -596,7 +596,7 @@ public class Carte {
 		}
 		return tableau;
 	}
-	
+	//Fct de tests
 	public void update(byte[] importation){
 		for(int i=0;i<this.width;i++){
 			for(int j=0;j<this.height;j++){
@@ -607,7 +607,7 @@ public class Carte {
 			this.marque=this.map[(int)(importation[0]-1)][(int)(importation[1])];
 		}
 		this.setExit();
-	}*/
+	}
 	
 	public void update(int x, int y, byte importation){
 		if(checkCoord(x,y)){

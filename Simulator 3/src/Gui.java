@@ -13,7 +13,6 @@ import Dialogue.Dialogue;
 
 import java.awt.BorderLayout;
 
-import drawing.DessinCarte;
 import drawing.FontImport;
 
 import java.awt.event.ActionEvent;
@@ -28,7 +27,6 @@ public class Gui extends JFrame implements ActionListener {
 	private Font bcomic = FontImport.getFont("ComicRelief-Bold.ttf");
 	
 	private Superviseur superviseur;
-	private DessinCarte laby;
 	private JButton start;
 	private JButton stop;
 	private JButton simuler;
@@ -40,9 +38,8 @@ public class Gui extends JFrame implements ActionListener {
 	public Gui(Superviseur superviseur){
 		this.superviseur=superviseur;
 		//Labyrinth sur le cote gauche
-		this.laby = superviseur.dessinCarte();
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		this.getContentPane().add(this.laby, BorderLayout.WEST);
+		this.getContentPane().add(this.superviseur.dessinCarte(), BorderLayout.WEST);
 		
 		//Robots sur le cote droit
 		JPanel panel = new JPanel();
@@ -55,7 +52,7 @@ public class Gui extends JFrame implements ActionListener {
 		
 		robots = new RobotPanel[3];
 		for(int i=0;i<3;i++){
-			robots[i]=new RobotPanel(laby,i);
+			robots[i]=new RobotPanel(this.superviseur.dessinCarte(),i);
 			tempBox.add(robots[i]);
 		}
 		
@@ -103,7 +100,7 @@ public class Gui extends JFrame implements ActionListener {
 	
 	public void updatePanel(){
 		for(int i=0;i<3;i++){
-			robots[i].setPanel(laby.getRobot(i).getX(), laby.getRobot(i).getY(), laby.getRobot(i).getDir());
+			robots[i].setPanel(this.superviseur.dessinCarte().getRobot(i).getX(), this.superviseur.dessinCarte().getRobot(i).getY(), this.superviseur.dessinCarte().getRobot(i).getDir());
 		}
 	}
 
@@ -124,6 +121,8 @@ public class Gui extends JFrame implements ActionListener {
 						Gui.this.superviseur.simulation(Integer.parseInt(seed.getText()));
 					}catch(InterruptedException ie){
 						Dialogue.Warning("Arret de la simulation");
+					}catch(Exception e){
+						e.printStackTrace();
 					}
 					return null;
 				}
@@ -159,9 +158,11 @@ public class Gui extends JFrame implements ActionListener {
 				@Override
 				public String doInBackground() {
 					try{
-					Gui.this.superviseur.destin();
+						Gui.this.superviseur.destin();
 					}catch(InterruptedException ie){
 						Dialogue.Warning("Arret de la supervision");
+					}catch(Exception e){
+						e.printStackTrace();
 					}
 					return null;
 				}
@@ -173,7 +174,7 @@ public class Gui extends JFrame implements ActionListener {
 			(thread=new YOLO()).execute();
 		}
 		if(e.getActionCommand().compareTo("Doge")==0){
-			this.laby.toggleDoge();
+			this.superviseur.dessinCarte().toggleDoge();
 		}
 		
 	}
