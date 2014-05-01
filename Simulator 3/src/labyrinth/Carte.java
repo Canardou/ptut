@@ -383,6 +383,9 @@ public class Carte {
 		if(blocked!=null){
 				check.addAll(blocked.get());
 		}
+		if(this.exit()){
+			check.remove(this.exit);
+		}
 		recherche.add(new ListeCase(depart,0,null,-1));
 		check.add(depart);
 		while(number>0 && recherche.size()>0){
@@ -391,8 +394,9 @@ public class Carte {
 				if(!avoid.get().contains(temp)){
 					Boolean yolo=true;
 					for(int k=0;k<4;k++){
-						if(avoid.get().contains(this.getCase(temp.getX(k),temp.getY(k))) && this.isCrossable(temp.getX(), temp.getY(), k))
+						if(avoid.get().contains(this.getCase(temp.getX(k),temp.getY(k))) && this.isCrossable(temp.getX(), temp.getY(), k)){
 							yolo=false;
+						}
 					}
 					if(yolo)
 						number--;
