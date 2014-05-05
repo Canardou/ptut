@@ -6,7 +6,7 @@ public class mainSimu {
 	public static Superviseur test;
 	
 	public static void main(String [] args){
-		exploration=new Carte(4);
+		exploration=new Carte(6);
 		new mainSimu();
 	}
 	

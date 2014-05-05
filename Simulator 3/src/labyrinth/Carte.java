@@ -193,22 +193,20 @@ public class Carte {
 	 */
 	
 	public Case setExit(){
-		if(this.exit==null){
-			for(int i=0;i<this.width;i++){
-				if(this.map[i][0].isCrossable(Case.UP))
-					this.exit= new Case(i,-1);
-				else if(this.map[i][this.height-1].isCrossable(Case.DOWN))
-					this.exit= new Case(i,this.height);
-			}
-			for(int i=0;i<this.height;i++){
-				if(this.map[0][i].isCrossable(Case.LEFT))
-					this.exit= new Case(-1,i);
-				if(this.map[this.width-1][i].isCrossable(Case.RIGHT))
-					this.exit= new Case(this.width,i);
-			}
-			for(int i=0;i<4;i++)
-				this.exit.close(i);
+		for(int i=0;i<this.width;i++){
+			if(this.map[i][0].isCrossable(Case.UP))
+				this.exit= new Case(i,-1);
+			else if(this.map[i][this.height-1].isCrossable(Case.DOWN))
+				this.exit= new Case(i,this.height);
 		}
+		for(int i=0;i<this.height;i++){
+			if(this.map[0][i].isCrossable(Case.LEFT))
+				this.exit= new Case(-1,i);
+			if(this.map[this.width-1][i].isCrossable(Case.RIGHT))
+				this.exit= new Case(this.width,i);
+		}
+		for(int i=0;i<4;i++)
+			this.exit.close(i);
 		return this.exit;
 	}
 	
@@ -226,6 +224,10 @@ public class Carte {
 			return true;
 		else
 			return false;
+	}
+	
+	public Case getExit(){
+		return this.exit;
 	}
 	
 	public Chemin pathToExit(int dx, int dy){
@@ -385,6 +387,7 @@ public class Carte {
 		}
 		if(this.exit()){
 			check.remove(this.exit);
+			avoid.get().remove(this.exit);
 		}
 		recherche.add(new ListeCase(depart,0,null,-1));
 		check.add(depart);
@@ -394,7 +397,7 @@ public class Carte {
 				if(!avoid.get().contains(temp)){
 					Boolean yolo=true;
 					for(int k=0;k<4;k++){
-						if(avoid.get().contains(this.getCase(temp.getX(k),temp.getY(k))) && this.isCrossable(temp.getX(), temp.getY(), k)){
+						if(avoid.get().contains(this.getCase(temp.getX(k),temp.getY(k))) && temp.isCrossable(k)){
 							yolo=false;
 						}
 					}
@@ -452,7 +455,7 @@ public class Carte {
 			return path;
 		}
 		else{
-			return null;
+			return new Chemin(depart);
 		}
 	}
 	
