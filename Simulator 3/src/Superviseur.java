@@ -44,7 +44,7 @@ public class Superviseur {
 		this.carte.rand.setSeed(seed);
 		Carte labyrinth=new Carte(this.carte.getWidth(),this.carte.getHeight());
 		labyrinth.rand.setSeed(carte.rand.nextInt());
-		labyrinth.randomMaze(0.35);
+		labyrinth.randomMaze(0);
 		this.carte.update(labyrinth.export());
 		this.carte.setExit();
 		for(int i=0;i<3;i++){
@@ -243,13 +243,14 @@ public class Superviseur {
 			if(solution!=null){
 				avoid = new Chemin();
 				avoid.add(temp2);
-				avoid.add(cur2);
 				avoid.add(princ);
 				temp3=this.carte.closestDiscover(cur3.get(cur3.size()-1), 1, avoid, null, exit);
 				temp3.setValue(cur3.getValue());
 				System.out.println("---Recure 3 - 21");
+				ListeChemin aux = solution;
+				solution = new ListeChemin(temp2, solution.getCout(),solution);
 				if(temp3.size()>1){
-					solution = this.resolution(solution, cur3, temp2, temp, temp3.get(temp3.size()-1), temp2.get(temp2.size()-1), obj1, exit);
+					solution = this.resolution(solution, cur3, temp, temp2, temp3.get(temp3.size()-1), obj1, temp2.get(temp2.size()-1), exit);
 				}
 			}
 			else{
@@ -260,21 +261,19 @@ public class Superviseur {
 				temp3.setValue(cur3.getValue());
 				System.out.println("---Recure 3 - 22");
 				if(temp3.size()>1){
-					solution = this.resolution(liste, cur3, cur2, temp, temp3.get(temp3.size()-1), cur2.get(cur2.size()-1), obj1, exit);
+					solution = this.resolution(liste, cur3, temp, cur2, temp3.get(temp3.size()-1), obj1, cur2.get(cur2.size()-1), exit);
 				}
 			}
-				
 			System.out.println("---Recure 3 - 3");
 			if(solution!=null){
+				solution = new ListeChemin(temp, cout+solution.getCout(),solution);
+				solution = this.resolution(solution, temp, temp2, temp3, obj1, temp2.get(temp2.size()-1), temp3.get(temp3.size()-1), exit);
 				ListeChemin aux = solution;
 				while(aux.previous()!=null && aux.current().getValue()!=cur1.getValue()){
 					aux=aux.previous();
 				}
 				if(aux.current()!=null)
 					solution = this.resolution(solution, aux.current(), temp2, temp3, temp.get(0), temp2.get(temp2.size()-1), temp3.get(temp3.size()-1), exit);
-				
-				solution = new ListeChemin(temp, cout+solution.getCout(),solution);
-				solution = this.resolution(solution, temp, temp2, temp3, obj1, temp2.get(temp2.size()-1), temp3.get(temp3.size()-1), exit);
 			}
 			if(solution!=null)
 				comparer.add(solution);

@@ -611,4 +611,23 @@ public class Carte {
 				this.mark(x,y);
 		}
 	}
+	
+	public void reset(){
+		this.marque=null;
+		this.exit=null;
+		this.map = new Case[width][height];
+		for(int i=0;i<this.width;i++){
+			for(int j=0;j<this.height;j++){
+				this.map[i][j]=new Case(i,j);
+			}
+		}
+		for(int i=0;i<this.width;i++){
+			this.map[i][0].close(Case.UP);
+			this.map[i][this.height-1].close(Case.DOWN);
+		}
+		for(int i=0;i<this.height;i++){
+			this.map[0][i].close(Case.LEFT);
+			this.map[this.width-1][i].close(Case.RIGHT);
+		}
+	}
 }

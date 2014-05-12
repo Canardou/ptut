@@ -43,7 +43,7 @@ public class Superviseur {
 		Carte labyrinth=new Carte(this.carte.getWidth(),this.carte.getHeight());
 		labyrinth.rand.setSeed(carte.rand.nextInt());
 		labyrinth.randomMaze(0.35);
-		//Carte labyrinth=carte;
+		this.carte.reset();
 		for(int i=0;i<3;i++){
 			this.dessin.getRobot(i).moveTo(carte.rand.nextInt(this.carte.getWidth()),this.carte.rand.nextInt(this.carte.getHeight()),this.carte.rand.nextInt(4));
 			this.dessin.getRobot(i).setVisible(true);
@@ -51,108 +51,79 @@ public class Superviseur {
 			current_paths[i].setValue(i);
 		}
 		this.initialisation();
-		/*while(step==0 && current_paths){
 		
-		}
-			
-			//Initialisation
-			/*int x= (int)robots[i].getX();
-			int y= (int)robots[i].getY();
-			this.carte.update(x, y, labyrinth.getCase(x, y).getCompo());
-			this.carte.reveal(x, y);
-			paths[i]=new Chemin(this.carte.getCase(x, y));*/
-		
-		
-		
-		
-		//Dans une simulation dessin est utilisï¿½ comme rï¿½fï¿½rent pour le superviseur
-		//Dans un cas rï¿½el le superviseur devra ï¿½tre cadencï¿½ par les appels blutooth
-		
-		//int numero=labyrinth.rand.nextInt(3);
 		int temps=0;
+		step=0;
+		//Les différentes étapes sont :
+		//0 - Exploration
+		//1 - Aller chercher la balle, quand un trajet robot 0 - balle existe
+		//2 - Sortir, quand un trajet robot 0 - sortie existe
 		while(true){
 			this.dessin.lock.lock();
 			try{
-				/*
-				//Choix du robot et import des informations
-				if(!dessin.getRobots()[numero].busy()){
-					//Rï¿½solution
-					int x= dessin.getRobots()[numero].getX();
-					int y= dessin.getRobots()[numero].getY();
-					this.carte.update(x, y, labyrinth.getCase(x, y).getCompo());
-					this.carte.reveal(x, y);
-					
-					
-					//DEBUT SUPERVISEUR
-					int k=1;
-					boolean retry=false;
-					if(carte.closestDiscover(x, y, k)!=null){//Comportement de closest discover lorsque plus de cases ï¿½ visiter peut ï¿½tre problï¿½matique
-						do{
-						retry=false;
-						if(carte.closestDiscover(x, y, k)!=null)
-							current_paths[numero]=carte.closestDiscover(x, y, k);
-						//Envois infos
-						for(int j=0;j<3;j++){
-							if(j!=numero){
-								if(current_paths[numero].collision(carte, current_paths[j],true)<Math.max(current_paths[numero].size(),2)){
-									retry=true;
+				switch(step){
+				case 0:
+					for(int numero=0; numero<3; numero++){
+						int x= dessin.getRobot(numero).getX();
+						int y= dessin.getRobot(numero).getY();
+						current_paths[numero].cut(carte.getCase(x, y));
+						if(!dessin.getRobot(numero).busy()){
+							this.carte.update(x, y, labyrinth.getCase(x, y).getCompo());
+							this.carte.reveal(x, y);
+							int k=1;
+							boolean retry=false;
+							if(carte.closestDiscover(x, y, k)!=null){//Comportement de closest discover lorsque plus de cases ï¿½ visiter peut ï¿½tre problï¿½matique
+								do{
+									retry=false;
+									if(carte.closestDiscover(x, y, k)!=null)
+										current_paths[numero]=carte.closestDiscover(x, y, k);
+									//Envois infos
+									for(int j=0;j<3;j++){
+										if(j!=numero){
+											if(current_paths[numero].collision(carte, current_paths[j],true)<Math.max(current_paths[numero].size(),2)){
+												retry=true;
+											}
+										current_paths[numero].beforeBlock(carte, current_paths[j],true);
+										}
+									}
+								k++;
+								}while(retry && k<5);
+								if(retry=true && k==5){
+									current_paths[numero]=carte.createPath(x, y, carte.rand.nextInt(this.carte.getWidth()),carte.rand.nextInt(this.carte.getHeight()));
+									current_paths[numero].stopToVisibility();
+									for(int j=0;j<3;j++){
+										if(j!=numero){
+											if(current_paths[numero].collision(carte, current_paths[j],true)<current_paths[numero].size()){
+												retry=true;
+											}
+										current_paths[numero].beforeBlock(carte, current_paths[j],true);
+										}
+									}
 								}
-								current_paths[numero].beforeBlock(carte, current_paths[j],true);
-							}
-						}
-						k++;
-					}while(retry && k<5);
-					if(retry=true && k==5){
-						current_paths[numero]=carte.createPath(x, y, labyrinth.rand.nextInt(this.carte.getWidth()),labyrinth.rand.nextInt(this.carte.getHeight()));
-						current_paths[numero].stopToVisibility();
-						for(int j=0;j<3;j++){
-							if(j!=numero){
-								if(current_paths[numero].collision(carte, current_paths[j],true)<current_paths[numero].size()){
-									retry=true;
-								}
-								current_paths[numero].beforeBlock(carte, current_paths[j],true);
+							current_paths[numero].setValue(numero);
+							dessin.getRobot(numero).walkPath(new Chemin(current_paths[numero]));
 							}
 						}
 					}
-					current_paths[numero].setValue(numero);
-					dessin.getRobots()[numero].walkPath(new Chemin(current_paths[numero]));
+					Chemin trajet=carte.pathToMark(dessin.getRobot(0).getX(), dessin.getRobot(0).getY());
+					if(trajet!=null){
+						if(!trajet.stopToVisibility())
+							step=1;
 					}
+					break;
+				case 1:
+					break;
 				}
-				numero=labyrinth.rand.nextInt(3);
-				*/
-				//FIN SUPERVISEUR
-				
-				if(!this.dessin.getRobot(0).busy()){
-					Chemin aux=new Chemin();
 					
-					aux.get().addAll(current_paths[1].get());
-					aux.get().addAll(current_paths[2].get());
-					
-					//Chemin test =carte.createPath(this.dessin.getRobot(0).getX(), this.dessin.getRobot(0).getY(), carte.getMark().getX(), carte.getMark().getY(), aux);
-					//Chemin test2=carte.createPath(this.dessin.getRobot(0).getX(), this.dessin.getRobot(0).getY(), carte.getMark().getX(), carte.getMark().getY());
-					Chemin test3=carte.createPath(this.dessin.getRobot(0).getX(), this.dessin.getRobot(0).getY(), carte.rand.nextInt(carte.getWidth()), carte.rand.nextInt(carte.getHeight()));
-					this.dessin.getRobot(0).walkPath(new Chemin(test3));
-					Chemin blocked = new Chemin();
-					
-					
-					blocked.add(current_paths[2]);
-					blocked.get().add(test3.get(0));
-					this.dessin.getRobot(1).walkPath(carte.closestDiscover(this.dessin.getRobot(1).getX(), this.dessin.getRobot(1).getY(), 1, test3, blocked,false));
-					/*if(test2.isCollision(carte, current_paths[1], true))
-						;
-						//Faire bouger robot 1 de faï¿½on ï¿½ libï¿½rer le chemin -> Noter qu'il faut qu'il sorte totalement du chemin prï¿½vu.
-						//Comparer cette solution ï¿½ l'ï¿½vitement en terme de cout
-					if(test.getValue()<test2.getValue())
-						;*/
-				}
-				this.application.updatePanel();
-				int steps=0;
-				while(steps<50){
-					this.dessin.step.await();
-					steps++;
-				}
-				temps+=5;
-				System.out.println(temps);
+
+					this.application.updatePanel();
+					int steps=0;
+					while(steps<20){
+						this.dessin.step.await();
+						steps++;
+					}
+					temps+=2;
+					System.out.println(temps/60+":"+temps%60);
 				}finally{
 					this.dessin.lock.unlock();
 				}
