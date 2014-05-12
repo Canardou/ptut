@@ -61,15 +61,16 @@ public class Superviseur {
 		while(true){
 			this.dessin.lock.lock();
 			try{
+				for(int numero=0; numero<3; numero++){
+					int x= dessin.getRobot(numero).getX();
+					int y= dessin.getRobot(numero).getY();
+					current_paths[numero].cut(carte.getCase(x, y));
+					this.carte.update(x, y, labyrinth.getCase(x, y).getCompo());
+					this.carte.reveal(x, y);
+				
 				switch(step){
 				case 0:
-					for(int numero=0; numero<3; numero++){
-						int x= dessin.getRobot(numero).getX();
-						int y= dessin.getRobot(numero).getY();
-						current_paths[numero].cut(carte.getCase(x, y));
 						if(!dessin.getRobot(numero).busy()){
-							this.carte.update(x, y, labyrinth.getCase(x, y).getCompo());
-							this.carte.reveal(x, y);
 							int k=1;
 							boolean retry=false;
 							if(carte.closestDiscover(x, y, k)!=null){//Comportement de closest discover lorsque plus de cases � visiter peut �tre probl�matique
@@ -104,18 +105,17 @@ public class Superviseur {
 							dessin.getRobot(numero).walkPath(new Chemin(current_paths[numero]));
 							}
 						}
-					}
-					Chemin trajet=carte.pathToMark(dessin.getRobot(0).getX(), dessin.getRobot(0).getY());
-					if(trajet!=null){
-						if(!trajet.stopToVisibility())
-							step=1;
-					}
 					break;
 				case 1:
 					break;
 				}
+			}
 					
-
+				Chemin trajet=carte.pathToMark(dessin.getRobot(0).getX(), dessin.getRobot(0).getY());
+				if(trajet!=null){
+					if(!trajet.stopToVisibility())
+						step=1;
+				}
 					this.application.updatePanel();
 					int steps=0;
 					while(steps<20){
