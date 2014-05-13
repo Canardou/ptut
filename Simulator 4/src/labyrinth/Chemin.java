@@ -15,8 +15,8 @@ public class Chemin {
 	
 	public Chemin(Chemin copie){
 		this();
+		this.value=copie.value;
 		if(copie!=null){
-			this.value=copie.value;
 			for(Case copy : copie.route)
 			this.route.add(copy);
 		}
@@ -146,16 +146,14 @@ public class Chemin {
 		this.route.setSize(this.collision(carte, autre, ecart));
 	}
 	
-	public boolean stopToVisibility(){
+	public void stopToVisibility(){
 		int i=0;
 		while(i<this.route.size()){
 			if(!this.route.get(i).isRevealed()){
 				this.route.setSize(i+1);
-				return true;
 			}
 			i++;
 		}
-		return false;
 	}
 	
 	public boolean concatenation(Chemin autre){
@@ -170,21 +168,6 @@ public class Chemin {
 		}
 		else
 			return false;
-	}
-	
-	public void cut(Case dprt){
-		int cut=0;
-		int sub=0;
-		for(Case aux : this.route){
-			if(aux==dprt){
-				cut=sub;
-			}
-			sub++;
-		}
-		if(cut!=0){
-			for(int i=0;i<cut;i++)
-				this.route.remove(0);
-		}
 	}
 	
 	/**

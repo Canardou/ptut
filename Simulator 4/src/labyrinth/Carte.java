@@ -49,6 +49,10 @@ public class Carte {
 		}
 	}
 	
+	/*public Carte(byte[] importation){
+		this.update(importation);
+	}*/
+	
 	public Carte(int side){
 		this(side,side);
 	}
@@ -574,6 +578,7 @@ public class Carte {
 		this.getMark().setMark();
 	}
 	
+	/*	
 	public byte[] export(){
 		byte [] tableau = new byte[this.width*this.height+2];
 		if(this.getMark()!=null){
@@ -602,32 +607,13 @@ public class Carte {
 			this.marque=this.map[(int)(importation[0]-1)][(int)(importation[1])];
 		}
 		this.setExit();
-	}
+	}*/
 	
 	public void update(int x, int y, byte importation){
 		if(checkCoord(x,y)){
 			this.map[x][y].update(importation);
 			if(this.map[x][y].isMark())
 				this.mark(x,y);
-		}
-	}
-	
-	public void reset(){
-		this.marque=null;
-		this.exit=null;
-		this.map = new Case[width][height];
-		for(int i=0;i<this.width;i++){
-			for(int j=0;j<this.height;j++){
-				this.map[i][j]=new Case(i,j);
-			}
-		}
-		for(int i=0;i<this.width;i++){
-			this.map[i][0].close(Case.UP);
-			this.map[i][this.height-1].close(Case.DOWN);
-		}
-		for(int i=0;i<this.height;i++){
-			this.map[0][i].close(Case.LEFT);
-			this.map[this.width-1][i].close(Case.RIGHT);
 		}
 	}
 }
