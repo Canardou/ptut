@@ -1,5 +1,5 @@
 package communication;
-import env.*;
+import labyrinth.*;
 import drawing.*;
 
 
@@ -30,5 +30,16 @@ public class InitPC {
 		this.tComJ = new ThreadComm(this.IE.robotJ,new Case(robot.getX(),robot.getY()),robot.getDir());
 		this.tComJ.start();
 		}
+	}
+	public ThreadComm getThreadComm(int i){
+			switch (i){
+			case 0 :
+			return this.tComF;
+			case 1:
+			return this.tComH;
+			case 2:
+			return this.tComJ;
+			}
+		return null;
 	}
 }

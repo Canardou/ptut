@@ -5,9 +5,10 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.concurrent.ConcurrentLinkedDeque;
+import java.util.LinkedList;
+import java.util.Queue;
 
-import env.Case;
+import labyrinth.Case;
 
 
 
@@ -21,7 +22,7 @@ public class ThreadComm extends Thread{
 	private BluetoothCommPC2 com;
 	private Case caseInit;
 	private int orientation;
-	private ConcurrentLinkedDeque queueOrdres ;
+	private Queue<Integer> queueOrdres ;
 	
 
 	
@@ -32,11 +33,16 @@ public class ThreadComm extends Thread{
 		this.com= new BluetoothCommPC2(IE.PCkiwor, this.recepteur);
 		this.caseInit=caseinit;
 		this.orientation = orientation;
+		this.queueOrdres =new LinkedList<Integer>();
 	
 	}
 	
 	
 	// m�thode
+	
+	public void setOrdres(Queue<Integer> ordres){
+		this.queueOrdres = ordres;
+	}
 	
 	public void run(){
 		

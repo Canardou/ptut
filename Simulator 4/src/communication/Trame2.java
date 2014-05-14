@@ -5,9 +5,9 @@ import java.util.ArrayList;
 
 
 //import threads.ThreadRobot;
-import env.Case;
+import labyrinth.Case;
 //import env.Environment;
-import env.ListCase;
+import labyrinth.ListeCase;
 
 
 
@@ -57,7 +57,7 @@ public class Trame2 {
 	
 	//trame qui contient une liste de cases � envoyer 
 	
-	public Trame2(byte ID, ListCase listCase ){
+	public Trame2(byte ID, ListeCase listCase ){
 
 		
 		

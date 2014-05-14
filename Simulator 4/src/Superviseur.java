@@ -1,12 +1,13 @@
 
 import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.Queue;
 
 import javax.swing.JFrame;
 
 import Dialogue.Dialogue;
 import labyrinth.*;
 import drawing.*;
-import env.*;
 import communication.*;
 
 public class Superviseur {
@@ -160,9 +161,97 @@ public class Superviseur {
 			}
 	}
 	
+	public Queue<Integer> caseToOrder(Case current, int dir, Case next){
+		
+		Queue<Integer> ordre = new LinkedList<Integer>();
+		
+		if (current.isRevealed()){
+			if (next.getX()>current.getX() && next.getY() == current.getY()){
+				switch(dir){
+					case Case.UP:
+						((LinkedList<Integer>)ordre).addFirst(Order.TURNR);
+						((LinkedList<Integer>)ordre).addFirst(Order.FORWARD);
+						break;
+					case Case.DOWN:
+						((LinkedList<Integer>)ordre).addFirst(Order.TURNL);
+						((LinkedList<Integer>)ordre).addFirst(Order.FORWARD);
+						break;
+					case Case.RIGHT:
+						((LinkedList<Integer>)ordre).addFirst(Order.FORWARD);
+						break;
+					case Case.LEFT:
+						((LinkedList<Integer>)ordre).addFirst(Order.TURNB);
+						((LinkedList<Integer>)ordre).addFirst(Order.FORWARD);
+						break;
+				}
+			}
+				if (next.getX()<current.getX() && next.getY() == current.getY()){
+					switch(dir){
+						case Case.UP:
+							((LinkedList<Integer>)ordre).addFirst(Order.TURNL);
+							((LinkedList<Integer>)ordre).addFirst(Order.FORWARD);
+							break;
+						case Case.DOWN:
+							((LinkedList<Integer>)ordre).addFirst(Order.TURNR);
+							((LinkedList<Integer>)ordre).addFirst(Order.FORWARD);
+							break;
+						case Case.LEFT:
+							((LinkedList<Integer>)ordre).addFirst(Order.FORWARD);
+							break;
+						case Case.RIGHT:
+							((LinkedList<Integer>)ordre).addFirst(Order.TURNB);
+							((LinkedList<Integer>)ordre).addFirst(Order.FORWARD);
+							break;
+					}
+				}
+				
+				if (next.getY()>current.getY() && next.getX() == current.getX()){
+					switch(dir){
+						case Case.UP:
+							((LinkedList<Integer>)ordre).addFirst(Order.FORWARD);
+							break;
+						case Case.DOWN:
+							((LinkedList<Integer>)ordre).addFirst(Order.TURNB);
+							((LinkedList<Integer>)ordre).addFirst(Order.FORWARD);
+							break;
+						case Case.LEFT:
+							((LinkedList<Integer>)ordre).addFirst(Order.TURNR);
+							((LinkedList<Integer>)ordre).addFirst(Order.FORWARD);
+							break;
+						case Case.RIGHT:
+							((LinkedList<Integer>)ordre).addFirst(Order.TURNL);
+							((LinkedList<Integer>)ordre).addFirst(Order.FORWARD);
+							break;
+					}
+				}
+				if (next.getY()<current.getY() && next.getX() == current.getX()){
+					switch(dir){
+						case Case.UP:
+							((LinkedList<Integer>)ordre).addFirst(Order.TURNB);
+							((LinkedList<Integer>)ordre).addFirst(Order.FORWARD);
+							break;
+						case Case.DOWN:
+							((LinkedList<Integer>)ordre).addFirst(Order.FORWARD);
+							break;
+						case Case.LEFT:
+							((LinkedList<Integer>)ordre).addFirst(Order.TURNL);
+							((LinkedList<Integer>)ordre).addFirst(Order.FORWARD);
+							break;
+						case Case.RIGHT:
+							((LinkedList<Integer>)ordre).addFirst(Order.TURNR);
+							((LinkedList<Integer>)ordre).addFirst(Order.FORWARD);
+							break;
+					}
+				}
+			}
+		else {((LinkedList<Integer>)ordre).addFirst(Order.STOP);}		
+		return ordre;	
+	}
+	
 	public void destin() throws InterruptedException {
 		InitPC comPCNXT = new InitPC();
 		int i;
+		Queue<Integer> ordres = new LinkedList<Integer>();
 		for(i=0;i<3;i++){
 			try{
 				comPCNXT.setThreadComm(this.dessin.getRobot(i));
@@ -171,8 +260,12 @@ public class Superviseur {
 				System.out.println(e);
 			}
 		}
-		while(true){   //tant que marque pas trouvée
+		while(true){   
+			//tant que marque pas trouvée
 			//Thread.sleep(1);
+			for(i=0;i<2;i++){
+				comPCNXT.getThreadComm(i).setOrdres(this.caseToOrder(current_paths[i].get(0), current_paths[i].get(0).getDir(current_paths[i].get(1)), current_paths[i].get(1)));
+			}
 			
 		}
 	}
