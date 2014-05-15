@@ -34,9 +34,12 @@ public class RobotPanel extends JPanel implements ActionListener {
 	
 	private DessinCarte carte;
 	private int id;
+	
+	private String []logline;
 
 	RobotPanel(DessinCarte carte, int id){
 		super();
+		logline = new String[2];
 		this.carte=carte;
 		this.id=id;
 		this.setBorder(new TitledBorder(BorderFactory.createLineBorder(Color.black, 1, true), "Robot "+id, TitledBorder.LEADING, TitledBorder.TOP, this.bcomic.deriveFont(15f)));
@@ -94,6 +97,7 @@ public class RobotPanel extends JPanel implements ActionListener {
 		log.setVisible(false);
 		log.setEditable(false);
 		horizontalBox_2.add(log);
+		this.resetLog();
 		
 	}
 	
@@ -101,6 +105,18 @@ public class RobotPanel extends JPanel implements ActionListener {
 		this.x.setText(Integer.toString(x));
 		this.y.setText(Integer.toString(y));
 		this.direction.setSelectedIndex(direction);
+	}
+	
+	public void putLog(String log){
+		this.logline[1]=this.logline[0];
+		this.logline[0]=log;
+		this.log.setText(logline[1]+"\n"+logline[0]);
+	}
+	
+	public void resetLog(){
+		this.logline[0]="";
+		this.logline[1]="";
+		this.log.setText(logline[1]+"\n"+logline[0]);
 	}
 	
 	public void freeze(){

@@ -38,6 +38,7 @@ public class Gui extends JFrame implements ActionListener {
 	private SwingWorker<String, Object> thread;
 
 	public Gui(Superviseur superviseur){
+		this.setTitle("Dogeberto v 1.7.0.1b Final-bis Stable ULTIMATE");
 		this.superviseur=superviseur;
 		//Labyrinth sur le cote gauche
 		this.laby = superviseur.dessinCarte();
@@ -106,6 +107,29 @@ public class Gui extends JFrame implements ActionListener {
 			robots[i].setPanel(laby.getRobot(i).getX(), laby.getRobot(i).getY(), laby.getRobot(i).getDir());
 		}
 	}
+	
+	public void putLog(int i, String s){
+		robots[i].putLog(s);
+	}
+	
+	public void reset(){
+		for(int i=0;i<3;i++){
+			robots[i].resetLog();
+		}
+	}
+	
+	public void arreter(){
+		//this.superviseur.end();
+		this.thread.cancel(true);
+		for(int i=0;i<3;i++){
+			robots[i].unfreeze();
+		}
+		this.start.setVisible(true);
+		this.stop.setVisible(false);
+		this.simuler.setVisible(true);
+		this.seed.setVisible(true);
+		this.seed.setEnabled(true);
+	}
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
@@ -124,28 +148,23 @@ public class Gui extends JFrame implements ActionListener {
 						Gui.this.superviseur.simulation(Integer.parseInt(seed.getText()));
 					}catch(InterruptedException ie){
 						Dialogue.Warning("Arret de la simulation");
+					}catch(Exception e){
+						e.printStackTrace();
 					}
+					
 					return null;
 				}
 
 				@Override
 				protected void done() {
+					Gui.this.arreter();
 				}
 			}
 			(thread=new YOLO()).execute();
 			//this.superviseur.simulate();
 		}
 		if(e.getActionCommand().compareTo("Arreter")==0){
-			//this.superviseur.end();
-			this.thread.cancel(true);
-			for(int i=0;i<3;i++){
-				robots[i].unfreeze();
-			}
-			this.start.setVisible(true);
-			this.stop.setVisible(false);
-			this.simuler.setVisible(true);
-			this.seed.setVisible(true);
-			this.seed.setEnabled(true);
+			this.arreter();
 		}
 		if(e.getActionCommand().compareTo("Commencer")==0){
 			this.start.setVisible(false);
@@ -162,12 +181,15 @@ public class Gui extends JFrame implements ActionListener {
 					Gui.this.superviseur.destin();
 					}catch(InterruptedException ie){
 						Dialogue.Warning("Arret de la supervision");
+					}catch(Exception e){
+						e.printStackTrace();
 					}
 					return null;
 				}
 
 				@Override
 				protected void done() {
+					Gui.this.arreter();
 				}
 			}
 			(thread=new YOLO()).execute();

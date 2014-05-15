@@ -182,8 +182,10 @@ public class Chemin {
 			sub++;
 		}
 		if(cut!=0){
-			for(int i=0;i<cut;i++)
-				this.route.remove(0);
+			for(int i=0;i<cut;i++){
+				if(this.route.size()>1)
+					this.route.remove(0);
+			}
 		}
 	}
 	

@@ -202,8 +202,10 @@ public class Carte {
 				if(this.map[this.width-1][i].isCrossable(Case.RIGHT))
 					this.exit= new Case(this.width,i);
 			}
-			for(int i=0;i<4;i++)
-				this.exit.close(i);
+			if(this.exit!=null){
+				for(int i=0;i<4;i++)
+					this.exit.close(i);
+			}
 		}
 		return this.exit;
 	}
@@ -308,25 +310,27 @@ public class Carte {
 		//Tant que la case n'est pas celle d'arrivée on continu de chercher
 		while(recherche.get(0).current()!=arrivee && !recherche.isEmpty()){	
 			Case temp=recherche.get(0).current();
-			for(int k=0;k<4;k++){
-				if(temp.isCrossable(k) && checkCoord(temp.getX(k),temp.getY(k))){
-					Case test=this.map[temp.getX(k)][temp.getY(k)];
-					if(!check.contains(test)){
-						int cout=1;
-						if(temp.getDir(test)!=recherche.get(0).getDir() && recherche.get(0).getDir()!=-1)
-							cout=2;
-						recherche.add(new ListeCase(test,recherche.get(0).getCout()+cout,recherche.get(0),temp.getDir(test)));
-						check.add(test);
+			if(temp.isRevealed() || (this.exit() && temp==this.exit)){
+				for(int k=0;k<4;k++){
+					if(temp.isCrossable(k) && checkCoord(temp.getX(k),temp.getY(k))){
+						Case test=this.map[temp.getX(k)][temp.getY(k)];
+						if(!check.contains(test)){
+							int cout=1;
+							if(temp.getDir(test)!=recherche.get(0).getDir() && recherche.get(0).getDir()!=-1)
+								cout=2;
+							recherche.add(new ListeCase(test,recherche.get(0).getCout()+cout,recherche.get(0),temp.getDir(test)));
+							check.add(test);
+						}
 					}
-				}
-				else if(this.exit()){
-					//Cas particulier de la recherche de sortie
-					if (this.exit.getX()==temp.getX(k) && this.exit.getY()==temp.getY(k)){
-						int cout=1;
-						if(temp.getDir(this.exit)!=recherche.get(0).getDir() && recherche.get(0).getDir()!=-1)
-							cout=2;
-						recherche.add(new ListeCase(this.exit,recherche.get(0).getCout()+cout,recherche.get(0),temp.getDir(this.exit)));
-						check.add(this.exit);
+					else if(this.exit()){
+						//Cas particulier de la recherche de sortie
+						if (this.exit.getX()==temp.getX(k) && this.exit.getY()==temp.getY(k)){
+							int cout=1;
+							if(temp.getDir(this.exit)!=recherche.get(0).getDir() && recherche.get(0).getDir()!=-1)
+								cout=2;
+							recherche.add(new ListeCase(this.exit,recherche.get(0).getCout()+cout,recherche.get(0),temp.getDir(this.exit)));
+							check.add(this.exit);
+						}
 					}
 				}
 			}
@@ -378,7 +382,12 @@ public class Carte {
 		ArrayList<Case> check=new ArrayList<Case>();
 		if(blocked!=null){
 				check.addAll(blocked.get());
+				if(this.exit()){
+					check.remove(this.exit());
+				}
 		}
+		if(avoid!=null)
+			avoid.get().remove(this.exit);
 		recherche.add(new ListeCase(depart,0,null,-1));
 		check.add(depart);
 		while(number>0 && recherche.size()>0){
