@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /Dialogue
 /Gui$1YOLO.class
 /Gui$2YOLO.class
@@ -6,4 +7,10 @@
 /Superviseur.class
 /communication
 /drawing
+=======
+/communication
+/Dialogue
+/drawing
+/env
+>>>>>>> f6906c0e6de62bae6e7ac23e8ef88640279107ee
 /labyrinth

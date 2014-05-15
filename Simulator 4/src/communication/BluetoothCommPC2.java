@@ -13,7 +13,7 @@ import lejos.pc.comm.NXTInfo;
 
 import java.lang.Thread;
 
-import env.ListCase;
+import labyrinth.ListeCase;
 
 public class BluetoothCommPC2 extends Thread{
 	
@@ -154,7 +154,7 @@ public class BluetoothCommPC2 extends Thread{
 		Trame2 trameR=null;
 					
 		if (trameRecue[tailleTrameRecue-1]==6){
-			ListCase listCase=new ListCase();
+			ListeCase listCase=new ListeCase();
 			int k=2;
 			
 			for (int i=0; i<(tailleTrameRecue-3)/3 ; i++){
@@ -169,7 +169,7 @@ public class BluetoothCommPC2 extends Thread{
 			
 		}
 		else if (trameRecue[tailleTrameRecue-1]!=7 & trameRecue[tailleTrameRecue-1]!=6){
-			ListCase listCase=new ListCase();
+			ListeCase listCase=new ListeCase();
 			int k=2;
 			for (int i=0; i<(tailleTrameRecue-3)/3 ; i++){
 				listCase.addCase2((int)trameRecue[k], (int)trameRecue[k+1], trameRecue[k+2]);
