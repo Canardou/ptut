@@ -24,7 +24,7 @@ public class Init {
 		ThreadRobot tRobot = new ThreadRobot();
 		ThreadCom tCom = new ThreadCom(tRobot);
 		this.init(tRobot);
-		//this.initTest(tRobot); // A VIRER //////////////////////////////////////////////////////////////////////////////////////////
+		this.initTest(tRobot); // A VIRER //////////////////////////////////////////////////////////////////////////////////////////
 		tRobot.start();
 		tCom.start();
 	}
@@ -35,7 +35,7 @@ public class Init {
 	 */
 	public static void main(String[] args) {
 		new Init();
-		//new Tests(15);
+		//new Tests(16);
 	}
 
 	/**

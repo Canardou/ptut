@@ -103,7 +103,7 @@ public class ThreadRobot extends Thread {
 	 */
 	public void run() {
 		while (true) {
-			this.order.chooseInsecurely();
+			this.order.chooseExploration();
 			this.order.execute();
 		}
 	} 
