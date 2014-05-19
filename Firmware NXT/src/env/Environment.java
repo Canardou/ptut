@@ -37,7 +37,7 @@ public class Environment {
 	/**
 	 * Distance d'arret par rapport au mur d'en face.
 	 */
-	public static final double FRONTWALL_REG = 13;
+	public static final double FRONTWALL_REG = 9.5;
 	
 	/**
 	 * Limite en dessous de laquelle on considère qu'il y a un mur en face. En

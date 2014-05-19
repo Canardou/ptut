@@ -18,8 +18,8 @@ public class Movement {
 	/**
 	 * Vitesse de croisière. De 0 à 36 cm/s.
 	 */
-	public static final double SPEED_CRUISE = 16;
-
+	public static final double SPEED_CRUISE = 20;
+	
 	/**
 	 * Vitesse à l'approche d'un mur avant. De 0 à 36 cm/s.
 	 */
@@ -28,12 +28,12 @@ public class Movement {
 	/**
 	 * Vitesse de rotation de croisière. De 0 à 366 deg/s
 	 */
-	public static final double RSPEED_CRUISE = 70;
-
+	public static final double RSPEED_CRUISE = 160;
+	
 	/**
 	 * Vitesse de rotation lorsqu'on approche de l'angle voulu. De 0 à 366 deg/s.
 	 */
-	public static final double RSPEED_DANGER = 25;
+	public static final double RSPEED_DANGER = 30;
 
 	/**
 	 * Vitesse de rotation lors de la calibration. Elle doit rester faible pour
@@ -51,13 +51,13 @@ public class Movement {
 	 * rotation. Utilisé lorsque le robot fait des virages. En degrés.
 	 */
 	public static final double ANGLE_DANGER = 18;
-
+	
 	/**
 	 * Angle relatif à l'objectif à partir duquel on considère que l'on a
 	 * atteind l'objectif en angle. Utilisé lorsque le robot fait des virages.
 	 * En Degrés.
 	 */
-	public static final double ANGLE_ERR = 2;
+	public static final double ANGLE_ERR = 3;
 
 	/**
 	 * Hystérésis sur la régulation de la vitesse de rotation pour éviter les
@@ -88,26 +88,26 @@ public class Movement {
 	 * n'y a qu'un mur droit de disponible pour réguler. Utilisé lorsque le
 	 * robot avance. En cm.
 	 */
-	public static final double DISTRIGHTWALL = 11;
+	public static final double DISTRIGHTWALL = 6.5;
 
 	/**
 	 * Distance souhaitée par rapport au mur gauche. Utilisée uniquement
 	 * lorsqu'il n'y a que le mur gauche de disponible et que le sonar rotatif
 	 * est en position gauche. Utilisé lorsque le robot avance. En cm.
 	 */
-	public static final double DISTLEFTWALL = 8;
+	public static final double DISTLEFTWALL = 6.5;
 
 	/**
 	 * Gain de la régulation par retour d'état. Gain appliqué à l'erreur
 	 * d'angle. Utilisé lorsque le robot avance.
 	 */
-	public static final double K_TETA = 0.0022;
+	public static final double K_TETA = 0.0025;
 	
 	/**
 	 * Gain de la régulation par retour d'état. Gain appliqué à l'erreur de
 	 * distance. Utilisé lorsque le robot avance.
 	 */
-	public static final double K_DIST = 0.011;
+	public static final double K_DIST = 0.015;
 
 	/**
 	 * Attribut représentant les 2 moteurs qui permettent de déplacer le robot.
@@ -225,10 +225,17 @@ public class Movement {
 			// Application de la commande au système
 			if (commande != 0) {
 				distTraveled += Math.cos(Math.toRadians(errAngle)) * this.diffPilot.getMovement().getDistanceTraveled();
-				this.diffPilot.arcForward(1 / commande);
+				//this.diffPilot.arcForward(1 / commande);
+				if(commande > 0) {
+					this.diffPilot.arc(1 / commande,10,true);
+				}
+				else {
+					this.diffPilot.arc(1 / commande,-10,true);
+				}
 			} else {
 				distTraveled += Math.cos(Math.toRadians(errAngle)) * this.diffPilot.getMovement().getDistanceTraveled();
-				this.diffPilot.arcForward(10000000);
+				//this.diffPilot.arcForward(10000000);
+				this.diffPilot.arc(10000000,10,true);
 			}
 
 			// Verification de la fin du mouvement
@@ -240,9 +247,9 @@ public class Movement {
 						if(!frontWall) {
 							frontWall=true;
 						}						
-						if (this.tRobot.getLeftFrontSonar().getMoyData() < Environment.FRONTWALL_REG) {
+						if ((this.tRobot.getLeftFrontSonar().getMoyData() < Environment.FRONTWALL_REG) || (distTraveled > (UNIT_DIST + 3))) {
 							finish = true;
-							this.stop();
+							//this.stop();
 							this.turn(-errAngle);
 							this.tRobot.getEnv().sonarLeft();
 							this.diffPilot.setTravelSpeed(SPEED_CRUISE);
@@ -252,7 +259,7 @@ public class Movement {
 					} else {
 						if (distTraveled > UNIT_DIST) {
 							finish = true;
-							this.stop();
+							//this.stop();
 							this.turn(-errAngle);
 							this.tRobot.getEnv().sonarLeft();
 							this.diffPilot.setTravelSpeed(SPEED_CRUISE);
@@ -261,23 +268,24 @@ public class Movement {
 				} else {
 					// Si on arrive en fin de mouvement
 					if (distTraveled > REG_FRONT) {
-						distTraveled += Math.cos(Math.toRadians(errAngle)) * this.diffPilot.getMovement().getDistanceTraveled();
-						this.stop();
-						this.turn(-errAngle);
-						this.tRobot.getEnv().sonarFront();
 						this.diffPilot.setTravelSpeed(SPEED_DANGER);
+						this.diffPilot.stop();
+						distTraveled += Math.cos(Math.toRadians(errAngle)) * this.diffPilot.getMovement().getDistanceTraveled();
+						System.out.println(errAngle);
+						this.turn(-errAngle);
+						this.tRobot.getEnv().sonarFront();						
 					}
 				}
 			} else {
 				if (distTraveled > UNIT_DIST ) {
 					finish = true;
-					this.stop();
+					//this.stop();
 					this.turn(-errAngle);
 				}
 			}
 		}
 		
-		this.stop();
+		//this.stop();
 		
 		// Mise à jour de l'environnement
 		this.tRobot.getEnv().setBackWallDetected(false);

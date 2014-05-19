@@ -168,6 +168,7 @@ public class Order {
 				|| o == CHECKFIRSTCASE || o == WAIT1SEC 
 				|| o == WAITBUTTON || o == FASTMODE 
 				|| o == NORMALMODE || o == SETPOSITION) {
+			this.isBusy=1;
 			this.list.add(o);
 			return 0;
 		} else {
@@ -191,9 +192,6 @@ public class Order {
 			}
 			return Order.STOP;
 		} else {
-			if(this.isBusy==0) {
-				this.isBusy=1;
-			}
 			return this.list.remove(0);
 		}
 	}

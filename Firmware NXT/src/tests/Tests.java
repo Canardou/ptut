@@ -63,6 +63,8 @@ public class Tests {
 			this.test14();
 		} else if (test == 15) {
 			this.test15();
+		} else if (test == 16) {
+			this.test16();
 		}
 	}
 
@@ -305,6 +307,18 @@ public class Tests {
 		System.out.println("test15:demarrage");
 		System.out.println(Bluetooth.getFriendlyName());
 		System.out.println(Bluetooth.getLocalAddress());
+		while (!Button.ESCAPE.isDown()) {}
+	}
+	
+	public void test16() {
+		System.out.println("test16:demarrage");
+		this.tRobot.getOrder().pause();
+		tRobot.getOrder().add(Order.WAITBUTTON);
+		tRobot.getOrder().chooseInsecurely();
+		tRobot.getOrder().execute();
+		tRobot.getOrder().add(Order.CALCOMPASS);
+		tRobot.getOrder().chooseInsecurely();
+		tRobot.getOrder().execute();
 		while (!Button.ESCAPE.isDown()) {}
 	}
 
