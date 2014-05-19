@@ -1,10 +1,5 @@
 package communication;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.util.LinkedList;
 import java.util.Queue;
 
@@ -44,6 +39,7 @@ public class ThreadComm extends Thread{
 		this.queueOrdres = ordres;
 	}
 	
+	@Override
 	public void run(){
 		
 		while(true){

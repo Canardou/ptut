@@ -18,7 +18,7 @@ public class Case {
 	
 	//murs & decouverte
 	private byte composition;
-	//Possibilitée d'utiliser un mask
+	//Possibilitï¿½e d'utiliser un mask
 	private int x;
 	private int y;
 	
@@ -33,7 +33,7 @@ public class Case {
 	}
 	
 	/*
-	 * Méthodes
+	 * Mï¿½thodes
 	 */
 	
 	/**
@@ -174,6 +174,7 @@ public class Case {
 		return this.getDir(autre.getX(),autre.getY());
 	}
 	
+	@Override
 	public String toString(){
 		return "Case ["+this.getX()+"]["+this.getY()+"]-"+this.getCompo();
 	}

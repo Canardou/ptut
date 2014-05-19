@@ -1,5 +1,4 @@
 package labyrinth;
-import java.lang.Comparable;
 import java.util.ArrayList;
 
 @SuppressWarnings({ "rawtypes", "unused" })
@@ -229,6 +228,7 @@ public class ListeCase implements java.lang.Comparable {
 	}
 	
 	//From http://java.developpez.com
+	@Override
 	public int compareTo(Object other) { 
 		int nombre1 = ((ListeCase)other).cout; 
 		int nombre2 = this.cout; 

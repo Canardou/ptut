@@ -49,16 +49,12 @@ public class Carte {
 		}
 	}
 	
-	/*public Carte(byte[] importation){
-		this.update(importation);
-	}*/
-	
 	public Carte(int side){
 		this(side,side);
 	}
 	
 	/*
-	 * Méthodes
+	 * Mï¿½thodes
 	 */
 	
 	private boolean checkCoord(int x, int y){
@@ -70,7 +66,7 @@ public class Carte {
 	 * @param {int} coordonne x
 	 * @param {int} coordonne y
 	 * @return {bool} true si changement effectue
-	 * @desc permet de notifier la présence de murs ou non aux bords de la case.
+	 * @desc permet de notifier la prï¿½sence de murs ou non aux bords de la case.
 	 * 
 	 */
 	
@@ -163,7 +159,7 @@ public class Carte {
 	 * @method mark
 	 * @param {int} coordonne x
 	 * @param {int} coordonne y
-	 * @param {bool} true si emplacement placé/replacé
+	 * @param {bool} true si emplacement placï¿½/replacï¿½
 	 * @desc definie l'emplacement du marqueur
 	 * 
 	 */
@@ -206,16 +202,18 @@ public class Carte {
 				if(this.map[this.width-1][i].isCrossable(Case.RIGHT))
 					this.exit= new Case(this.width,i);
 			}
-			for(int i=0;i<4;i++)
-				this.exit.close(i);
+			if(this.exit!=null){
+				for(int i=0;i<4;i++)
+					this.exit.close(i);
+			}
 		}
 		return this.exit;
 	}
 	
 	/**
 	 * @method pathToExit
-	 * @param {int} position de départ x
-	 * @param {int} position de départ y
+	 * @param {int} position de dï¿½part x
+	 * @param {int} position de dï¿½part y
 	 * @return {Chemin} chemin
 	 * @desc retourne un chemin entre la position et la sortie si existante, sinon null
 	 * 
@@ -239,8 +237,8 @@ public class Carte {
 	
 	/**
 	 * @method pathToMark
-	 * @param {int} position de départ x
-	 * @param {int} position de départ y
+	 * @param {int} position de dï¿½part x
+	 * @param {int} position de dï¿½part y
 	 * @return {Chemin} chemin
 	 * @desc retourne un chemin entre la position et le marqueur si existant, sinon null
 	 * 
@@ -265,8 +263,8 @@ public class Carte {
 	/**
 	 * 
 	 * @method createPath
-	 * @param {int} position de départ x
-	 * @param {int} position de départ y
+	 * @param {int} position de dï¿½part x
+	 * @param {int} position de dï¿½part y
 	 * @param {int} position d'arrivee x
 	 * @param {int} position d'arrivee y
 	 * @return {Chemin} chemin
@@ -292,7 +290,7 @@ public class Carte {
 	/**
 	 * 
 	 * @method createPath
-	 * @param {Case} case de départ
+	 * @param {Case} case de dï¿½part
 	 * @param {Case} case d'arrivee
 	 * @return {Chemin} chemin
 	 * @desc retourne un chemin entre deux emplacements
@@ -309,34 +307,36 @@ public class Carte {
 		}
 		recherche.add(new ListeCase(depart,0,null,-1));
 		check.add(depart);
-		//Tant que la case n'est pas celle d'arrivée on continu de chercher
+		//Tant que la case n'est pas celle d'arrivï¿½e on continu de chercher
 		while(recherche.get(0).current()!=arrivee && !recherche.isEmpty()){	
 			Case temp=recherche.get(0).current();
-			for(int k=0;k<4;k++){
-				if(temp.isCrossable(k) && checkCoord(temp.getX(k),temp.getY(k))){
-					Case test=this.map[temp.getX(k)][temp.getY(k)];
-					if(!check.contains(test)){
-						int cout=1;
-						if(temp.getDir(test)!=recherche.get(0).getDir() && recherche.get(0).getDir()!=-1)
-							cout=2;
-						recherche.add(new ListeCase(test,recherche.get(0).getCout()+cout,recherche.get(0),temp.getDir(test)));
-						check.add(test);
+			if(temp.isRevealed() || (this.exit() && temp==this.exit)){
+				for(int k=0;k<4;k++){
+					if(temp.isCrossable(k) && checkCoord(temp.getX(k),temp.getY(k))){
+						Case test=this.map[temp.getX(k)][temp.getY(k)];
+						if(!check.contains(test)){
+							int cout=1;
+							if(temp.getDir(test)!=recherche.get(0).getDir() && recherche.get(0).getDir()!=-1)
+								cout=2;
+							recherche.add(new ListeCase(test,recherche.get(0).getCout()+cout,recherche.get(0),temp.getDir(test)));
+							check.add(test);
+						}
 					}
-				}
-				else if(this.exit()){
-					//Cas particulier de la recherche de sortie
-					if (this.exit.getX()==temp.getX(k) && this.exit.getY()==temp.getY(k)){
-						int cout=1;
-						if(temp.getDir(this.exit)!=recherche.get(0).getDir() && recherche.get(0).getDir()!=-1)
-							cout=2;
-						recherche.add(new ListeCase(this.exit,recherche.get(0).getCout()+cout,recherche.get(0),temp.getDir(this.exit)));
-						check.add(this.exit);
+					else if(this.exit()){
+						//Cas particulier de la recherche de sortie
+						if (this.exit.getX()==temp.getX(k) && this.exit.getY()==temp.getY(k)){
+							int cout=1;
+							if(temp.getDir(this.exit)!=recherche.get(0).getDir() && recherche.get(0).getDir()!=-1)
+								cout=2;
+							recherche.add(new ListeCase(this.exit,recherche.get(0).getCout()+cout,recherche.get(0),temp.getDir(this.exit)));
+							check.add(this.exit);
+						}
 					}
 				}
 			}
 			if(recherche.size()>=1){
 				recherche.remove(0);
-				//Tri de cases à parcourir restante par distance depuis le point de départ
+				//Tri de cases ï¿½ parcourir restante par distance depuis le point de dï¿½part
 				if(recherche.size()>0)
 					Collections.sort(recherche);
 				else
@@ -344,7 +344,7 @@ public class Carte {
 			}
 		}
 		if(!recherche.isEmpty()){
-			//On retourne le chemin trouvé par parcours inversé des cases
+			//On retourne le chemin trouvï¿½ par parcours inversï¿½ des cases
 			ListeCase temp = recherche.get(0);
 			int yolo = temp.getCout();
 			while(temp.current()!=depart){
@@ -382,7 +382,12 @@ public class Carte {
 		ArrayList<Case> check=new ArrayList<Case>();
 		if(blocked!=null){
 				check.addAll(blocked.get());
+				if(this.exit()){
+					check.remove(this.exit());
+				}
 		}
+		if(avoid!=null)
+			avoid.get().remove(this.exit);
 		recherche.add(new ListeCase(depart,0,null,-1));
 		check.add(depart);
 		while(number>0 && recherche.size()>0){
@@ -436,7 +441,7 @@ public class Carte {
 			}
 		}
 		if(!recherche.isEmpty()){
-			//On retourne le chemin trouvé par parcours inversé des cases
+			//On retourne le chemin trouvï¿½ par parcours inversï¿½ des cases
 			ListeCase temp = recherche.get(0);
 			int yolo = temp.getCout();
 			while(temp.current()!=depart){
@@ -515,7 +520,7 @@ public class Carte {
 	/**
 	 * @method randomMaze
 	 * @param {double} probabilite
-	 * @desc Permet de générer un labyrinthe aléatoire, disposant d'une sortie, à des fins de tests. La probabilité augmente le nombre probable de murs enlevés au delà du minimum.
+	 * @desc Permet de gï¿½nï¿½rer un labyrinthe alï¿½atoire, disposant d'une sortie, ï¿½ des fins de tests. La probabilitï¿½ augmente le nombre probable de murs enlevï¿½s au delï¿½ du minimum.
 	 */
 	
 	public void randomMaze(double wall){
@@ -532,7 +537,7 @@ public class Carte {
 			}
 		}
 		Case temp = recherche.get(rand.nextInt(recherche.size()));
-		//Tant qu'il reste des cases potentiellements non reliés aux autres, on continu la recherche
+		//Tant qu'il reste des cases potentiellements non reliï¿½s aux autres, on continu la recherche
 		while(recherche.size()>0){
 			ArrayList<Case> random = new ArrayList<Case>();
 			if(rand.nextDouble()>wall)
@@ -578,7 +583,6 @@ public class Carte {
 		this.getMark().setMark();
 	}
 	
-	/*	
 	public byte[] export(){
 		byte [] tableau = new byte[this.width*this.height+2];
 		if(this.getMark()!=null){
@@ -604,16 +608,35 @@ public class Carte {
 			}
 		}
 		if(importation[0]!=0){
-			this.marque=this.map[(int)(importation[0]-1)][(int)(importation[1])];
+			this.marque=this.map[importation[0]-1][(importation[1])];
 		}
 		this.setExit();
-	}*/
+	}
 	
 	public void update(int x, int y, byte importation){
 		if(checkCoord(x,y)){
 			this.map[x][y].update(importation);
 			if(this.map[x][y].isMark())
 				this.mark(x,y);
+		}
+	}
+	
+	public void reset(){
+		this.marque=null;
+		this.exit=null;
+		this.map = new Case[width][height];
+		for(int i=0;i<this.width;i++){
+			for(int j=0;j<this.height;j++){
+				this.map[i][j]=new Case(i,j);
+			}
+		}
+		for(int i=0;i<this.width;i++){
+			this.map[i][0].close(Case.UP);
+			this.map[i][this.height-1].close(Case.DOWN);
+		}
+		for(int i=0;i<this.height;i++){
+			this.map[0][i].close(Case.LEFT);
+			this.map[this.width-1][i].close(Case.RIGHT);
 		}
 	}
 }

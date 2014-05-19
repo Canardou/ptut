@@ -15,6 +15,7 @@ public class Emission extends Thread {
 	}
 	
 			
+	@Override
 	public void run()  {
 		System.out.println("run ok");
 		int tailleTrame=this.trame.tableauTrame().length;
@@ -25,7 +26,7 @@ public class Emission extends Thread {
 				try {
 					
 						this.emetteur.getOutput().writeByte(this.trame.tableauTrame()[i]);
-						System.out.println("valeur de la trame envoyée");
+						System.out.println("valeur de la trame envoyï¿½e");
 						System.out.println(this.trame.tableauTrame()[i]);
 					
 					} catch (IOException e) {

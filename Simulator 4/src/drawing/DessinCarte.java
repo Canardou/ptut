@@ -15,6 +15,7 @@ import labyrinth.*;
 @SuppressWarnings("serial")
 public class DessinCarte extends JPanel implements ActionListener {
 	
+	private static final int speed=5;
 	/**
 	 * 
 	 */
@@ -74,8 +75,8 @@ public class DessinCarte extends JPanel implements ActionListener {
 	 */
 	
 	public void launch(){
-		timer=new Timer(20,this);
-		timer.setInitialDelay(20);
+		timer=new Timer(speed,this);
+		timer.setInitialDelay(speed);
 		timer.start();
 	}
 	
@@ -85,6 +86,10 @@ public class DessinCarte extends JPanel implements ActionListener {
 	
 	public void stop(){
 		timer.stop();
+	}
+	
+	public boolean getDoge(){
+		return this.dogeMode;
 	}
 	
 	public void toggleDoge(){
@@ -117,6 +122,7 @@ public class DessinCarte extends JPanel implements ActionListener {
 	}
 	
 	//@override
+	@Override
 	protected void paintComponent(Graphics g) {
         super.paintComponent(g);
         g.drawImage(img, Math.max(min_width-this.width,0)/2, Math.max(min_height-this.height,0)/2, null);

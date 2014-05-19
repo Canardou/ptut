@@ -15,8 +15,8 @@ public class Chemin {
 	
 	public Chemin(Chemin copie){
 		this();
-		this.value=copie.value;
 		if(copie!=null){
+			this.value=copie.value;
 			for(Case copy : copie.route)
 			this.route.add(copy);
 		}
@@ -32,7 +32,7 @@ public class Chemin {
 	}
 	
 	/*
-	 * Méthodes
+	 * Mï¿½thodes
 	 */
 	
 	public void push(Case nouvelle){
@@ -146,14 +146,16 @@ public class Chemin {
 		this.route.setSize(this.collision(carte, autre, ecart));
 	}
 	
-	public void stopToVisibility(){
+	public boolean stopToVisibility(){
 		int i=0;
 		while(i<this.route.size()){
 			if(!this.route.get(i).isRevealed()){
 				this.route.setSize(i+1);
+				return true;
 			}
 			i++;
 		}
+		return false;
 	}
 	
 	public boolean concatenation(Chemin autre){
@@ -170,8 +172,25 @@ public class Chemin {
 			return false;
 	}
 	
+	public void cut(Case dprt){
+		int cut=0;
+		int sub=0;
+		for(Case aux : this.route){
+			if(aux==dprt){
+				cut=sub;
+			}
+			sub++;
+		}
+		if(cut!=0){
+			for(int i=0;i<cut;i++){
+				if(this.route.size()>1)
+					this.route.remove(0);
+			}
+		}
+	}
+	
 	/**
-	 * Retourne vrai si le chemin ne dispose pas de possibilité de croisement
+	 * Retourne vrai si le chemin ne dispose pas de possibilitï¿½ de croisement
 	 * @param autre
 	 * @return
 	 
@@ -192,7 +211,7 @@ public class Chemin {
 	}
 	
 	/**
-	 * Compare deux chemins pour savoir s'ils se croisent et s'il existe une possibilité de croisement.
+	 * Compare deux chemins pour savoir s'ils se croisent et s'il existe une possibilitï¿½ de croisement.
 	 * @param autre
 	 * @return
 	 
@@ -217,6 +236,7 @@ public class Chemin {
 		return retour;
 	}*/
 	
+	@Override
 	public String toString(){
 		String temp="";
 		for(Case item : this.route){

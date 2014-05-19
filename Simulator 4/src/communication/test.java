@@ -3,8 +3,6 @@ package communication;
 
 import java.io.IOException;
 import java.util.Scanner;
-import labyrinth.Case;
-//import robot.Param;
 
 public class test {
 	

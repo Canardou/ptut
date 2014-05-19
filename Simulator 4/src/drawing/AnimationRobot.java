@@ -122,6 +122,7 @@ public class AnimationRobot {
 					this.row=0;
 					break;
 				case "icone":
+					this.col=12;
 					if(type==3)
 						this.row=5;
 					else

@@ -6,8 +6,8 @@ import java.util.Queue;
 
 import javax.swing.JFrame;
 
+import communication.InitPC;
 import communication.Order;
-
 import Dialogue.Dialogue;
 import labyrinth.*;
 import drawing.*;

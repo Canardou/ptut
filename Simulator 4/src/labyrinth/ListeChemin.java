@@ -30,6 +30,7 @@ public class ListeChemin implements Comparable {
 	}
 	
 	//From http://java.developpez.com
+	@Override
 	public int compareTo(Object other) { 
 		int nombre1 = ((ListeChemin)other).cout; 
 		int nombre2 = this.cout; 
