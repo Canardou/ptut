@@ -181,7 +181,6 @@ public class BluetoothCommPC2 extends Thread{
 					
 		return trameR;
 					
-					
 			
 	
 	}

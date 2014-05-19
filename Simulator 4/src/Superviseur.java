@@ -348,7 +348,7 @@ public class Superviseur {
 				System.out.println(e);
 			}
 		}
-		for(i=0;i<2;i++){
+		for(i=0;i<3;i++){
 			comPCNXT.getThreadComm(i).setOrdres(ordres);
 		}
 		while(true){   

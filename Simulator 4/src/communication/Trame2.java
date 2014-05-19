@@ -185,7 +185,16 @@ public class Trame2 {
 		return this.isBusy;
 	}
 	
-	
+	public Case toCase(){
+		if(this.typeTrame == 1){
+			Case nouvelleCase = new Case((int)this.contenuT[2],(int)this.contenuT[3]);
+			nouvelleCase.update(this.contenuT[4]);
+			return  nouvelleCase;
+		}
+		else{
+			return null;
+		}
+	}
 	
 	public void printTrame() throws InterruptedException{
 		//Thread thread=new Thread();
