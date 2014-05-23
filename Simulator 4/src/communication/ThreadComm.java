@@ -1,6 +1,7 @@
 package communication;
 
 import java.util.LinkedList;
+import java.util.NoSuchElementException;
 import java.util.Queue;
 
 import labyrinth.Case;
@@ -19,7 +20,8 @@ public class ThreadComm extends Thread{
 	private Case caseRecue ;
 	private int orientation;
 	private Queue<Integer> queueOrdres ;
-	private int typeOrdre ;
+	private boolean busy;
+
 	
 
 	
@@ -32,8 +34,7 @@ public class ThreadComm extends Thread{
 		this.orientation = orientation;
 		this.queueOrdres =new LinkedList<Integer>();
 		this.caseRecue = new Case(-1,-1);
-		this.typeOrdre = Order.STOP;
-	
+
 	}
 	
 	
@@ -62,6 +63,7 @@ public class ThreadComm extends Thread{
 				System.out.println("Demande isBusy OK" );
 				Trame2 receiveIsBusy = this.com.receive();
 				int Busy=receiveIsBusy.getBusy();
+				int typeOrdre;
 				
 				while(this.connected){
 
@@ -70,8 +72,8 @@ public class ThreadComm extends Thread{
 					Busy=receiveIsBusy.getBusy();
 					
 					if (Busy!=1){
-						
-						switch(this.typeOrdre){
+						typeOrdre = this.lireOrdre();
+						switch(typeOrdre){
 
 						//Angle de r�f�rence
 						case Order.SAVEREFANGLE: 
@@ -89,11 +91,7 @@ public class ThreadComm extends Thread{
 						
 						System.out.println("angleRef OK" );
 						break;
-						
-						// Position initiale
-						//Case caseInit = new Case(1,2);														// � recup�rer grace au moniteur, pour l'instant initialisation quelconque 		
-						//int orientation=0; 			
-						// � recup�rer grace au moniteur, pour l'instant initialisation quelconque 	
+	
 						case Order.SETPOSITION:
 						if(this.recepteur.getID()==0) {
 							Trame2 sendPositionInit  = new Trame2((byte)0, caseInit,orientation);
@@ -155,7 +153,6 @@ public class ThreadComm extends Thread{
 						}
 						
 						Trame2 receiveListCase=this.com.receive();
-						System.out.println("trame recue :");
 						if(receiveListCase != null){	
 							caseRecue = receiveListCase.toCase();
 						}
@@ -164,15 +161,29 @@ public class ThreadComm extends Thread{
 							caseRecue = null ;
 						}
 						break;
+						
+						case -1:
+							//LULZ NUTHIGN TU DO !!
+						break;
 					}
 				}
 			}
 		}			
 	}
 	
-	public void setTypeOrdre(int type){
-		this.typeOrdre = type;
+	public int lireOrdre(){
+		int i ;
+		try{
+		i = ((LinkedList<Integer>)this.queueOrdres).getLast();
+		((LinkedList<Integer>)this.queueOrdres).removeLast();
+		return i;
+		}
+		catch(NoSuchElementException e){
+			return -1;
+		}
+	
 	}
+	
 }
 	
 	

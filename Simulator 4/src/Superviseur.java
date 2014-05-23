@@ -239,9 +239,9 @@ public class Superviseur {
 				}
 			}
 		if(this.dessin.getDoge())
-			Dialogue.SuccessDoge("Simulation r�solue ! Ouaf !");
+			Dialogue.SuccessDoge("Simulation résolue ! Ouaf !");
 		else
-			Dialogue.Success("Simulation r�solue ! Bilip !");
+			Dialogue.Success("Simulation résolue ! Bilip !");
 	}
 	
 	
@@ -336,10 +336,26 @@ public class Superviseur {
 	}
 	
 	public void destin() throws InterruptedException {
+		
+		//Affiche une jolie fenêtre de début 
+		if(this.dessin.getDoge())
+			Dialogue.Warning("Who let the dogs out ?");
+		else
+			Dialogue.Warning("Début de la résolution, suivez votre destin");
+		
+		//Initialisation de ce dont on a besoin
+		this.dessin.lock.lock();
+		Carte labyrinth=new Carte(this.carte.getWidth(),this.carte.getHeight());
+		this.carte.reset();
+		this.next_paths=null;
+		this.test.clear();
+		this.application.reset();
 		InitPC comPCNXT = new InitPC();
 		int i;
 		Queue<Integer> ordres = new LinkedList<Integer>();
 		ordres.add(Order.CHECKFIRSTCASE);
+		
+		//On connecte les 3 robots
 		for(i=0;i<3;i++){
 			try{
 				comPCNXT.setThreadComm(this.dessin.getRobot(i));
@@ -348,11 +364,15 @@ public class Superviseur {
 				System.out.println(e);
 			}
 		}
+		
+		//On envoie au 3 robots l'ordre de vérifier la première case
 		for(i=0;i<3;i++){
 			comPCNXT.getThreadComm(i).setOrdres(ordres);
 		}
+		
+		
 		while(true){   
-			//tant que marque pas trouv�e
+			//tant que marque pas trouvee
 			//Thread.sleep(1);
 			for(i=0;i<2;i++){
 				comPCNXT.getThreadComm(i).setOrdres(this.caseToOrder(current_paths[i].get(0), current_paths[i].get(0).getDir(current_paths[i].get(1)), current_paths[i].get(1)));
