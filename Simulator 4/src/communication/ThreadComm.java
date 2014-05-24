@@ -20,7 +20,7 @@ public class ThreadComm extends Thread{
 	private Case caseRecue ;
 	private int orientation;
 	private Queue<Integer> queueOrdres ;
-	private boolean busy;
+
 
 	
 
@@ -152,6 +152,13 @@ public class ThreadComm extends Thread{
 							this.com.send (new Trame2((byte)2,(byte)Order.CASETOSEND));						
 						}
 						
+						break;
+						
+						case -1:
+							//LULZ NUTHIGN TU DO !!
+						break;
+					}
+
 						Trame2 receiveListCase=this.com.receive();
 						if(receiveListCase != null){	
 							caseRecue = receiveListCase.toCase();
@@ -160,12 +167,6 @@ public class ThreadComm extends Thread{
 							System.out.println(" Rien reçu!");
 							caseRecue = null ;
 						}
-						break;
-						
-						case -1:
-							//LULZ NUTHIGN TU DO !!
-						break;
-					}
 				}
 			}
 		}			

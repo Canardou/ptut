@@ -26,6 +26,7 @@ public class Superviseur {
 	private int current;
 	private Gui application;
 	private int simulation;
+	private  Chemin [] current_paths_4ever;
 	
 	public Superviseur(Carte carte){
 		this.current_paths=new Chemin[agent];
@@ -343,7 +344,7 @@ public class Superviseur {
 		else
 			Dialogue.Warning("Début de la résolution, suivez votre destin");
 		
-		//Initialisation de ce dont on a besoin
+		//Déclaration de ce dont on a besoin
 		this.dessin.lock.lock();
 		Carte labyrinth=new Carte(this.carte.getWidth(),this.carte.getHeight());
 		this.carte.reset();
@@ -355,6 +356,14 @@ public class Superviseur {
 		Queue<Integer> ordres = new LinkedList<Integer>();
 		ordres.add(Order.CHECKFIRSTCASE);
 		
+		
+		// code chelou d'Olivier, on ne sait pas si ça sert à qqch ici.
+		
+		if(dessin.getRobot(0).getType()==3 || dessin.getRobot(0).getType()==7)
+			dessin.getRobot(0).changeType(dessin.getRobot(0).getType()-3);
+		
+		
+		
 		//On connecte les 3 robots
 		for(i=0;i<3;i++){
 			try{
@@ -364,16 +373,34 @@ public class Superviseur {
 				System.out.println(e);
 			}
 		}
+
 		
+
 		//On envoie au 3 robots l'ordre de vérifier la première case
 		for(i=0;i<3;i++){
 			comPCNXT.getThreadComm(i).setOrdres(ordres);
 		}
 		
+		/*TODO:
+		 * 		 
+		 * for sur le caseToOrder pour transformer le currentpath en suite d'ordres.
+		 * reset du buffer d'entree d'ordres pour la MAJ du current path.
+		 * calcul orientation courante du robot.
+		 * 		  
+		*/
+		
+		for(i=0;i<3;i++){
+			
+			this.dessin.getRobot(i).moveTo(this.dessin.getRobot(i).getX(),this.dessin.getRobot(i).getY(),this.dessin.getRobot(i).getDir());
+			this.dessin.getRobot(i).setVisible(true);
+			current_paths_4ever[i]=new Chemin(this.carte.getCase(this.dessin.getRobot(i).getX(), this.dessin.getRobot(i).getY()));
+			current_paths_4ever[i].setValue(i);
+		}
 		
 		while(true){   
-			//tant que marque pas trouvee
-			//Thread.sleep(1);
+			
+			
+			//On envoie les ordres de déplacement aux 3 robots.
 			for(i=0;i<2;i++){
 				comPCNXT.getThreadComm(i).setOrdres(this.caseToOrder(current_paths[i].get(0), current_paths[i].get(0).getDir(current_paths[i].get(1)), current_paths[i].get(1)));
 			}
