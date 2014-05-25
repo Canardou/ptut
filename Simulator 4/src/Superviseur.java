@@ -31,6 +31,7 @@ public class Superviseur {
 	
 	public Superviseur(Carte carte){
 		this.current_paths=new Chemin[agent];
+		this.current_paths_4ever=new Chemin[agent];
 		this.priority=new int[agent];
 		this.test=new ArrayList<Chemin>();
 		this.next_paths=null;
@@ -63,11 +64,8 @@ public class Superviseur {
 		this.next_paths=null;
 		this.test.clear();
 		this.application.reset();
-		
-		if(dessin.getRobot(0).getType()==3 || dessin.getRobot(0).getType()==7)
-			dessin.getRobot(0).changeType(dessin.getRobot(0).getType()-3);
+
 		for(int i=0;i<3;i++){
-			
 			this.dessin.getRobot(i).moveTo(carte.rand.nextInt(this.carte.getWidth()),this.carte.rand.nextInt(this.carte.getHeight()),this.carte.rand.nextInt(4));
 			this.dessin.getRobot(i).setVisible(true);
 			current_paths[i]=new Chemin(this.carte.getCase(this.dessin.getRobot(i).getX(), this.dessin.getRobot(i).getY()));
@@ -251,97 +249,6 @@ public class Superviseur {
 			Dialogue.Success("Simulation rÃ©solue ! Bilip !");
 	}
 	
-	
-	public Queue<Integer> caseToOrder(Case current, int dir, Case next){
-		
-		Queue<Integer> ordre = new LinkedList<Integer>();
-		
-		if (current.isRevealed()){
-			if(next.getX()!=current.getX() || next.getY() != current.getY()){
-				if (next.getX()>current.getX() && next.getY() == current.getY()){
-					switch(dir){
-						case Case.UP:
-							((LinkedList<Integer>)ordre).addFirst(Order.TURNR);
-							((LinkedList<Integer>)ordre).addFirst(Order.FORWARD);
-						break;
-						case Case.DOWN:
-							((LinkedList<Integer>)ordre).addFirst(Order.TURNL);
-							((LinkedList<Integer>)ordre).addFirst(Order.FORWARD);
-						break;
-						case Case.RIGHT:
-							((LinkedList<Integer>)ordre).addFirst(Order.FORWARD);
-						break;
-						case Case.LEFT:
-							((LinkedList<Integer>)ordre).addFirst(Order.TURNB);
-							((LinkedList<Integer>)ordre).addFirst(Order.FORWARD);
-						break;
-					}
-				}
-					if (next.getX()<current.getX() && next.getY() == current.getY()){
-						switch(dir){
-							case Case.UP:
-								((LinkedList<Integer>)ordre).addFirst(Order.TURNL);
-								((LinkedList<Integer>)ordre).addFirst(Order.FORWARD);
-							break;
-							case Case.DOWN:
-								((LinkedList<Integer>)ordre).addFirst(Order.TURNR);
-								((LinkedList<Integer>)ordre).addFirst(Order.FORWARD);
-							break;
-							case Case.LEFT:
-								((LinkedList<Integer>)ordre).addFirst(Order.FORWARD);
-							break;
-							case Case.RIGHT:
-								((LinkedList<Integer>)ordre).addFirst(Order.TURNB);
-								((LinkedList<Integer>)ordre).addFirst(Order.FORWARD);
-							break;
-						}
-					}
-				
-					if (next.getY()>current.getY() && next.getX() == current.getX()){
-						switch(dir){
-							case Case.UP:
-								((LinkedList<Integer>)ordre).addFirst(Order.FORWARD);
-							break;
-							case Case.DOWN:
-								((LinkedList<Integer>)ordre).addFirst(Order.TURNB);
-								((LinkedList<Integer>)ordre).addFirst(Order.FORWARD);
-							break;
-							case Case.LEFT:
-								((LinkedList<Integer>)ordre).addFirst(Order.TURNR);
-								((LinkedList<Integer>)ordre).addFirst(Order.FORWARD);
-							break;
-							case Case.RIGHT:
-								((LinkedList<Integer>)ordre).addFirst(Order.TURNL);
-								((LinkedList<Integer>)ordre).addFirst(Order.FORWARD);
-							break;
-						}
-					}
-					if (next.getY()<current.getY() && next.getX() == current.getX()){
-						switch(dir){
-							case Case.UP:
-								((LinkedList<Integer>)ordre).addFirst(Order.TURNB);
-								((LinkedList<Integer>)ordre).addFirst(Order.FORWARD);
-							break;
-							case Case.DOWN:
-								((LinkedList<Integer>)ordre).addFirst(Order.FORWARD);
-							break;
-							case Case.LEFT:
-								((LinkedList<Integer>)ordre).addFirst(Order.TURNL);
-								((LinkedList<Integer>)ordre).addFirst(Order.FORWARD);
-							break;
-							case Case.RIGHT:
-								((LinkedList<Integer>)ordre).addFirst(Order.TURNR);
-								((LinkedList<Integer>)ordre).addFirst(Order.FORWARD);
-							break;
-						}
-					}
-				}
-				else {((LinkedList<Integer>)ordre).addFirst(Order.STOP);}
-			}
-			else {((LinkedList<Integer>)ordre).addFirst(Order.STOP);}		
-		return ordre;	
-	}
-	
 	public void destin() throws InterruptedException {
 		
 		//Affiche une jolie fenÃªtre de dÃ©but 
@@ -352,7 +259,6 @@ public class Superviseur {
 		
 		//DÃ©claration de ce dont on a besoin
 		this.dessin.lock.lock();
-		Carte labyrinth=new Carte(this.carte.getWidth(),this.carte.getHeight());
 		this.carte.reset();
 		this.next_paths=null;
 		this.test.clear();
@@ -360,13 +266,6 @@ public class Superviseur {
 		InitPC comPCNXT = new InitPC();
 		int i;
 		Queue<Integer> ordres = new LinkedList<Integer>();
-		
-		
-		
-		// code chelou d'Olivier, sert Ã  l'affichage des robot.
-		
-		if(dessin.getRobot(0).getType()==3 || dessin.getRobot(0).getType()==7)
-			dessin.getRobot(0).changeType(dessin.getRobot(0).getType()-3);
 		
 		
 		
@@ -431,7 +330,8 @@ public class Superviseur {
 							current_paths[numero].setValue(numero);
 						}
 						if(this.carte.getCase(x, y)!=null){
-							this.carte.update(x, y, labyrinth.getCase(x, y).getCompo());
+//Composition needed !
+							this.carte.update(x, y, /*->*/carte.getCase(x, y).getCompo()/*<-*/);//Il faut la composition ici !!
 							this.carte.reveal(x, y);
 						}
 						this.carte.setExit();
@@ -524,6 +424,7 @@ public class Superviseur {
 								}
 							current_paths[numero].setValue(numero);
 							dessin.getRobot(numero).walkPath(new Chemin(current_paths[numero]));
+							current_paths_4ever[numero]=new Chemin(current_paths[numero]);
 							}
 						}
 					}
@@ -544,6 +445,7 @@ public class Superviseur {
 								if(test.get(0)!=null){
 									if(test.get(0).get(0)==carte.getCase(dessin.getRobot(test.get(0).getValue()).getX(), dessin.getRobot(test.get(0).getValue()).getY())){
 										dessin.getRobot(test.get(0).getValue()).walkPath(test.get(0));
+										current_paths_4ever[test.get(0).getValue()]=new Chemin(test.get(0));
 										current_paths[test.get(0).getValue()]=test.get(0);
 										this.application.putLog(test.get(0).getValue(),"Woof !");
 										System.out.println(test.get(0));
@@ -572,6 +474,7 @@ public class Superviseur {
 								if(test.get(0)!=null){
 									if(test.get(0).get(0)==carte.getCase(dessin.getRobot(test.get(0).getValue()).getX(), dessin.getRobot(test.get(0).getValue()).getY())){
 										dessin.getRobot(test.get(0).getValue()).walkPath(test.get(0));
+										current_paths_4ever[test.get(0).getValue()]=new Chemin(test.get(0));
 										current_paths[test.get(0).getValue()]=test.get(0);
 										System.out.println(test.get(0));
 									}
@@ -608,12 +511,107 @@ public class Superviseur {
 				
 		}
 
+public Queue<Integer> caseToOrder(Case current, int dir, Case next){
+		
+		Queue<Integer> ordre = new LinkedList<Integer>();
+		
+		if (current.isRevealed()){
+			if(next.getX()!=current.getX() || next.getY() != current.getY()){
+				if (next.getX()>current.getX() && next.getY() == current.getY()){
+					switch(dir){
+						case Case.UP:
+							((LinkedList<Integer>)ordre).addFirst(Order.TURNR);
+							((LinkedList<Integer>)ordre).addFirst(Order.FORWARD);
+						break;
+						case Case.DOWN:
+							((LinkedList<Integer>)ordre).addFirst(Order.TURNL);
+							((LinkedList<Integer>)ordre).addFirst(Order.FORWARD);
+						break;
+						case Case.RIGHT:
+							((LinkedList<Integer>)ordre).addFirst(Order.FORWARD);
+						break;
+						case Case.LEFT:
+							((LinkedList<Integer>)ordre).addFirst(Order.TURNB);
+							((LinkedList<Integer>)ordre).addFirst(Order.FORWARD);
+						break;
+					}
+				}
+					if (next.getX()<current.getX() && next.getY() == current.getY()){
+						switch(dir){
+							case Case.UP:
+								((LinkedList<Integer>)ordre).addFirst(Order.TURNL);
+								((LinkedList<Integer>)ordre).addFirst(Order.FORWARD);
+							break;
+							case Case.DOWN:
+								((LinkedList<Integer>)ordre).addFirst(Order.TURNR);
+								((LinkedList<Integer>)ordre).addFirst(Order.FORWARD);
+							break;
+							case Case.LEFT:
+								((LinkedList<Integer>)ordre).addFirst(Order.FORWARD);
+							break;
+							case Case.RIGHT:
+								((LinkedList<Integer>)ordre).addFirst(Order.TURNB);
+								((LinkedList<Integer>)ordre).addFirst(Order.FORWARD);
+							break;
+						}
+					}
+				
+					if (next.getY()>current.getY() && next.getX() == current.getX()){
+						switch(dir){
+							case Case.UP:
+								((LinkedList<Integer>)ordre).addFirst(Order.FORWARD);
+							break;
+							case Case.DOWN:
+								((LinkedList<Integer>)ordre).addFirst(Order.TURNB);
+								((LinkedList<Integer>)ordre).addFirst(Order.FORWARD);
+							break;
+							case Case.LEFT:
+								((LinkedList<Integer>)ordre).addFirst(Order.TURNR);
+								((LinkedList<Integer>)ordre).addFirst(Order.FORWARD);
+							break;
+							case Case.RIGHT:
+								((LinkedList<Integer>)ordre).addFirst(Order.TURNL);
+								((LinkedList<Integer>)ordre).addFirst(Order.FORWARD);
+							break;
+						}
+					}
+					if (next.getY()<current.getY() && next.getX() == current.getX()){
+						switch(dir){
+							case Case.UP:
+								((LinkedList<Integer>)ordre).addFirst(Order.TURNB);
+								((LinkedList<Integer>)ordre).addFirst(Order.FORWARD);
+							break;
+							case Case.DOWN:
+								((LinkedList<Integer>)ordre).addFirst(Order.FORWARD);
+							break;
+							case Case.LEFT:
+								((LinkedList<Integer>)ordre).addFirst(Order.TURNL);
+								((LinkedList<Integer>)ordre).addFirst(Order.FORWARD);
+							break;
+							case Case.RIGHT:
+								((LinkedList<Integer>)ordre).addFirst(Order.TURNR);
+								((LinkedList<Integer>)ordre).addFirst(Order.FORWARD);
+							break;
+						}
+					}
+				}
+				else {((LinkedList<Integer>)ordre).addFirst(Order.STOP);}
+			}
+			else {((LinkedList<Integer>)ordre).addFirst(Order.STOP);}		
+		return ordre;	
+	}
+	
 	
 	public void initialisation(){
+		//Redéfini l'état comme initial
 		for(int k=0;k<this.priority.length;k++)
 			this.priority[k]=k;
 		this.step=0;
+		//Enlève la balle au robot
+		if(dessin.getRobot(0).getType()==3 || dessin.getRobot(0).getType()==7)
+			dessin.getRobot(0).changeType(dessin.getRobot(0).getType()-3);
 	}
+	
 	
 	public DessinCarte dessinCarte(){
 		return this.dessin;
