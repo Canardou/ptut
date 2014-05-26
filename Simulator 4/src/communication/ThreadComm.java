@@ -64,12 +64,7 @@ public class ThreadComm extends Thread{
 
 				//System.out.println("Demande isBusy" );
 				Trame2 receiveIsBusy = this.com.receive();
-				/*try {
-					receiveIsBusy.printTrame();
-				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}*/
+				
 				int Busy=receiveIsBusy.getBusy();
 				int typeOrdre;
 				

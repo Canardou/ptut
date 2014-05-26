@@ -276,7 +276,7 @@ public class Superviseur {
 			try{
 				comPCNXT.setThreadComm(this.dessin.getRobot(i));
 				System.out.println("robot "+ i +" connecté : ");
-				while(!comPCNXT.getThreadComm(i).getConnected()){}
+				//while(!comPCNXT.getThreadComm(i).getConnected()){}
 				
 			}
 			catch(Exception e){
