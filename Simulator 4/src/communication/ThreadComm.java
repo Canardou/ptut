@@ -55,15 +55,21 @@ public class ThreadComm extends Thread{
 			
 			this.com.connexion();
 			this.connected=true;
-				System.out.println("robot connecté : ");
+				//System.out.println("robot connecté : ");
 				
 				//
 				//Initialisation du robot
 				//
 				
 
-				System.out.println("Demande isBusy OK" );
+				//System.out.println("Demande isBusy" );
 				Trame2 receiveIsBusy = this.com.receive();
+				/*try {
+					receiveIsBusy.printTrame();
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}*/
 				int Busy=receiveIsBusy.getBusy();
 				int typeOrdre;
 				
@@ -311,6 +317,7 @@ public class ThreadComm extends Thread{
 						}
 				}
 			}
+		
 		}			
 	}
 	
@@ -339,6 +346,15 @@ public class ThreadComm extends Thread{
 		return this.reception;
 	}
 	
+	public boolean getConnected(){
+		return this.connected;
+	}
+	
+	public void setCaseInit(int x, int y, int dir){
+		this.caseInit = new Case(x,y);
+		this.orientation = dir ;
+		
+	}
 }
 	
 	

@@ -28,6 +28,7 @@ public class Superviseur {
 	private int simulation;
 	private  Chemin [] current_paths_4ever;
 	private int currentDir ;
+	private boolean ready;
 	
 	public Superviseur(Carte carte){
 		this.current_paths=new Chemin[agent];
@@ -39,6 +40,7 @@ public class Superviseur {
 		this.dessin=new DessinCarte(carte);
 		this.dessin.launch();
 		this.currentDir=0;
+		this.ready = false;
 		
 		application = new Gui(this);
 		application.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -255,7 +257,7 @@ public class Superviseur {
 		if(this.dessin.getDoge())
 			Dialogue.Warning("Who let the dogs out ?");
 		else
-			Dialogue.Warning("Début de la résolution, suivez votre destin");
+			Dialogue.Warning("Début de la résolution, suivez votre destin !");
 		
 		//Déclaration de ce dont on a besoin
 		this.dessin.lock.lock();
@@ -268,22 +270,29 @@ public class Superviseur {
 		Queue<Integer> ordres = new LinkedList<Integer>();
 		
 		
-		
 		//On connecte les 3 robots
 		for(i=0;i<3;i++){
+			
 			try{
 				comPCNXT.setThreadComm(this.dessin.getRobot(i));
+				System.out.println("robot "+ i +" connecté : ");
+				while(!comPCNXT.getThreadComm(i).getConnected()){}
+				
 			}
 			catch(Exception e){
 				System.out.println(e);
 			}
+			
 		}
 
 		
 
-		//On envoie au 3 robots l'ordre de vérifier la première case
+		//On envoie au 3 robots les ordres d'initialisation.
+		ordres.add(Order.SETPOSITION);
+		ordres.add(Order.SAVEREFANGLE);
 		ordres.add(Order.CHECKFIRSTCASE);
 		for(i=0;i<3;i++){
+			comPCNXT.getThreadComm(i).setCaseInit(this.dessin.getRobot(i).getX(), this.dessin.getRobot(i).getY(), this.dessin.getRobot(i).getDir());
 			comPCNXT.getThreadComm(i).setOrdres(ordres);
 		}
 		ordres.clear();
@@ -320,7 +329,9 @@ public class Superviseur {
 				int y=0;
 				ordres.add(Order.CASETOSEND);
 				for(int numero=0; numero<3; numero++){
+					
 					comPCNXT.getThreadComm(i).setOrdres(ordres);
+					
 					if(comPCNXT.getThreadComm(i).getReception()){
 						x= comPCNXT.getThreadComm(i).getCaseRecue().getX();
 						y= comPCNXT.getThreadComm(i).getCaseRecue().getY();
@@ -603,11 +614,11 @@ public Queue<Integer> caseToOrder(Case current, int dir, Case next){
 	
 	
 	public void initialisation(){
-		//Red�fini l'�tat comme initial
+		//Red�fini l'�tat comme initial
 		for(int k=0;k<this.priority.length;k++)
 			this.priority[k]=k;
 		this.step=0;
-		//Enl�ve la balle au robot
+		//Enl�ve la balle au robot
 		if(dessin.getRobot(0).getType()==3 || dessin.getRobot(0).getType()==7)
 			dessin.getRobot(0).changeType(dessin.getRobot(0).getType()-3);
 	}
