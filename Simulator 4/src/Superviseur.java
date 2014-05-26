@@ -292,7 +292,6 @@ public class Superviseur {
 		ordres.add(Order.SAVEREFANGLE);
 		ordres.add(Order.CHECKFIRSTCASE);
 		for(i=0;i<3;i++){
-			comPCNXT.getThreadComm(i).setCaseInit(this.dessin.getRobot(i).getX(), this.dessin.getRobot(i).getY(), this.dessin.getRobot(i).getDir());
 			comPCNXT.getThreadComm(i).setOrdres(ordres);
 		}
 		ordres.clear();

@@ -52,8 +52,31 @@ public class ThreadComm extends Thread{
 		while(true){
 			
 			//connexion PC -> robot
-			
-			this.com.connexion();
+			while(!this.connected){
+				try{
+				this.com.connexion();
+				Trame2 receiveIsBusy = this.com.receive();
+				int Busy=receiveIsBusy.getBusy();
+				int typeOrdre;
+				this.connected=true;
+				if(this.recepteur.getID()==0) {
+					Trame2 sendIsBusy= new Trame2((byte)1,(byte)Order.SENDBUSY);  // ajouter dans Ordre et g�rer cette commande dans robot
+					this.com.send (sendIsBusy);
+				} else if (this.recepteur.getID()==1) {
+					Trame2 sendIsBusy= new Trame2((byte)1,(byte)Order.SENDBUSY);  // ajouter dans Ordre et g�rer cette commande dans robot
+					this.com.send (sendIsBusy);
+				} else if (this.recepteur.getID()==2) {
+					Trame2 sendIsBusy= new Trame2((byte)1,(byte)Order.SENDBUSY);  // ajouter dans Ordre et g�rer cette commande dans robot
+					this.com.send (sendIsBusy);					
+				}
+				}
+				catch(Exception e){
+					this.connected = false;
+				}
+			}
+			Trame2 receiveIsBusy = this.com.receive();
+			int Busy=receiveIsBusy.getBusy();
+			int typeOrdre;
 			this.connected=true;
 				//System.out.println("robot connecté : ");
 				
@@ -63,18 +86,28 @@ public class ThreadComm extends Thread{
 				
 
 				//System.out.println("Demande isBusy" );
-				Trame2 receiveIsBusy = this.com.receive();
 				
-				int Busy=receiveIsBusy.getBusy();
-				int typeOrdre;
 				
 				while(this.connected){
 					
 					this.reception = false ;
 
+					// Demande au robot s'il est occup� et reception
+					if(this.recepteur.getID()==0) {
+						Trame2 sendIsBusy= new Trame2((byte)1,(byte)Order.SENDBUSY);  // ajouter dans Ordre et g�rer cette commande dans robot
+						this.com.send (sendIsBusy);
+					} else if (this.recepteur.getID()==1) {
+						Trame2 sendIsBusy= new Trame2((byte)1,(byte)Order.SENDBUSY);  // ajouter dans Ordre et g�rer cette commande dans robot
+						this.com.send (sendIsBusy);
+					} else if (this.recepteur.getID()==2) {
+						Trame2 sendIsBusy= new Trame2((byte)1,(byte)Order.SENDBUSY);  // ajouter dans Ordre et g�rer cette commande dans robot
+						this.com.send (sendIsBusy);					
+					}
+					
 					System.out.println("Demande isBusy OK" );
 					receiveIsBusy = this.com.receive();
 					Busy=receiveIsBusy.getBusy();
+					
 					
 					if (Busy!=1){
 						typeOrdre = this.lireOrdre();
@@ -131,20 +164,6 @@ public class ThreadComm extends Thread{
 						
 						break;
 						
-						case Order.SENDBUSY:
-						// Demande au robot s'il est occup� et reception
-						if(this.recepteur.getID()==0) {
-							Trame2 sendIsBusy= new Trame2((byte)1,(byte)Order.SENDBUSY);  // ajouter dans Ordre et g�rer cette commande dans robot
-							this.com.send (sendIsBusy);
-						} else if (this.recepteur.getID()==1) {
-							Trame2 sendIsBusy= new Trame2((byte)1,(byte)Order.SENDBUSY);  // ajouter dans Ordre et g�rer cette commande dans robot
-							this.com.send (sendIsBusy);
-						} else if (this.recepteur.getID()==2) {
-							Trame2 sendIsBusy= new Trame2((byte)1,(byte)Order.SENDBUSY);  // ajouter dans Ordre et g�rer cette commande dans robot
-							this.com.send (sendIsBusy);					
-						}
-						
-						break;
 						
 						case Order.STOP:
 							// envoie ordre STOP
