@@ -331,13 +331,15 @@ public class ThreadComm extends Thread{
 							this.com.send (new Trame2((byte)2,(byte)Order.CASETOSEND));						
 						}
 						Trame2 receiveListCase=this.com.receive();
-						if(receiveListCase != null){	
-							caseRecue = receiveListCase.toCase();
+						if(receiveListCase != null){
+							synchronized(this){
+							caseRecue = receiveListCase.toCase();}
 							this.reception = true ;
 						}
 						else{
 							System.out.println(" Rien reçu!");
-							caseRecue = null ;
+							synchronized(this){
+							caseRecue = null ;}
 						}
 						break;
 						
@@ -369,7 +371,8 @@ public class ThreadComm extends Thread{
 	}
 	
 	public Case getCaseRecue(){
-		return this.caseRecue;
+		synchronized(this){
+		return this.caseRecue;}
 	}
 	
 	public Queue<Integer> getQueue(){

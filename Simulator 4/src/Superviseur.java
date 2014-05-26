@@ -294,8 +294,10 @@ public class Superviseur {
 		ordres.add(Order.SAVEREFANGLE);
 		ordres.add(Order.CHECKFIRSTCASE);
 		for(i=0;i<3;i++){
-			comPCNXT.getThreadComm(i).setOrdres(ordres);
+			synchronized(comPCNXT.getThreadComm(i)){
+			comPCNXT.getThreadComm(i).setOrdres(ordres);}
 		}
+		System.out.println(ordres.toString());
 		ordres.clear();
 		/*TODO:
 		 * 		 
@@ -334,6 +336,7 @@ public class Superviseur {
 					comPCNXT.getThreadComm(i).setOrdres(ordres);
 					
 					if(comPCNXT.getThreadComm(i).getReception()){
+						
 						x= comPCNXT.getThreadComm(i).getCaseRecue().getX();
 						y= comPCNXT.getThreadComm(i).getCaseRecue().getY();
 						current_paths[numero].cut(carte.getCase(x, y));
@@ -350,6 +353,7 @@ public class Superviseur {
 					}
 				}
 				ordres.clear();
+				
 				if(step<2 && carte.getCase(comPCNXT.getThreadComm(i).getCaseRecue().getX(), comPCNXT.getThreadComm(i).getCaseRecue().getY())==carte.getMark()){
 					dessin.getRobot(0).changeType(dessin.getRobot(0).getType()+3);
 					dessin.showMark(false);
@@ -392,6 +396,7 @@ public class Superviseur {
 				case 0:
 				case 2:
 					for(int numero=0; numero<3; numero++){
+						
 						if(comPCNXT.getThreadComm(numero).getQueue().isEmpty()){
 							ordres.add(Order.CASETOSEND);
 							comPCNXT.getThreadComm(i).setOrdres(ordres);
@@ -439,6 +444,7 @@ public class Superviseur {
 							current_paths_4ever[numero]=new Chemin(current_paths[numero]);
 							}
 						}
+						
 					}
 					break;
 				case 1:
