@@ -83,18 +83,28 @@ public class BluetoothCommPC2 extends Thread{
 				
 				// ouverture connexion et activation des input et output streams 
 				try {
+					System.out.println("print YOLO");
+					System.out.println(recepteur.getNom());
+					System.out.println( recepteur.getAdr());
+					System.out.println(NXTComm.PACKET);
 					nxtComm.open(new NXTInfo(NXTCommFactory.BLUETOOTH, recepteur.getNom() , recepteur.getAdr()),NXTComm.PACKET);  // pas sure
 					System.out.println("connexion ok");
 					
 					
 					this.in = this.nxtComm.getInputStream();  
+					System.out.println("creation in");
 					this.out = this.nxtComm.getOutputStream(); 
+					System.out.println("creation out");
 					
 					this.dis = new DataInputStream(this.in);
+					System.out.println("creation dis");
 					this.dos = new DataOutputStream(this.out);
+					System.out.println("creation dos");
 
 					this.emetteur.setInput(this.dis);
+					System.out.println("set in");
 					this.emetteur.setOutput(this.dos);
+					System.out.println("set out");
 					
 				//on v�rifie que le PC recoie la valeur 0  pour initier la communication
 					

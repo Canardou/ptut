@@ -14,13 +14,13 @@ public class ThreadComm extends Thread{
 	
 	
 	EntiteeBT recepteur;
-	private boolean connected;
+	private volatile boolean connected;
 	private BluetoothCommPC2 com;
 	private Case caseInit;
-	private Case caseRecue ;
+	private volatile Case caseRecue ;
 	private boolean reception;
 	private int orientation;
-	private Queue<Integer> queueOrdres ;
+	private volatile Queue<Integer> queueOrdres ;
 
 
 	
@@ -43,7 +43,8 @@ public class ThreadComm extends Thread{
 	// m�thode
 	
 	public void setOrdres(Queue<Integer> ordres){
-		this.queueOrdres = ordres;
+		synchronized(this){
+		this.queueOrdres = ordres;}
 	}
 	
 	@Override
@@ -51,33 +52,37 @@ public class ThreadComm extends Thread{
 		
 		while(true){
 			
-			//connexion PC -> robot
-			while(!this.connected){
-				try{
 				this.com.connexion();
-				Trame2 receiveIsBusy = this.com.receive();
-				int Busy=receiveIsBusy.getBusy();
-				int typeOrdre;
+				synchronized(this){
 				this.connected=true;
+				}
+				
+				/*
 				if(this.recepteur.getID()==0) {
-					Trame2 sendIsBusy= new Trame2((byte)1,(byte)Order.SENDBUSY);  // ajouter dans Ordre et g�rer cette commande dans robot
+					Trame2 sendIsBusy= new Trame2((byte)0,(byte)Order.SENDBUSY);  // ajouter dans Ordre et g�rer cette commande dans robot
 					this.com.send (sendIsBusy);
 				} else if (this.recepteur.getID()==1) {
 					Trame2 sendIsBusy= new Trame2((byte)1,(byte)Order.SENDBUSY);  // ajouter dans Ordre et g�rer cette commande dans robot
 					this.com.send (sendIsBusy);
 				} else if (this.recepteur.getID()==2) {
-					Trame2 sendIsBusy= new Trame2((byte)1,(byte)Order.SENDBUSY);  // ajouter dans Ordre et g�rer cette commande dans robot
+					Trame2 sendIsBusy= new Trame2((byte)2,(byte)Order.SENDBUSY);  // ajouter dans Ordre et g�rer cette commande dans robot
 					this.com.send (sendIsBusy);					
 				}
+				
+				Trame2 receiveIsBusy = this.com.receive();
+				
+				int Busy=-2;
+				while(Busy==-2){
+				try{
+				receiveIsBusy = this.com.receive();
+				Busy=receiveIsBusy.getBusy();
+				System.out.println("Demande isBusy success" );
 				}
 				catch(Exception e){
-					this.connected = false;
+					//this.connected = false;
 				}
-			}
-			Trame2 receiveIsBusy = this.com.receive();
-			int Busy=receiveIsBusy.getBusy();
-			int typeOrdre;
-			this.connected=true;
+				}
+				int typeOrdre;
 				//System.out.println("robot connecté : ");
 				
 				//
@@ -86,31 +91,44 @@ public class ThreadComm extends Thread{
 				
 
 				//System.out.println("Demande isBusy" );
-				
+				*/
 				
 				while(this.connected){
-					
+					System.out.println(this.connected);
 					this.reception = false ;
 
 					// Demande au robot s'il est occup� et reception
+					
 					if(this.recepteur.getID()==0) {
-						Trame2 sendIsBusy= new Trame2((byte)1,(byte)Order.SENDBUSY);  // ajouter dans Ordre et g�rer cette commande dans robot
+						Trame2 sendIsBusy= new Trame2((byte)0,(byte)Order.SENDBUSY);  // ajouter dans Ordre et g�rer cette commande dans robot
 						this.com.send (sendIsBusy);
 					} else if (this.recepteur.getID()==1) {
 						Trame2 sendIsBusy= new Trame2((byte)1,(byte)Order.SENDBUSY);  // ajouter dans Ordre et g�rer cette commande dans robot
 						this.com.send (sendIsBusy);
 					} else if (this.recepteur.getID()==2) {
-						Trame2 sendIsBusy= new Trame2((byte)1,(byte)Order.SENDBUSY);  // ajouter dans Ordre et g�rer cette commande dans robot
+						Trame2 sendIsBusy= new Trame2((byte)2,(byte)Order.SENDBUSY);  // ajouter dans Ordre et g�rer cette commande dans robot
 						this.com.send (sendIsBusy);					
 					}
 					
-					System.out.println("Demande isBusy OK" );
-					receiveIsBusy = this.com.receive();
+					int Busy=-2;
+					while(Busy==-2){
+					try{
+					Trame2 receiveIsBusy = this.com.receive();
 					Busy=receiveIsBusy.getBusy();
-					
-					
+					System.out.println("Demande isBusy success bis" );
+					synchronized(this){
+					this.connected = true;}
+					}
+					catch(Exception e){
+						synchronized(this){
+						this.connected = false;}
+						}
+					}
+					int typeOrdre;
 					if (Busy!=1){
+						System.out.println("Je lis mes odres" );
 						typeOrdre = this.lireOrdre();
+						System.out.println("Ordre: "+typeOrdre );
 						switch(typeOrdre){
 
 						//Angle de r�f�rence
@@ -312,14 +330,6 @@ public class ThreadComm extends Thread{
 						} else if (this.recepteur.getID()==2) {
 							this.com.send (new Trame2((byte)2,(byte)Order.CASETOSEND));						
 						}
-						
-						break;
-						
-						case -1:
-							//LULZ NUTHIGN TU DO !!
-						break;
-					}
-
 						Trame2 receiveListCase=this.com.receive();
 						if(receiveListCase != null){	
 							caseRecue = receiveListCase.toCase();
@@ -329,14 +339,23 @@ public class ThreadComm extends Thread{
 							System.out.println(" Rien reçu!");
 							caseRecue = null ;
 						}
+						break;
+						
+						case -1:
+							//LULZ NUTHIGN TU DO !!
+						break;
+					}
+
+						
 				}
+					
 			}
-		
 		}			
 	}
 	
 	public int lireOrdre(){
 		int i ;
+		synchronized(this){
 		try{
 		i = ((LinkedList<Integer>)this.queueOrdres).getLast();
 		((LinkedList<Integer>)this.queueOrdres).removeLast();
@@ -344,6 +363,7 @@ public class ThreadComm extends Thread{
 		}
 		catch(NoSuchElementException e){
 			return -1;
+		}
 		}
 	
 	}
@@ -353,7 +373,8 @@ public class ThreadComm extends Thread{
 	}
 	
 	public Queue<Integer> getQueue(){
-		return this.queueOrdres;
+		synchronized(this){
+		return this.queueOrdres;}
 	}
 
 	public boolean getReception(){
@@ -361,7 +382,9 @@ public class ThreadComm extends Thread{
 	}
 	
 	public boolean getConnected(){
-		return this.connected;
+		synchronized(this){
+		return this.connected;}
+		
 	}
 	
 	public void setCaseInit(int x, int y, int dir){
