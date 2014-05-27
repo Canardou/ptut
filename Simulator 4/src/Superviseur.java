@@ -337,7 +337,7 @@ public class Superviseur {
 					catch(Exception e){
 						
 					}
-					
+					try{
 					if(comPCNXT.getThreadComm(i).getReception()){
 						
 						x= comPCNXT.getThreadComm(i).getCaseRecue().getX();
@@ -353,6 +353,10 @@ public class Superviseur {
 							this.carte.reveal(x, y);
 						}
 						this.carte.setExit();
+					}
+					}
+					catch(Exception e){
+						
 					}
 				}
 				ordres.clear();
@@ -387,7 +391,10 @@ public class Superviseur {
 							this.currentDir = current_paths_4ever[i].get(j).getDir(current_paths_4ever[i].get(j+1));
 							if(j==current_paths_4ever[i].size()-2){
 								//On envoie les ordres de déplacement aux 3 robots et on reset la queue d'ordre
-								comPCNXT.getThreadComm(i).setOrdres(ordres);
+								try{comPCNXT.getThreadComm(i).setOrdres(ordres);}
+								catch(Exception e){
+									
+								}
 								ordres.clear();
 							}
 					}
@@ -402,7 +409,11 @@ public class Superviseur {
 						
 						if(comPCNXT.getThreadComm(numero).getQueue().isEmpty()){
 							ordres.add(Order.CASETOSEND);
-							comPCNXT.getThreadComm(i).setOrdres(ordres);
+							try{
+							comPCNXT.getThreadComm(i).setOrdres(ordres);}
+							catch(Exception e){
+								
+							}
 							ordres.clear();
 							x= comPCNXT.getThreadComm(i).getCaseRecue().getX();
 							y= comPCNXT.getThreadComm(i).getCaseRecue().getY();

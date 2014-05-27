@@ -116,7 +116,7 @@ public class Trame2 {
 	public Trame2(byte ID, Case firstCase, int direction){
 		this.ID=ID;
 		this.direction=direction;
-		this.typeTrame=8;
+		this.typeTrame=2;
 		this.X=firstCase.getX();
 		this.Y=firstCase.getY();
 		
