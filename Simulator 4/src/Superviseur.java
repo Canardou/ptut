@@ -296,7 +296,7 @@ public class Superviseur {
 		
 
 		//On envoie au 3 robots les ordres d'initialisation.
-		//((LinkedList<Integer>)ordres).addFirst(Order.SETPOSITION);
+		((LinkedList<Integer>)ordres).addFirst(Order.SETPOSITION);
 		((LinkedList<Integer>)ordres).addFirst(Order.SAVEREFANGLE);
 		((LinkedList<Integer>)ordres).addFirst(Order.CHECKFIRSTCASE);
 		boolean caseVerifier = false;
@@ -306,7 +306,7 @@ public class Superviseur {
 		}
 		System.out.println(ordres.toString());
 		ordres.clear();
-		/*caseVerifier = false;
+		caseVerifier = false;
 		while(!caseVerifier){
 		try{
 		synchronized(comPCNXT.getThreadComm(i)){
@@ -318,7 +318,7 @@ public class Superviseur {
 			//System.out.println(e);
 			caseVerifier = false;
 		}
-	}*/
+	}
 		/*TODO:
 		 * 		 
 		 * for sur le caseToOrder pour transformer le currentpath en suite d'ordres.
