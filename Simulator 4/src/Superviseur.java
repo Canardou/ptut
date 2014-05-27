@@ -299,13 +299,14 @@ public class Superviseur {
 		((LinkedList<Integer>)ordres).addFirst(Order.SETPOSITION);
 		((LinkedList<Integer>)ordres).addFirst(Order.SAVEREFANGLE);
 		((LinkedList<Integer>)ordres).addFirst(Order.CHECKFIRSTCASE);
+		boolean caseVerifier = false;
 		for(i=0;i<3;i++){
 			synchronized(comPCNXT.getThreadComm(i)){
 			comPCNXT.getThreadComm(i).setOrdres(ordres);}
 		}
 		System.out.println(ordres.toString());
 		ordres.clear();
-		boolean caseVerifier = false;
+		caseVerifier = false;
 		while(!caseVerifier){
 		try{
 		synchronized(comPCNXT.getThreadComm(i)){
@@ -314,6 +315,7 @@ public class Superviseur {
 		caseVerifier = true;}
 		
 		catch(Exception e){
+			System.out.println(e);
 			caseVerifier = false;
 		}
 	}
