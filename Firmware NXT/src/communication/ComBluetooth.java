@@ -94,7 +94,7 @@ public class ComBluetooth{
 		else if (trameRecue[tailleTrameRecue-1]==7){
 			trameR= new Trame2(trameRecue[1],trameRecue[2],trameRecue[3]);
 		}
-		else if (trameRecue[tailleTrameRecue-1]==8){
+		else if (trameRecue[tailleTrameRecue-1]==2){
 			Case firstCase= new Case(trameRecue[2],trameRecue[3]);
 			trameR= new Trame2(trameRecue[1],firstCase,trameRecue[4]);
 		}
