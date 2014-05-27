@@ -161,12 +161,15 @@ public class ThreadComm extends Thread{
 						case Order.SETPOSITION:
 						if(this.recepteur.getID()==0) {
 							Trame2 sendPositionInit  = new Trame2((byte)0, caseInit,orientation);
+							System.out.println("Robot 0 envoie case : "+caseInit.toString());
 							this.com.send (sendPositionInit);
 						} else if (this.recepteur.getID()==1) {
 							Trame2 sendPositionInit  = new Trame2((byte)1, caseInit,orientation);
+							System.out.println("Robot 1 envoie case : "+caseInit.toString());
 							this.com.send (sendPositionInit);
 						} else if (this.recepteur.getID()==2) {
 							Trame2 sendPositionInit  = new Trame2((byte)2, caseInit,orientation);
+							System.out.println("Robot 3 envoie case : "+caseInit.toString());
 							this.com.send (sendPositionInit);						
 						}
 						
