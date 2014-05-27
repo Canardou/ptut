@@ -44,7 +44,7 @@ public class ThreadComm extends Thread{
 	
 	public void setOrdres(Queue<Integer> ordres){
 		synchronized(this){
-		this.queueOrdres = ordres;}
+		this.queueOrdres.addAll(ordres);}
 	}
 	
 	@Override
