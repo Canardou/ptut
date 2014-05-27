@@ -119,7 +119,7 @@ public class ThreadComm extends Thread{
 					try{
 					Trame2 receiveIsBusy = this.com.receive();
 					Busy=receiveIsBusy.getBusy();
-					System.out.println("Demande isBusy success bis" );
+				//	System.out.println("Demande isBusy success bis" );
 					synchronized(this){
 					this.connected = true;}
 					}
