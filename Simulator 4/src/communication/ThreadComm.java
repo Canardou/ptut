@@ -3,7 +3,7 @@ package communication;
 import java.util.LinkedList;
 import java.util.NoSuchElementException;
 import java.util.Queue;
-
+import communication.ProblemeConnexion;
 import labyrinth.Case;
 
 
@@ -52,9 +52,13 @@ public class ThreadComm extends Thread{
 		
 		while(true){
 			
-				this.com.connexion();
+				try{this.com.connexion();
 				synchronized(this){
 				this.connected=true;
+				}}
+				catch(ProblemeConnexion e){
+					synchronized(this){
+					this.connected=false;}
 				}
 				
 				/*

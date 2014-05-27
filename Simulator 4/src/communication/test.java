@@ -60,7 +60,7 @@ public class test {
 					
 					else if (strTrame==2){
 						BluetoothCommPC2 bluetoothPC1= new BluetoothCommPC2(PC, robot1);
-						bluetoothPC1.connexion();
+						//bluetoothPC1.connexion();
 						System.out.println("robot 1 connecté");
 						//System.out.println("j'ai recu 0, j'envoie une trame" );
 						
@@ -81,7 +81,7 @@ public class test {
 						int strordre =sc.nextInt();
 						Trame2 sendOrdre= new Trame2((byte)1,(byte)strordre);
 						BluetoothCommPC2 bluetoothPC1= new BluetoothCommPC2(PC, robot1);
-						bluetoothPC1.connexion();
+						//bluetoothPC1.connexion();
 						System.out.println("robot 1 connecté");
 						//System.out.println("j'ai reçu 0, j'envoie une trame" );
 	
@@ -101,7 +101,7 @@ public class test {
 						
 						if (strTrame==1){
 							BluetoothCommPC2 bluetoothPC1= new BluetoothCommPC2(robot1, PC);
-							bluetoothPC1.connexion();
+						//	bluetoothPC1.connexion();
 							System.out.println("robot 1 connecté");
 							
 							Trame2 receiveInfos;
@@ -115,11 +115,11 @@ public class test {
 						
 						else if (strTrame==2){   ///////// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 							BluetoothCommPC2 bluetoothPC1= new BluetoothCommPC2(PC, robot1);
-							bluetoothPC1.connexion();
+						//	bluetoothPC1.connexion();
 							System.out.println("robot J connecté");
 
 							BluetoothCommPC2 bluetoothPC4= new BluetoothCommPC2(PC, robot4);
-							bluetoothPC4.connexion();
+						//	bluetoothPC4.connexion();
 							System.out.println("robot F connecté");
 							
 							while(true){
@@ -155,7 +155,7 @@ public class test {
 					
 			else if (str==2){
 				BluetoothCommPC2 bluetoothPC2= new BluetoothCommPC2(PC, robot1);
-				bluetoothPC2.initialisationCommunication();
+			//	bluetoothPC2.initialisationCommunication();
 				System.out.println("robot 2 connecté");		
 				
 				//if(PC.getInput().read()==0){

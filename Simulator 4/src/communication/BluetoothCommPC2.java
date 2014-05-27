@@ -10,7 +10,7 @@ import lejos.pc.comm.NXTComm;
 import lejos.pc.comm.NXTCommException;
 import lejos.pc.comm.NXTCommFactory;
 import lejos.pc.comm.NXTInfo;
-
+import communication.ProblemeConnexion;
 import java.lang.Thread;
 
 import labyrinth.ListeCase;
@@ -44,10 +44,13 @@ public class BluetoothCommPC2 extends Thread{
 	/*m�thodes*/
 	
 	
-	public void connexion() {
+	public void connexion() throws ProblemeConnexion {
 		 try{
 			 this.initialisationCommunication();
-		 } catch (Exception e) {}
+		 } catch (Exception e) {
+			 ProblemeConnexion probleme = new ProblemeConnexion();
+			 throw probleme ;
+		 }
 	}
 	
 	public Trame2 receive() {
@@ -70,20 +73,18 @@ public class BluetoothCommPC2 extends Thread{
 	
 	
 	
-	public void initialisationCommunication(){
+	public void initialisationCommunication() throws NXTCommException{
 		
 		// creation d'une connexion bluetooth entre PC et NXT
 		
-				try {
+				
 					nxtComm = NXTCommFactory.createNXTComm(NXTCommFactory.BLUETOOTH);
-				} catch (NXTCommException e) {
-					System.err.println("Could not create connection " +e.getMessage());
-				}
+				
 				System.out.println("Attempting to connect to robot...");
 				
 				// ouverture connexion et activation des input et output streams 
-				try {
-					System.out.println("print YOLO");
+				
+					//System.out.println("print YOLO");
 					System.out.println(recepteur.getNom());
 					System.out.println( recepteur.getAdr());
 					System.out.println(NXTComm.PACKET);
@@ -109,10 +110,7 @@ public class BluetoothCommPC2 extends Thread{
 				//on v�rifie que le PC recoie la valeur 0  pour initier la communication
 					
 				
-				} catch (NXTCommException e) {
-					//throw new IOException("Failed to connect " + e.toString());
-					System.err.println("Failed to connect" +e.getMessage());
-				}
+				
 					
 		
 		
