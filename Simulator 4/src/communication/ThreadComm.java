@@ -98,7 +98,7 @@ public class ThreadComm extends Thread{
 				*/
 				
 				while(this.connected){
-					System.out.println(this.connected);
+					//System.out.println(this.connected);
 					this.reception = false ;
 
 					// Demande au robot s'il est occup� et reception
@@ -130,9 +130,12 @@ public class ThreadComm extends Thread{
 					}
 					int typeOrdre;
 					if (Busy!=1){
-						System.out.println("Je lis mes odres" );
-						typeOrdre = this.lireOrdre();
-						System.out.println("Ordre: "+typeOrdre );
+						
+						synchronized(this){
+						typeOrdre = this.lireOrdre();}
+						if(typeOrdre !=-1){
+							System.out.println("Je lis mes odres" );
+							System.out.println("Ordre: "+typeOrdre );}
 						switch(typeOrdre){
 
 						//Angle de r�f�rence
