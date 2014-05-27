@@ -18,9 +18,11 @@ public class ThreadComm extends Thread{
 	private BluetoothCommPC2 com;
 	private Case caseInit;
 	private volatile Case caseRecue ;
-	private boolean reception;
+	private volatile boolean envoye;
+	private volatile boolean reception;
 	private int orientation;
 	private volatile Queue<Integer> queueOrdres ;
+	
 
 
 	
@@ -35,6 +37,7 @@ public class ThreadComm extends Thread{
 		this.orientation = orientation;
 		this.queueOrdres =new LinkedList<Integer>();
 		this.caseRecue = new Case(-1,-1);
+		this.envoye = false;
 		this.reception = false;
 
 	}
@@ -99,7 +102,7 @@ public class ThreadComm extends Thread{
 				
 				while(this.connected){
 					//System.out.println(this.connected);
-					this.reception = false ;
+					
 
 					// Demande au robot s'il est occup� et reception
 					
@@ -177,12 +180,21 @@ public class ThreadComm extends Thread{
 						if(this.recepteur.getID()==0) {
 							Trame2 sendCheckCase= new Trame2((byte)0,(byte)Order.CHECKFIRSTCASE);
 							this.com.send (sendCheckCase);
+							synchronized(this){
+								this.envoye =true;
+							}
 						} else if (this.recepteur.getID()==1) {
 							Trame2 sendCheckCase= new Trame2((byte)1,(byte)Order.CHECKFIRSTCASE);
 							this.com.send (sendCheckCase);
+							synchronized(this){
+								this.envoye =true;
+							}
 						} else if (this.recepteur.getID()==2) {
 							Trame2 sendCheckCase= new Trame2((byte)2,(byte)Order.CHECKFIRSTCASE);
-							this.com.send (sendCheckCase);						
+							this.com.send (sendCheckCase);	
+							synchronized(this){
+								this.envoye =true;
+							}
 						}
 						
 						System.out.println("Detection murs case1 OK" );
@@ -387,8 +399,17 @@ public class ThreadComm extends Thread{
 		return this.queueOrdres;}
 	}
 
+	public boolean getEnvoye(){
+		synchronized(this){
+		boolean b =this.envoye;
+		this.envoye = false ;
+		return b;}
+	}
 	public boolean getReception(){
-		return this.reception;
+		synchronized(this){
+		boolean b =this.reception;
+		this.reception = false ;
+		return b;}
 	}
 	
 	public boolean getConnected(){

@@ -305,6 +305,9 @@ public class Superviseur {
 		}
 		System.out.println(ordres.toString());
 		ordres.clear();
+		synchronized(comPCNXT.getThreadComm(i)){
+		while(!comPCNXT.getThreadComm(i).getEnvoye());
+		}
 		/*TODO:
 		 * 		 
 		 * for sur le caseToOrder pour transformer le currentpath en suite d'ordres.
@@ -339,6 +342,7 @@ public class Superviseur {
 						
 					}
 					try{
+						synchronized(comPCNXT.getThreadComm(i)){
 					if(comPCNXT.getThreadComm(i).getReception()){
 						
 						x= comPCNXT.getThreadComm(i).getCaseRecue().getX();
@@ -355,7 +359,7 @@ public class Superviseur {
 						}
 						this.carte.setExit();
 					}
-					}
+					}}
 					catch(Exception e){
 						
 					}
