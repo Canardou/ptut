@@ -290,9 +290,9 @@ public class Superviseur {
 		
 
 		//On envoie au 3 robots les ordres d'initialisation.
-		ordres.add(Order.SETPOSITION);
-		ordres.add(Order.SAVEREFANGLE);
-		ordres.add(Order.CHECKFIRSTCASE);
+		((LinkedList<Integer>)ordres).addFirst(Order.SETPOSITION);
+		((LinkedList<Integer>)ordres).addFirst(Order.SAVEREFANGLE);
+		((LinkedList<Integer>)ordres).addFirst(Order.CHECKFIRSTCASE);
 		for(i=0;i<3;i++){
 			synchronized(comPCNXT.getThreadComm(i)){
 			comPCNXT.getThreadComm(i).setOrdres(ordres);}
@@ -330,7 +330,7 @@ public class Superviseur {
 			try{
 				int x=0;
 				int y=0;
-				ordres.add(Order.CASETOSEND);
+				((LinkedList<Integer>)ordres).addFirst(Order.CASETOSEND);
 				for(int numero=0; numero<3; numero++){
 					try{
 					comPCNXT.getThreadComm(i).setOrdres(ordres);}
@@ -387,20 +387,23 @@ public class Superviseur {
 				 * Construction des listes d'ordres pour les robots
 				 * TODO: construire current_paths_4ever
 				 */
-				
+				try{
 				for(i=0;i<2;i++){
+					
 					for(int j=0;j<current_paths_4ever[i].size()-1;j++){
 							ordres.addAll(this.caseToOrder(current_paths_4ever[i].get(j), this.currentDir, current_paths_4ever[i].get(j+1)));
 							this.currentDir = current_paths_4ever[i].get(j).getDir(current_paths_4ever[i].get(j+1));
 							if(j==current_paths_4ever[i].size()-2){
 								//On envoie les ordres de déplacement aux 3 robots et on reset la queue d'ordre
-								try{comPCNXT.getThreadComm(i).setOrdres(ordres);}
-								catch(Exception e){
-									
-								}
+								comPCNXT.getThreadComm(i).setOrdres(ordres);
 								ordres.clear();
 							}
 					}
+					
+					
+				}
+				}
+				catch(Exception e){
 					
 				}
 				
