@@ -332,8 +332,11 @@ public class Superviseur {
 				int y=0;
 				ordres.add(Order.CASETOSEND);
 				for(int numero=0; numero<3; numero++){
-					
-					comPCNXT.getThreadComm(i).setOrdres(ordres);
+					try{
+					comPCNXT.getThreadComm(i).setOrdres(ordres);}
+					catch(Exception e){
+						
+					}
 					
 					if(comPCNXT.getThreadComm(i).getReception()){
 						
