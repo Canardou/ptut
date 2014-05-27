@@ -296,7 +296,7 @@ public class Superviseur {
 		
 
 		//On envoie au 3 robots les ordres d'initialisation.
-		((LinkedList<Integer>)ordres).addFirst(Order.SETPOSITION);
+		//((LinkedList<Integer>)ordres).addFirst(Order.SETPOSITION);
 		((LinkedList<Integer>)ordres).addFirst(Order.SAVEREFANGLE);
 		((LinkedList<Integer>)ordres).addFirst(Order.CHECKFIRSTCASE);
 		boolean caseVerifier = false;

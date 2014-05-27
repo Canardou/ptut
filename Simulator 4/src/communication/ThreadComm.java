@@ -105,7 +105,12 @@ public class ThreadComm extends Thread{
 				while(this.connected){
 					//System.out.println(this.connected);
 					
-
+					try {
+						this.sleep(100);
+					} catch (InterruptedException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
 					// Demande au robot s'il est occup� et reception
 					
 					if(this.recepteur.getID()==0) {
@@ -163,15 +168,15 @@ public class ThreadComm extends Thread{
 						case Order.SETPOSITION:
 						synchronized(this){
 						if(this.recepteur.getID()==0) {
-							Trame2 sendPositionInit  = new Trame2((byte)0, caseInit,orientation);
+							Trame2 sendPositionInit  = new Trame2((byte)0, this.caseInit, this.orientation);
 							System.out.println("Robot 0 envoie case : "+caseInit.toString());
 							this.com.send (sendPositionInit);
 						} else if (this.recepteur.getID()==1) {
-							Trame2 sendPositionInit  = new Trame2((byte)1, caseInit,orientation);
+							Trame2 sendPositionInit  = new Trame2((byte)1, this.caseInit, this.orientation);
 							System.out.println("Robot 1 envoie case : "+caseInit.toString());
 							this.com.send (sendPositionInit);
 						} else if (this.recepteur.getID()==2) {
-							Trame2 sendPositionInit  = new Trame2((byte)2, caseInit,orientation);
+							Trame2 sendPositionInit  = new Trame2((byte)2, this.caseInit, this.orientation);
 							System.out.println("Robot 3 envoie case : "+caseInit.toString());
 							this.com.send (sendPositionInit);						
 						}
