@@ -360,7 +360,7 @@ public class Superviseur {
 					}
 				}
 				ordres.clear();
-				
+				try{
 				if(step<2 && carte.getCase(comPCNXT.getThreadComm(i).getCaseRecue().getX(), comPCNXT.getThreadComm(i).getCaseRecue().getY())==carte.getMark()){
 					dessin.getRobot(0).changeType(dessin.getRobot(0).getType()+3);
 					dessin.showMark(false);
@@ -378,7 +378,10 @@ public class Superviseur {
 					}
 				}
 				
-				System.out.println("Etape "+step);
+				System.out.println("Etape "+step);}
+				catch(Exception e){
+					
+				}
 			
 				/*
 				 * Construction des listes d'ordres pour les robots
@@ -410,13 +413,14 @@ public class Superviseur {
 						if(comPCNXT.getThreadComm(numero).getQueue().isEmpty()){
 							ordres.add(Order.CASETOSEND);
 							try{
-							comPCNXT.getThreadComm(i).setOrdres(ordres);}
+							comPCNXT.getThreadComm(i).setOrdres(ordres);
+							ordres.clear();
+							x= comPCNXT.getThreadComm(i).getCaseRecue().getX();
+							y= comPCNXT.getThreadComm(i).getCaseRecue().getY();}
 							catch(Exception e){
 								
 							}
-							ordres.clear();
-							x= comPCNXT.getThreadComm(i).getCaseRecue().getX();
-							y= comPCNXT.getThreadComm(i).getCaseRecue().getY();
+							
 							int k=1;
 							boolean retry=false;
 							if(carte.closestDiscover(x, y, k)!=null){//Comportement de closest discover lorsque plus de cases � visiter peut �tre probl�matique
