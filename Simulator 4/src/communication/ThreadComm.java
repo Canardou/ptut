@@ -202,6 +202,17 @@ public class ThreadComm extends Thread{
 							synchronized(this){
 								this.envoye =true;
 							}
+							Trame2 receiveListCase=this.com.receive();
+							if(receiveListCase != null){
+								synchronized(this){
+								caseRecue = receiveListCase.toCase();}
+								this.reception = true ;
+							}
+							else{
+								System.out.println(" Rien reçu!");
+								synchronized(this){
+								caseRecue = null ;}
+							}
 						}
 						
 						System.out.println("Detection murs case1 OK" );
