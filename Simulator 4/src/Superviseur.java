@@ -265,6 +265,12 @@ public class Superviseur {
 		this.next_paths=null;
 		this.test.clear();
 		this.application.reset();
+		this.initialisation();
+		dessin.showMark(true);
+		int temps=0;
+		step=0;
+		boolean continuer=true;
+		this.dessin.lock.unlock();
 		InitPC comPCNXT = new InitPC();
 		int i;
 		Queue<Integer> ordres = new LinkedList<Integer>();
@@ -309,19 +315,14 @@ public class Superviseur {
 		
 		for(i=0;i<3;i++){
 			
-			this.dessin.getRobot(i).moveTo(this.dessin.getRobot(i).getX(),this.dessin.getRobot(i).getY(),this.dessin.getRobot(i).getDir());
-			this.dessin.getRobot(i).setVisible(true);
+			//this.dessin.getRobot(i).moveTo(this.dessin.getRobot(i).getX(),this.dessin.getRobot(i).getY(),this.dessin.getRobot(i).getDir());
+			//this.dessin.getRobot(i).setVisible(true);
 			current_paths[i]=new Chemin(this.carte.getCase(this.dessin.getRobot(i).getX(), this.dessin.getRobot(i).getY()));
 			current_paths[i].setValue(i);
-			this.currentDir = this.dessin.getRobot(i).getDir();
+			//this.currentDir = this.dessin.getRobot(i).getDir();
 		}
 		
-		this.initialisation();
-		dessin.showMark(true);
-		int temps=0;
-		step=0;
-		boolean continuer=true;
-		this.dessin.lock.unlock();
+		
 		
 		
 		
@@ -537,8 +538,8 @@ public class Superviseur {
 						this.dessin.step.await();
 						steps++;
 					}
-					temps+=2;
-					System.out.println(temps/60+":"+temps%60);
+					//temps+=2;
+					//System.out.println(temps/60+":"+temps%60);
 				}finally{
 					this.dessin.lock.unlock();
 				}
