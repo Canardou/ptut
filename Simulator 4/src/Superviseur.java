@@ -305,8 +305,12 @@ public class Superviseur {
 		}
 		System.out.println(ordres.toString());
 		ordres.clear();
+		try{
 		synchronized(comPCNXT.getThreadComm(i)){
 		while(!comPCNXT.getThreadComm(i).getEnvoye());
+		}}
+		catch(Exception e){
+			
 		}
 		/*TODO:
 		 * 		 
