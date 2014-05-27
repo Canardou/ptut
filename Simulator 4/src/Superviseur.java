@@ -315,7 +315,7 @@ public class Superviseur {
 		caseVerifier = true;}
 		
 		catch(Exception e){
-			System.out.println(e);
+			//System.out.println(e);
 			caseVerifier = false;
 		}
 	}
