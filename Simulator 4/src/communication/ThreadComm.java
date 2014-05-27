@@ -3,6 +3,7 @@ package communication;
 import java.util.LinkedList;
 import java.util.NoSuchElementException;
 import java.util.Queue;
+
 import communication.ProblemeConnexion;
 import labyrinth.Case;
 
@@ -20,7 +21,7 @@ public class ThreadComm extends Thread{
 	private volatile Case caseRecue ;
 	private volatile boolean envoye;
 	private volatile boolean reception;
-	private int orientation;
+	private volatile int orientation;
 	private volatile Queue<Integer> queueOrdres ;
 	
 
@@ -35,6 +36,7 @@ public class ThreadComm extends Thread{
 		this.com= new BluetoothCommPC2(IE.PCkiwor, this.recepteur);
 		this.caseInit=caseinit;
 		this.orientation = orientation;
+		System.out.println("Robot "+robot.getID()+" direction = "+this.orientation);
 		this.queueOrdres =new LinkedList<Integer>();
 		this.caseRecue = new Case(-1,-1);
 		this.envoye = false;
@@ -159,6 +161,7 @@ public class ThreadComm extends Thread{
 						break;
 	
 						case Order.SETPOSITION:
+						synchronized(this){
 						if(this.recepteur.getID()==0) {
 							Trame2 sendPositionInit  = new Trame2((byte)0, caseInit,orientation);
 							System.out.println("Robot 0 envoie case : "+caseInit.toString());
@@ -171,6 +174,7 @@ public class ThreadComm extends Thread{
 							Trame2 sendPositionInit  = new Trame2((byte)2, caseInit,orientation);
 							System.out.println("Robot 3 envoie case : "+caseInit.toString());
 							this.com.send (sendPositionInit);						
+						}
 						}
 						
 						
