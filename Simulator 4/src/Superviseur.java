@@ -349,7 +349,7 @@ public class Superviseur {
 						}
 						if(this.carte.getCase(x, y)!=null){
 //Composition needed !
-							this.carte.update(x, y, /*->*/carte.getCase(x, y).getCompo()/*<-*/);//Il faut la composition ici !!
+							this.carte.update(x, y, /*->*/comPCNXT.getThreadComm(i).getCaseRecue().getCompo()/*<-*/);//Il faut la composition ici !!
 							this.carte.reveal(x, y);
 						}
 						this.carte.setExit();
