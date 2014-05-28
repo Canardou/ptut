@@ -50,9 +50,9 @@ public class ThreadComm extends Thread{
 	
 	// methode
 	
-	public void setOrdres(Queue<Integer> ordres){
-		synchronized(this){
-		this.queueOrdres.addAll(ordres);}
+	public synchronized void setOrdres(Queue<Integer> ordres){
+		
+		this.queueOrdres.addAll(ordres);
 	}
 	
 	@Override
@@ -61,8 +61,8 @@ public class ThreadComm extends Thread{
 		// Pour toujours:
 		while(true){
 				try {
-					synchronized(this){
-					this.wait(250);}
+					
+					this.wait(250);
 				} catch (InterruptedException e2) {
 					// TODO Auto-generated catch block
 					e2.printStackTrace();
@@ -76,7 +76,7 @@ public class ThreadComm extends Thread{
 							this.connected=true;
 					//}
 					//...et on attend 1/2 seconde...
-							synchronized(this){this.wait(500);}}
+							this.wait(500);}
 				
 				//...sinon connected <= false
 				catch(ProblemeConnexion e){
@@ -90,7 +90,7 @@ public class ThreadComm extends Thread{
 				while(this.connected){
 					//...on attend 100ms...
 					try {
-						synchronized(this){this.wait(100);}
+						this.wait(100);
 					} 
 					catch (InterruptedException e1) {
 						
@@ -109,7 +109,7 @@ public class ThreadComm extends Thread{
 					
 					while(Busy==-2 && compteur < 10){
 						try {
-							synchronized(this){this.wait(100);}
+							this.wait(100);
 						}catch (InterruptedException e1) {
 						
 						//	e1.printStackTrace();
@@ -405,7 +405,7 @@ public class ThreadComm extends Thread{
 		}			
 	}
 	
-	public int lireOrdre(){
+	public synchronized int lireOrdre(){
 		int i ;
 		//synchronized(this){
 		try{
@@ -420,30 +420,30 @@ public class ThreadComm extends Thread{
 	
 	}
 	
-	public Case getCaseRecue(){
+	public synchronized Case getCaseRecue(){
 		//synchronized(this){
 		return this.caseRecue;//}
 	}
 	
-	public Queue<Integer> getQueue(){
+	public synchronized Queue<Integer> getQueue(){
 		//synchronized(this){
 		return this.queueOrdres;//}
 	}
 
-	public boolean getEnvoye(){
+	public synchronized boolean getEnvoye(){
 		//synchronized(this){
 		boolean b =this.envoye;
 		this.envoye = false ;
 		return b;//}
 	}
-	public boolean getReception(){
+	public synchronized boolean getReception(){
 		//synchronized(this){
 		boolean b =this.reception;
 		this.reception = false ;
 		return b;//}
 	}
 	
-	public boolean getConnected(){
+	public synchronized boolean getConnected(){
 		//synchronized(this){
 		return this.connected;//}
 		
