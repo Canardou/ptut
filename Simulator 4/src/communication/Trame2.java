@@ -187,8 +187,8 @@ public class Trame2 {
 	
 	public Case toCase(){
 		if(this.typeTrame == 1){
-			Case nouvelleCase = new Case((int)this.contenuT[this.contenuT.length-3],(int)this.contenuT[this.contenuT.length-2]);
-			nouvelleCase.update(this.contenuT[this.contenuT.length-1]);
+			Case nouvelleCase = new Case((int)this.contenuT[this.contenuT.length-4],(int)this.contenuT[this.contenuT.length-3]);
+			nouvelleCase.update(this.contenuT[this.contenuT.length-2]);
 			return  nouvelleCase;
 		}
 		else{

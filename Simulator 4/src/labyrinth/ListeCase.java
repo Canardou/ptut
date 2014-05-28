@@ -169,8 +169,9 @@ public class ListeCase implements java.lang.Comparable {
 			
 	}
 	
-	public void addCase2(int x, int y, int dir){
+	public void addCase2(int x, int y, byte compo){
 		Case caseTemp = new Case(x,y);
+		caseTemp.update(compo);
 		this.list.add(caseTemp);
 		
 	}

@@ -69,6 +69,10 @@ public class Order {
 	 */
 	public static final int CASETOSEND = 12;
 	
+	public static final int NORMALMODE = 13;
+	
+	public static final int FASTMODE = 15;
+	
 	/**
 	 * Ordre : Envoyer l'état du robot.</br> Attention cette ordre est executé
 	 * immédiatement à sa reception.
@@ -101,5 +105,43 @@ public class Order {
 	 */
 	private boolean checkFirstCaseDone;
 	
-
+	public static String printOrdre(int o) {
+		if (o == STOP) {
+			return "stop";
+		} else if (o == FORWARD) {
+			return "avancer";
+		} else if (o == TURNR) {
+			return "droite";
+		} else if (o == TURNL) {
+			return "gauche";
+		} else if (o == TURNB) {
+			return "demitour";
+		} else if (o == CALCOMPASS) {
+			return "cal boussole";
+		} else if (o == SAVEREFANGLE) {
+			return "sauv. ref";
+		} else if (o == CHECKFIRSTCASE) {
+			return "explo1case";
+		} else if (o == CLEARLISTORDER) {
+			return "vider ordres";
+		} else if (o == WAITBUTTON) {
+			return "wait bouton";
+		} else if (o == WAIT1SEC) {
+			return "wait 1sec";
+		} else if (o == FASTMODE) {
+			return "fast mode";
+		} else if (o == NORMALMODE) {
+			return "normal mode";
+		} else if (o == SETPOSITION) {
+			return "setPos";
+		} else if (o == CASETOSEND) {
+			return "sendcase";
+		} else if (o == SENDBUSY) {
+			return "sendbusy";
+		} else {
+			return String.valueOf(o);
+		}
+	}
+	
+	
 }

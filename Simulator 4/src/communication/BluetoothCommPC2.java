@@ -11,8 +11,8 @@ import lejos.pc.comm.NXTCommException;
 import lejos.pc.comm.NXTCommFactory;
 import lejos.pc.comm.NXTInfo;
 import communication.ProblemeConnexion;
-import java.lang.Thread;
 
+import java.lang.Thread;
 import labyrinth.ListeCase;
 
 public class BluetoothCommPC2 extends Thread{
@@ -176,15 +176,19 @@ public class BluetoothCommPC2 extends Thread{
 			trameR= new Trame2(trameRecue[1],trameRecue[2],trameRecue[3]);
 			
 		}
+		else if (trameRecue[tailleTrameRecue-1]==5){
+			trameR= new Trame2(trameRecue[1],trameRecue[2]);
+			
+		}
 		else if (trameRecue[tailleTrameRecue-1]!=7 & trameRecue[tailleTrameRecue-1]!=6){
 			ListeCase listCase=new ListeCase();
 			int k=2;
 			for (int i=0; i<(tailleTrameRecue-3)/3 ; i++){
 				listCase.addCase2(trameRecue[k], trameRecue[k+1], trameRecue[k+2]);
 				k=k+3;
-				//System.out.println(trameRecue[k]+" ; "+trameRecue[k+1]+" ; "+trameRecue[k+2] + " ; ");
 			}
-			trameR= new Trame2(trameRecue[1],listCase);}
+			trameR= new Trame2(trameRecue[1],listCase);
+		}
 		
 					
 		return trameR;
