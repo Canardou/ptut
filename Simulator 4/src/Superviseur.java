@@ -348,7 +348,9 @@ public class Superviseur {
 				((LinkedList<Integer>)ordres).addFirst(Order.CASETOSEND);
 				for(int numero=0; numero<3; numero++){
 					synchronized(comPCNXT.getThreadComm(i)){
-					connexion =!(comPCNXT.getThreadComm(i).getConnected());}
+					connexion =!(comPCNXT.getThreadComm(i).getConnected());
+					System.out.println("Robot "+ i + " : etat connexion = "+connexion);
+					}
 					if(!connexion){
 					try{
 						comPCNXT.setThreadComm(this.dessin.getRobot(i));
