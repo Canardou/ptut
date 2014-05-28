@@ -274,19 +274,25 @@ public class Superviseur {
 		InitPC comPCNXT = new InitPC();
 		int i;
 		Queue<Integer> ordres = new LinkedList<Integer>();
+		boolean caseVerifier = false;
+		boolean connexion ;
 		
-		
-		//On connecte les 3 robots
+		//Pour chaque robot...
 		for(i=0;i<3;i++){
 			
+			
 			try{
+				//...on lance le thread de com correspondant
 				comPCNXT.setThreadComm(this.dessin.getRobot(i));
-				System.out.println("robot "+ i +" attente connexion : ");
-				while(!(comPCNXT.getThreadComm(i).getConnected())){
-				//System.out.println(comPCNXT.getThreadComm(i).getConnected());
-				}
 				
-			}
+				System.out.println("robot "+ i +" attente connexion : ");
+				
+				//Tant que pas connecté, on bloque le superviseur
+					while(!(comPCNXT.getThreadComm(i).getConnected())){
+				
+					}
+				
+				}
 			catch(Exception e){
 				System.out.println(e);
 			}
@@ -295,38 +301,41 @@ public class Superviseur {
 
 		
 
-		//On envoie au 3 robots les ordres d'initialisation.
+		//On prépare une queue de 3 ordres d'initialisation
 		((LinkedList<Integer>)ordres).addFirst(Order.SETPOSITION);
 		((LinkedList<Integer>)ordres).addFirst(Order.SAVEREFANGLE);
 		((LinkedList<Integer>)ordres).addFirst(Order.CHECKFIRSTCASE);
-		boolean caseVerifier = false;
+		
+		//Pour chaque robot...
 		for(i=0;i<3;i++){
+			
+			//on envoie transmet au thread la liste d'ordres.
 			synchronized(comPCNXT.getThreadComm(i)){
 			comPCNXT.getThreadComm(i).setOrdres(ordres);}
 		}
+		//éventuellement on affiche ces ordres
 		System.out.println(ordres.toString());
+		
+		//on vide la queue préparée dans cette classe
 		ordres.clear();
+		
+		//tant que le thread ne lève pas le flag qui signale qu'il a reçu la compo de la première case
 		caseVerifier = false;
 		while(!caseVerifier){
-		try{
-		synchronized(comPCNXT.getThreadComm(i)){
-		while(!comPCNXT.getThreadComm(i).getEnvoye());
-		}
-		caseVerifier = true;}
+			
+			//on attent...
+			try{
+				synchronized(comPCNXT.getThreadComm(i)){
+					while(!comPCNXT.getThreadComm(i).getEnvoye());
+				}
+				caseVerifier = true;}
 		
-		catch(Exception e){
-			//System.out.println(e);
-			caseVerifier = false;
+			catch(Exception e){
+				//System.out.println(e);
+				caseVerifier = false;
+			}
 		}
-	}
-		/*TODO:
-		 * 		 
-		 * for sur le caseToOrder pour transformer le currentpath en suite d'ordres.
-		 * reset du buffer d'entree d'ordres pour la MAJ du current path.
-		 * calcul orientation courante du robot.
-		 * 		  
-		*/
-		
+		//Code d'Olivier
 		for(i=0;i<3;i++){
 			
 			//this.dessin.getRobot(i).moveTo(this.dessin.getRobot(i).getX(),this.dessin.getRobot(i).getY(),this.dessin.getRobot(i).getDir());
@@ -338,26 +347,32 @@ public class Superviseur {
 		
 		
 		
-		boolean connexion ;
+		//Code d'Olivier
 		
 		while(continuer){
 			this.dessin.lock.lock();
 			try{
 				int x=0;
 				int y=0;
+				//On ajoute dans une queue l'ordre d'envoyer une case
 				((LinkedList<Integer>)ordres).addFirst(Order.CASETOSEND);
+				
+				//pour chaque robot...
 				for(int numero=0; numero<3; numero++){
 					
-					
+					//...on transmet cette queue au thread de com...
 					try{
 					comPCNXT.getThreadComm(i).setOrdres(ordres);}
 					catch(Exception e){
 						
 					}
+					
+					//...puis on regarde le flag qui indique s'il y a eu reception d'info...
 					try{
 						synchronized(comPCNXT.getThreadComm(i)){
 					if(comPCNXT.getThreadComm(i).getReception()){
 						
+						//...si oui, on récupère x,y et compo et Olivier fait des trucs...
 						x= comPCNXT.getThreadComm(i).getCaseRecue().getX();
 						y= comPCNXT.getThreadComm(i).getCaseRecue().getY();
 						current_paths[numero].cut(carte.getCase(x, y));
@@ -366,8 +381,7 @@ public class Superviseur {
 							current_paths[numero].setValue(numero);
 						}
 						if(this.carte.getCase(x, y)!=null){
-//Composition needed !
-							this.carte.update(x, y, /*->*/comPCNXT.getThreadComm(i).getCaseRecue().getCompo()/*<-*/);//Il faut la composition ici !!
+							this.carte.update(x, y, comPCNXT.getThreadComm(i).getCaseRecue().getCompo()/*<-*/);//Il faut la composition ici !!
 							this.carte.reveal(x, y);
 						}
 						this.carte.setExit();
@@ -377,7 +391,11 @@ public class Superviseur {
 						
 					}
 				}
+				
+				//on vide la queue d'ordres
 				ordres.clear();
+				
+				//Tambouille d'Olivier
 				try{
 				if(step<2 && carte.getCase(comPCNXT.getThreadComm(i).getCaseRecue().getX(), comPCNXT.getThreadComm(i).getCaseRecue().getY())==carte.getMark()){
 					dessin.getRobot(0).changeType(dessin.getRobot(0).getType()+3);
@@ -401,19 +419,19 @@ public class Superviseur {
 					
 				}
 			
-				/*
-				 * Construction des listes d'ordres pour les robots
-				 * TODO: construire current_paths_4ever
-				 */
+				//Pour chaque robot...
 				try{
 				for(i=0;i<3;i++){
-					
+					//...pour chaque case du chemin qu'il doit parcourir...
 					for(int j=0;j<current_paths_4ever[i].size()-1;j++){
+							//...on convertit le chemin en ordres
 							ordres.addAll(this.caseToOrder(current_paths_4ever[i].get(j), this.currentDir, current_paths_4ever[i].get(j+1)));
 							this.currentDir = current_paths_4ever[i].get(j).getDir(current_paths_4ever[i].get(j+1));
 							if(j==current_paths_4ever[i].size()-2){
+								
 								//On envoie les ordres de déplacement aux 3 robots et on reset la queue d'ordre
-								comPCNXT.getThreadComm(i).setOrdres(ordres);
+								synchronized(comPCNXT.getThreadComm(i)){
+								comPCNXT.getThreadComm(i).setOrdres(ordres);}
 								ordres.clear();
 							}
 					}
@@ -429,19 +447,25 @@ public class Superviseur {
 				switch(step){
 				case 0:
 				case 2:
+					//Pour chaque robot...
 					for(int numero=0; numero<3; numero++){
-						
+						//si la file d'ordres est vide,
 						if(comPCNXT.getThreadComm(numero).getQueue().isEmpty()){
 							ordres.add(Order.CASETOSEND);
+							//...on fait une demande d'envoi de case
 							try{
-							comPCNXT.getThreadComm(i).setOrdres(ordres);
-							ordres.clear();
-							x= comPCNXT.getThreadComm(i).getCaseRecue().getX();
-							y= comPCNXT.getThreadComm(i).getCaseRecue().getY();}
+								synchronized(comPCNXT.getThreadComm(i)){
+								comPCNXT.getThreadComm(i).setOrdres(ordres);}
+								ordres.clear();
+								
+								//on lit les infos de la case
+								x= comPCNXT.getThreadComm(i).getCaseRecue().getX();
+								y= comPCNXT.getThreadComm(i).getCaseRecue().getY();}
 							catch(Exception e){
 								
 							}
 							
+							//Code Olivier
 							int k=1;
 							boolean retry=false;
 							if(carte.closestDiscover(x, y, k)!=null){//Comportement de closest discover lorsque plus de cases � visiter peut �tre probl�matique
@@ -451,7 +475,8 @@ public class Superviseur {
 										current_paths[numero]=carte.closestDiscover(x, y, k);
 									}
 									
-									//Envois infos
+									
+									//Commentaire Olivier: Envoi infos
 									for(int j=0;j<3;j++){
 										if(j!=numero){
 											if(current_paths[numero].collision(carte, current_paths[j],true)<Math.max(current_paths[numero].size(),2)){

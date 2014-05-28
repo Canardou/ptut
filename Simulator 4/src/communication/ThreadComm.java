@@ -55,89 +55,64 @@ public class ThreadComm extends Thread{
 	@Override
 	public void run(){
 		
+		int Busy=-2;
+		// Pour toujours:
 		while(true){
-			
-				try{this.com.connexion();
-				synchronized(this){
-				this.connected=true;
-				}
-				this.sleep(500);}
+				//...tentative connexion...
+				try{
+					this.com.connexion();
+					//...si ça réussit...
+					synchronized(this){
+						//...connected <= true...
+							this.connected=true;
+					}
+					//...et on attend 1/2 seconde...
+					this.sleep(500);}
+				
+				//...sinon connected <= false
 				catch(ProblemeConnexion e){
 					synchronized(this){
-					this.connected=false;}
+						this.connected=false;}
 				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 				
-				/*
-				if(this.recepteur.getID()==0) {
-					Trame2 sendIsBusy= new Trame2((byte)0,(byte)Order.SENDBUSY);  // ajouter dans Ordre et g�rer cette commande dans robot
-					this.com.send (sendIsBusy);
-				} else if (this.recepteur.getID()==1) {
-					Trame2 sendIsBusy= new Trame2((byte)1,(byte)Order.SENDBUSY);  // ajouter dans Ordre et g�rer cette commande dans robot
-					this.com.send (sendIsBusy);
-				} else if (this.recepteur.getID()==2) {
-					Trame2 sendIsBusy= new Trame2((byte)2,(byte)Order.SENDBUSY);  // ajouter dans Ordre et g�rer cette commande dans robot
-					this.com.send (sendIsBusy);					
-				}
-				
-				Trame2 receiveIsBusy = this.com.receive();
-				
-				int Busy=-2;
-				while(Busy==-2){
-				try{
-				receiveIsBusy = this.com.receive();
-				Busy=receiveIsBusy.getBusy();
-				System.out.println("Demande isBusy success" );
-				}
-				catch(Exception e){
-					//this.connected = false;
-				}
-				}
-				int typeOrdre;
-				//System.out.println("robot connecté : ");
-				
-				//
-				//Initialisation du robot
-				//
-				
-
-				//System.out.println("Demande isBusy" );
-				*/
-				
+				//Tant que connected = true...
 				while(this.connected){
-					//System.out.println(this.connected);
-					
+					//...on attend 100ms...
 					try {
 						this.sleep(100);
-					} catch (InterruptedException e1) {
-						// TODO Auto-generated catch block
+					} 
+					catch (InterruptedException e1) {
+						
 						e1.printStackTrace();
 					}
-					// Demande au robot s'il est occup� et reception
+					// ...on demande au robot s'il est occupé... et reception de sa réponse...
 					
 					if(this.recepteur.getID()==0) {
-						Trame2 sendIsBusy= new Trame2((byte)0,(byte)Order.SENDBUSY);  // ajouter dans Ordre et g�rer cette commande dans robot
-						this.com.send (sendIsBusy);
+						Trame2 sendIsBusy= new Trame2((byte)0,(byte)Order.SENDBUSY);  
 					} else if (this.recepteur.getID()==1) {
-						Trame2 sendIsBusy= new Trame2((byte)1,(byte)Order.SENDBUSY);  // ajouter dans Ordre et g�rer cette commande dans robot
-						this.com.send (sendIsBusy);
+						Trame2 sendIsBusy= new Trame2((byte)1,(byte)Order.SENDBUSY);  
 					} else if (this.recepteur.getID()==2) {
-						Trame2 sendIsBusy= new Trame2((byte)2,(byte)Order.SENDBUSY);  // ajouter dans Ordre et g�rer cette commande dans robot
+						Trame2 sendIsBusy= new Trame2((byte)2,(byte)Order.SENDBUSY);
 						this.com.send (sendIsBusy);					
 					}
-					
-					int Busy=-2;
-					while(Busy==-2){
+							
+					try {
+						this.sleep(100);
+					}
+					catch (InterruptedException e1) {
+						
+						e1.printStackTrace();
+					}
 					try{
-					Trame2 receiveIsBusy = this.com.receive();
-					Busy=receiveIsBusy.getBusy();
-				//	System.out.println("Demande isBusy success bis" );
-					synchronized(this){
-					this.connected = true;}
-					int typeOrdre;
-					if (Busy!=1){
+						Trame2 receiveIsBusy = this.com.receive();
+						Busy=receiveIsBusy.getBusy();
+						synchronized(this){
+							this.connected = true;}
+						int typeOrdre;
+						
+						if (Busy!=1){
 						
 						synchronized(this){
 						typeOrdre = this.lireOrdre();}
@@ -399,19 +374,17 @@ public class ThreadComm extends Thread{
 						case -1:
 							//LULZ NUTHIGN TU DO !!
 						break;
-					}
+						}
 
 						
-				}
 					}
-					catch(Exception e){
+				}
+				catch(Exception e){
 						synchronized(this){
 						this.connected = false;}
-						}
-					}
+				}
+			}	
 					
-					
-			}
 		}			
 	}
 	
