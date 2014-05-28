@@ -570,8 +570,6 @@ public class Superviseur {
 						this.dessin.step.await();
 						steps++;
 					}
-					//temps+=2;
-					//System.out.println(temps/60+":"+temps%60);
 				}
 				}finally{
 					this.dessin.lock.unlock();

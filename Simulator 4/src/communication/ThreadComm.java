@@ -142,7 +142,7 @@ public class ThreadComm extends Thread{
 						synchronized(this){
 						typeOrdre = this.lireOrdre();}
 						if(typeOrdre !=-1){
-							System.out.println("Je lis mes odres" );
+							System.out.println("Robot " + this.recepteur.getID()+": je lis mes odres" );
 							System.out.println("Ordre: "+typeOrdre );}
 						switch(typeOrdre){
 
@@ -160,7 +160,7 @@ public class ThreadComm extends Thread{
 							this.com.send (sendAngleRef);						
 						}
 						
-						System.out.println("angleRef OK" );
+						System.out.println("Robot " + this.recepteur.getID()+": angleRef OK" );
 						break;
 	
 						case Order.SETPOSITION:
@@ -181,7 +181,7 @@ public class ThreadComm extends Thread{
 						}
 						
 						
-						System.out.println("Position initiale OK" );
+						System.out.println("Robot " + this.recepteur.getID()+": Position initiale OK" );
 						
 						break;
 						
@@ -212,13 +212,13 @@ public class ThreadComm extends Thread{
 								this.reception = true ;
 							}
 							else{
-								System.out.println(" Rien reçu!");
+								System.out.println("Robot " + this.recepteur.getID()+": Rien reçu!");
 								synchronized(this){
 								caseRecue = null ;}
 							}
 						}
 						
-						System.out.println("Detection murs case1 OK" );
+						System.out.println("Robot " + this.recepteur.getID()+ ": Detection murs case1 OK" );
 						
 						break;
 						
@@ -377,7 +377,7 @@ public class ThreadComm extends Thread{
 							this.reception = true ;
 						}
 						else{
-							System.out.println(" Rien reçu!");
+							System.out.println("Robot " + this.recepteur.getID()+": Rien reçu!");
 							synchronized(this){
 							caseRecue = null ;}
 						}
