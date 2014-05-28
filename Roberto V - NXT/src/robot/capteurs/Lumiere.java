@@ -1,6 +1,5 @@
 package robot.capteurs;
 
-import lejos.nxt.LCD;
 import lejos.nxt.LightSensor;
 import lejos.nxt.SensorPort;
 
@@ -33,8 +32,6 @@ public class Lumiere extends LightSensor {
 	/**
 	 * Constructeur du capteur Lumière.
 	 * @param port
-	 * 		Port auquel est branché le capteur
-	 * @see SensorPort
 	 */
 	public Lumiere (SensorPort port) {
 		super(port);
@@ -52,7 +49,6 @@ public class Lumiere extends LightSensor {
 	public void rafraichir() {
 		this.acquisition();
 		this.moyData = this.moyenne();
-		 LCD.drawInt((int)this.moyData,4, 0, 1);
 	}	
 	
 	/**

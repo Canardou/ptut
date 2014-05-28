@@ -29,21 +29,11 @@ public class TacheCom extends Thread {
 	 * Tache principale du robot.
 	 */
 	private TachePrincipale tPrincipale;
-	
-	/**
-	 * Attribut permettant de gerer les trames a envoyer et a recevoir.
-	 */
-	private Trame2 trame;
 
 	/**
 	 * Attribut représentant la communication.
 	 */
 	private ComBluetooth com;
-
-	/**
-	 * Attribut représentant l'entitée de communication.
-	 */
-	private EntiteeBT entitee;
 	
 	/**
 	 * Etat de la connexion.
@@ -75,8 +65,8 @@ public class TacheCom extends Thread {
 		} else {
 			System.out.println("tCom:errId");
 		}	
-		
-		this.entitee = new EntiteeBT(Bluetooth.getFriendlyName(), (byte) this.idRobot, Bluetooth.getLocalAddress());
+		EntiteeBT entitee;
+		entitee = new EntiteeBT(Bluetooth.getFriendlyName(), (byte) this.idRobot, Bluetooth.getLocalAddress());
 		
 		this.com = new ComBluetooth(entitee);
 		this.setPriority(5);		
@@ -88,40 +78,45 @@ public class TacheCom extends Thread {
 	 * Tache de communication.
 	 */
 	public void run() {
+		
+		Trame2 trame;
 
 		while(true) {
-			this.com.connexion();
-			System.out.println("tCom:connexion");
-			this.connected=true;
+			System.out.println("tCom:Attente co.");
+			try {
+				this.com.connexion();
+				System.out.println("tCom:connexion");
+				this.connected=true;
+			} catch (Exception e) {}
 			
 			while (this.connected) {	
-				this.trame = this.com.receive();
+				trame = this.com.receive();
 				
-				if (this.trame != null) {
+				if (trame != null) {
 					
-					if (this.trame.getTypeTrame() == TYPE_ORDRE) {
-						System.out.println("tCom-R:"+this.tPrincipale.getOrdre().printOrdre(this.trame.getOrdre()));
-						if (this.trame.getOrdre() == Ordre.VIDER_ORDRES) {
+					if (trame.getTypeTrame() == TYPE_ORDRE) {
+						if( trame.getOrdre() != Ordre.ENVOYER_ISBUSY ) {
+							System.out.println("tCom-R:"+this.tPrincipale.getOrdre().printOrdre(trame.getOrdre()));
+						}
+						if (trame.getOrdre() == Ordre.VIDER_ORDRES) {
 							this.tPrincipale.getOrdre().vider();
-						} else if(this.trame.getOrdre() == Ordre.ENVOYER_CASE) {
-							System.out.println("tcom-E:cases");
+						} else if(trame.getOrdre() == Ordre.ENVOYER_CASE) {
+							System.out.println("tcom-E:Cases");
 							this.com.send(new Trame2((byte) this.idRobot,this.tPrincipale.getEnv().getListCase()));
 							this.tPrincipale.getEnv().getListCase().vider();
-						} else if(this.trame.getOrdre() == Ordre.ENVOYER_ISBUSY) {
-							//System.out.println("tcom-E:isbusy");
+						} else if(trame.getOrdre() == Ordre.ENVOYER_ISBUSY) {
 							this.com.send(new Trame2((byte) this.idRobot,this.tPrincipale.getOrdre().getIsBusy()));
 						} else {
-							this.tPrincipale.getOrdre().ajouterOrdre(this.trame.getOrdre());							
+							this.tPrincipale.getOrdre().ajouterOrdre(trame.getOrdre());							
 						}
 						
-					} else if (this.trame.getTypeTrame() == TYPE_INITPOSITION) {
-						this.tPrincipale.getEnv().setInitPos(this.trame.getPosX(),this.trame.getPosY(), this.trame.getDirection());
-						this.tPrincipale.getOrdre().ajouterOrdre(Ordre.SETPOSITION);
+					} else if (trame.getTypeTrame() == TYPE_INITPOSITION) {
 						System.out.println("tCom-R:setPos");
+						this.tPrincipale.getEnv().setInitPos(trame.getPosX(),trame.getPosY(), trame.getDirection());
+						this.tPrincipale.getOrdre().ajouterOrdre(Ordre.SETPOSITION);
 					}
 				}
 				else {
-					System.out.println("tCom:comperdu");
 					this.connected=false;
 				}
 			}

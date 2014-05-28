@@ -1,14 +1,20 @@
 package robot.actionneurs;
 
 import java.lang.Math;
+
 import lejos.nxt.Motor;
 import lejos.nxt.NXTRegulatedMotor;
+import lejos.nxt.Sound;
 import lejos.robotics.navigation.DifferentialPilot;
 import lejos.robotics.RegulatedMotor;
-import robot.taches.*;
+import robot.taches.TachePrincipale;
 
 /**
- * Cette classe permet de gérer les déplacements du robot.
+ * Cette classe permet de gérer les déplacements du robot. Elle contient les
+ * constantes liées aux caractéristiques physiques du robot (comment est-il
+ * monté?) ainsi que les constantes en rapport avec le mouvement (vitesses,
+ * erreurs admises, gain des regulations, distances souhaitées par rapport aux
+ * murs, etc ...).
  * 
  * @author Thomas
  */
@@ -37,27 +43,30 @@ public class Mouvement {
     public static final RegulatedMotor PORT_MOTEUR_DROIT = Motor.B ;
     
     /**
-     * Port auquel est connecté le moteur droit.
+     * Port auquel est connecté le moteur portant le sonar.
      */
     public static final NXTRegulatedMotor PORT_MOTEUR_SONAR = Motor.C ;
-    
+
 	/**
-	 * Vitesse de croisière. De 0 à 36 cm/s.
+	 * Vitesse de croisière. Utilisé lorsque le robot avance. De 0 à 36 cm/s.
 	 */
-	public static final double VITESSE_CROISIERE = 20;
+	public static final double VITESSE_CROISIERE = 18;
 	
 	/**
-	 * Vitesse à l'approche d'un mur avant. De 0 à 36 cm/s.
+	 * Vitesse du robot lorsqu'il est en fin de mouvement. Utilisé lorsque le
+	 * robot avance. De 0 à 36 cm/s.
 	 */
 	public static final double VITESSE_DANGER = 12;
 
 	/**
-	 * Vitesse de rotation de croisière. De 0 à 366 deg/s
+	 * Vitesse de rotation de croisière. De 0 à 366 deg/s.
 	 */
-	public static final double VITESSE_ROTATION_CROISIERE = 160;
+	public static final double VITESSE_ROTATION_CROISIERE = 140;
 	
 	/**
-	 * Vitesse de rotation lorsqu'on approche de l'angle voulu. De 0 à 366 deg/s.
+	 * Vitesse de rotation lorsqu'il est en fin de mouvement, c'est à dire
+	 * lorsqu'il est proche de l'angle désiré (voir ANGLE_DANGER). Utilisé
+	 * lorsque le robot tourne. De 0 à 366 deg/s.
 	 */
 	public static final double VITESSE_ROTATION_DANGER = 30;
 
@@ -68,44 +77,83 @@ public class Mouvement {
 
 	/**
 	 * Angle relatif à l'objectif à partir duquel on réduit la vitesse de
-	 * rotation. Utilisé lorsque le robot fait des virages. En degrés.
+	 * rotation. Utilisé lorsque le robot tourne. En degrés.
 	 */
 	public static final double ANGLE_DANGER = 18;
 	
 	/**
 	 * Angle relatif à l'objectif à partir duquel on considère que l'on a
-	 * atteind l'objectif en angle. Utilisé lorsque le robot fait des virages.
-	 * En Degrés.
+	 * atteind l'angle désiré. Utilisé lorsque le robot tourne. En Degrés.
 	 */
 	public static final double ANGLE_ERREUR = 3;
 
 	/**
 	 * Hystérésis sur la régulation de la vitesse de rotation pour éviter les
 	 * oscillations en vitesse qui perturbe la boussole. Utilisé lorsque le
-	 * robot fait des virages. En degrés.
+	 * robot tourne. En degrés.
 	 */
 	public static final double ANGLE_HYSTERESIS = 1;
+	
+	/**
+	 * Valeur maximale de l'erreur pour determiner si elle est valide ou si on
+	 * ne la prend pas en compte. On sait que le cap de reférence est a peu prés
+	 * correct, ainsi si on trouve une erreur trop grande c'est qu'il y a eu un
+	 * probleme dans son calcul ou sa mesure, ou que le robot a trop oscillé par
+	 * exemple. On considère alors que l'erreur a mal été calculée et on ne la
+	 * prend pas en compte au dela de cette valeur. Utilisé lorsque le robot
+	 * avance. En degrés.
+	 */
+	public static final double ERR_REF_ANGLE_MAX = 30;
+	
+	/**
+	 * Valeur en dessus de laquelle on considère qu'il n'y a pas d'erreur.
+	 * Utilisé lorsque le robot avance. En degrés.
+	 */
+	public static final double ERR_REF_ANGLE_MIN = 10 ;
 
+	/**
+	 * Distance a partir de laquelle le robot prend des mesures pour calculer
+	 * l'erreur du cap. Utilisé lorsque le robot avance. En cm.
+	 */
+	public static final double DISTANCE_MESURE_ERRCAP = 12;
+	
 	/**
 	 * Distance entre 2 cases en cm.
 	 */
-	public static final double DISTANCE_UNITAIRE = 30;
+	public static final double DISTANCE_UNITAIRE = 32;
+	
+	/**
+	 * Erreur concernant la position du robot lorsqu'il s'arrete au milieu d'une
+	 * nouvelle case. Utilisé lorsque le robot avance (fin du mouvement). En cm.
+	 */
+	public static final double ERREUR_POSITION_CENTRE_CASE = 2;
+	
+	/**
+	 * Lorsqu'on detecte la perte d'un mur sur un coté, on utilise cette donnée
+	 * comme une info en plus, ainsi, le robot va parcourir ce nombre de cm
+	 * aprés le mur perdu, pour s'arreter bien au milieu de la case. Utilisé
+	 * lorsque le robot avance, en fin de mouvement s'il n'y a pas de mur devant
+	 * et des murs manquant sur le coté.
+	 */
+	public static final double REG_DISTANCE_APRES_MUR = 11 ;
 
 	/**
 	 * Offset modélisant le fait que les sonars ne soient pas à la même distance
-	 * du centre du robot. Utilisé lorsque le robot avance. En cm.
+	 * du centre du robot. En effet, lorsque le robot est au centre du couloir,
+	 * il faut avoir Distance_Mesurée_Gauche-Distance_Mesurée_Droit-OFFSET=0.
+	 * Utilisé lorsque le robot avance. En cm.
 	 */
 	public static final double OFFSET_ENTRE_SONARS = 0;
 
 	/**
 	 * Distance à partir de laquelle le sonar rotatif va passer en position
-	 * avant. Utilisé lorsque le robot avance. En cm.
+	 * avant. Utilisé lorsque le robot avance (fin de mouvement). En cm.
 	 */
 	public static final double REGUL_DISTANCE_DANGER = 25;
 
 	/**
 	 * Limite en dessous de laquelle on considère qu'on est à proximité d'un mur
-	 * avant. En cm.
+	 * avant. Utilisé lorsque le robot avance (en fin de mouvement). En cm.
 	 */
 	public static final double REGUL_DISTANCE_MUR_AVANT_DANGER = 22;
 	
@@ -124,21 +172,24 @@ public class Mouvement {
 	public static final double REGUL_DISTANCE_MUR_GAUCHE = 6.5;
 
 	/**
-	 * Distance d'arret par rapport au mur d'en face.
+	 * Distance, par rapport au mur devant, à laquelle le robot va s'arreter
+	 * (s'il y a un mur devant). Utilisé lorsque le robot avance (en fin de
+	 * mouvement). En cm.
 	 */
 	public static final double REGUL_DISTANCE_MUR_AVANT = 9.5;
 
 	/**
 	 * Gain de la régulation par retour d'état. Gain appliqué à l'erreur
-	 * d'angle. Utilisé lorsque le robot avance.
+	 * d'angle (angle mesuré - cap). Utilisé lorsque le robot avance.
 	 */
 	public static final double K_TETA = 0.0025;
-	
+
 	/**
 	 * Gain de la régulation par retour d'état. Gain appliqué à l'erreur de
-	 * distance. Utilisé lorsque le robot avance.
+	 * distance (distance par rapport au centre du couloir). Utilisé lorsque le
+	 * robot avance.
 	 */
-	public static final double K_DIST = 0.015;
+	public static final double K_DIST = 0.02;
 	
 	// ------------------------------------- ATTRIBUTS --------------------------------------------
 
@@ -153,11 +204,6 @@ public class Mouvement {
 	private NXTRegulatedMotor moteurSonar;
 
 	/**
-	 * Tache principale du robot.
-	 */
-	private TachePrincipale tPrincipale;
-
-	/**
 	 * Angle de référence initial en degrés, celui-ci est mis à jour lors de
 	 * l'execution de l'ordre correspondant. Sa valeur est comprise dans
 	 * l'intervalle [0,360].
@@ -168,25 +214,32 @@ public class Mouvement {
 	 * Angle de référence actuel en degrés, il est toujours de la forme
 	 * initAngle + N*90° et est mis à jour lorsque le robot tourne. Sa valeur
 	 * est comprise dans l'intervalle [0,360]. il sert de référence angulaire
-	 * pour la régulation de tout les mouvements.
+	 * pour la régulation de tout les mouvements (cap).
 	 */
 	private double refAngleActuel;
 	
 	/**
-	 * Attribut définissant le mode de fonctionnement du robot.
+	 * Erreur mesurée sur le cap. Cela permet detecter la deviation de la
+	 * boussole.
+	 */
+	private double errRefAngle;
+	
+	/**
+	 * Attribut définissant le mode de fonctionnement du robot. En fastMode, le
+	 * robot ne mettra plus le sonar rotatif en position avant. Ce mode n'est a
+	 * utiliser que lorsque le chemin a emprunter est connu, pour se déplacer
+	 * plus vite.
 	 */
 	private boolean fastMode;
 	
 	// ------------------------------------- CONSTRUCTEUR -----------------------------------------
 
 	/**
-	 * Constructeur de Movement
-	 * @param tPrincipaleInit
+	 * Constructeur de Mouvement.
 	 */
-	public Mouvement(TachePrincipale tPrincipaleInit) {
+	public Mouvement() {
 		this.diffPilot = new DifferentialPilot(DIAMETRE_ROUE, DISTANCE_ENTRE_ROUE, PORT_MOTEUR_GAUCHE, PORT_MOTEUR_DROIT, false);
 		this.moteurSonar = PORT_MOTEUR_SONAR;
-		this.tPrincipale = tPrincipaleInit;
 		this.fastMode = false;
 	}
 	
@@ -201,45 +254,58 @@ public class Mouvement {
 	 * rapport au milieu du couloir, à partir des sonars et de la présence ou
 	 * non de murs lateraux.</br> A la fin du mouvement, une case décrivant
 	 * l'environnement est créée.
+	 * @param tPrincipale
 	 */
-	public void avancer() {
+	public void avancer(TachePrincipale tPrincipale) {
 		double errAngle = 0;
 		double errDist = 0;
+		
 		double commande = 0;
 		double distance = 0;
 		boolean termine = false;
 		boolean murDevant = false ;
+		
+		boolean ancienMurDroit = tPrincipale.getEnv().getMurDroit();
+		boolean ancienMurGauche = tPrincipale.getEnv().getMurGauche();
+		double distPerteMur = 0 ;
+		
+		double nbMesureCap = 0;
+		double sommeErrCap = 0;
 
 		// Initialisation du mouvement
 		this.diffPilot.reset();
 		this.diffPilot.setTravelSpeed(VITESSE_CROISIERE);	
-		this.tPrincipale.getCapteurs().miseAJourComplete();
+		tPrincipale.getCapteurs().miseAJourComplete(tPrincipale);
 
 		while (!termine) {
-
-			// Récuperation et calcul des sorties du système
-			this.tPrincipale.getCapteurs().miseAJour();
-			errAngle = this.refAngleActuel - this.tPrincipale.getCapteurs().getBoussole().getMoyData();
+			
+			// Récuperation des données des capteurs
+			tPrincipale.getCapteurs().miseAJour(tPrincipale);
+			errAngle = this.refAngleActuel - tPrincipale.getCapteurs().getBoussole().getMoyData();
+			
+			// Calcul de l'erreur angulaire
 			if (errAngle < -180) {
 				errAngle = errAngle + 360;
 			} else if (errAngle > 180) {
 				errAngle = errAngle - 360;
 			}
-			if (this.tPrincipale.getEnv().getMurDroit() && this.tPrincipale.getEnv().getMurGauche() && !this.tPrincipale.getCapteurs().getSonarEstDevant()) {
-				errDist = Math.cos(Math.toRadians(errAngle)) * (this.tPrincipale.getCapteurs().getSonarAvantGauche().getMoyData() - this.tPrincipale.getCapteurs().getSonarDroit().getMoyData() - OFFSET_ENTRE_SONARS);
-			} else if (this.tPrincipale.getEnv().getMurDroit()) {
-				errDist = Math.cos(Math.toRadians(errAngle)) * (REGUL_DISTANCE_MUR_DROIT - this.tPrincipale.getCapteurs().getSonarDroit().getMoyData());
-			} else if (this.tPrincipale.getEnv().getMurGauche() && !this.tPrincipale.getCapteurs().getSonarEstDevant()) {
-				errDist = Math.cos(Math.toRadians(errAngle)) * (this.tPrincipale.getCapteurs().getSonarAvantGauche().getMoyData() - REGUL_DISTANCE_MUR_GAUCHE);
+			
+			// Calcul de l'erreur position par rapport au milieu du couloir, selon la présence des murs
+			if (tPrincipale.getEnv().getMurDroit() && tPrincipale.getEnv().getMurGauche() && !tPrincipale.getCapteurs().getSonarEstDevant()) {
+				errDist = Math.cos(Math.toRadians(errAngle)) * (tPrincipale.getCapteurs().getSonarAvantGauche().getMoyData() - tPrincipale.getCapteurs().getSonarDroit().getMoyData() - OFFSET_ENTRE_SONARS);
+			} else if (tPrincipale.getEnv().getMurDroit()) {
+				errDist = Math.cos(Math.toRadians(errAngle)) * (REGUL_DISTANCE_MUR_DROIT - tPrincipale.getCapteurs().getSonarDroit().getMoyData());
+			} else if (tPrincipale.getEnv().getMurGauche() && !tPrincipale.getCapteurs().getSonarEstDevant()) {
+				errDist = Math.cos(Math.toRadians(errAngle)) * (tPrincipale.getCapteurs().getSonarAvantGauche().getMoyData() - REGUL_DISTANCE_MUR_GAUCHE);
 			} else {
 				errDist = 0;
 			}
 			
-			// Calcul de la commande
+			// Calcul de la commande par retour d'etat
 			commande = -(K_DIST * errDist + K_TETA * errAngle);
 
 			// Application de la commande au système
-			if (commande != 0) {
+			if (commande != 0) { // Attention à la division par 0
 				distance += Math.cos(Math.toRadians(errAngle)) * this.diffPilot.getMovement().getDistanceTraveled();
 				if(commande > 0) {
 					this.diffPilot.arc(1 / commande,10,true);
@@ -251,61 +317,137 @@ public class Mouvement {
 				distance += Math.cos(Math.toRadians(errAngle)) * this.diffPilot.getMovement().getDistanceTraveled();
 				this.diffPilot.arc(10000000,10,true);
 			}
+			
+			// Si on arrive sur une nouvelle case , il se peut qu'il n'y ait pas
+			// de mur à droite ou/et à gauche. On detecte lorsqu'on perd la
+			// présence d'un mur à gauche ou/et à droite pour avoir une info
+			// complémentaire sur la position du robot.
+			if( ((ancienMurDroit && !tPrincipale.getEnv().getMurDroit())
+					|| (ancienMurGauche && !tPrincipale.getEnv().getMurGauche())) 
+					&& distance > 14 && distance < 26 ) {
+				Sound.beep();
+				distPerteMur = distance ;
+			}
+			ancienMurDroit = tPrincipale.getEnv().getMurDroit() ;
+			ancienMurGauche = tPrincipale.getEnv().getMurGauche() ;
+
+			// On fait la vérification du cap en cumulant l'erreur angulaire en
+			// vu d'en faire une moyenne. pour eventuellement corriger le cap de
+			// référence.
+			if( distance > DISTANCE_MESURE_ERRCAP && distance < REGUL_DISTANCE_DANGER) {
+				if(this.refAngleActuel>270) { // On fait attention à la discontinuité 360->0
+					if(tPrincipale.getCapteurs().getBoussole().getMoyData()<90) {
+						sommeErrCap += (tPrincipale.getCapteurs().getBoussole().getMoyData()+360-this.refAngleActuel);
+					} else {
+						sommeErrCap += tPrincipale.getCapteurs().getBoussole().getMoyData()-this.refAngleActuel;
+					}
+				} else if (this.refAngleActuel<90) {
+					if(tPrincipale.getCapteurs().getBoussole().getMoyData()>270) {
+						sommeErrCap += (tPrincipale.getCapteurs().getBoussole().getMoyData()-360-this.refAngleActuel);
+					} else {
+						sommeErrCap += tPrincipale.getCapteurs().getBoussole().getMoyData()-this.refAngleActuel;
+					}
+				} else {
+					sommeErrCap += tPrincipale.getCapteurs().getBoussole().getMoyData()-this.refAngleActuel;
+				}
+				nbMesureCap++;
+			}
 
 			//Vérification sur l'avancement du mouvement
 			if ( !this.fastMode ) {
 				
-				if (this.tPrincipale.getCapteurs().getSonarEstDevant()) {
+				// Si le sonar est devant c'est qu'on est en fin de mouvement :
+				if (tPrincipale.getCapteurs().getSonarEstDevant()) {
 					
-					// S'il y a un mur devant on va se caller à bonne distance
-					if (this.tPrincipale.getCapteurs().getSonarAvantGauche().getMoyData() < REGUL_DISTANCE_MUR_AVANT_DANGER || murDevant) {
+					// S'il y a un mur devant on va se caller à bonne distance de celui-ci
+					if (tPrincipale.getCapteurs().getSonarAvantGauche().getMoyData() < REGUL_DISTANCE_MUR_AVANT_DANGER || murDevant) {
 						if(!murDevant) {
 							murDevant=true;
 						}						
-						if ((this.tPrincipale.getCapteurs().getSonarAvantGauche().getMoyData() < REGUL_DISTANCE_MUR_AVANT) || (distance > (DISTANCE_UNITAIRE + 3))) {
+						if ((tPrincipale.getCapteurs().getSonarAvantGauche().getMoyData() < REGUL_DISTANCE_MUR_AVANT) || (distance > (DISTANCE_UNITAIRE + 2*ERREUR_POSITION_CENTRE_CASE))) {
 							termine = true;
-							this.tourner(-errAngle);
-							this.tPrincipale.getCapteurs().tournerSonarAGauche();
+							this.tourner(tPrincipale,-errAngle);
+							tPrincipale.getCapteurs().tournerSonarAGauche(tPrincipale);
 							this.diffPilot.setTravelSpeed(VITESSE_CROISIERE);
-							
 						}
-					// Sinon on s'arrete au bout de 30cm
+						
+					// Sinon on s'arrete lorsqu'on se considère au centre de la nouvelle case
 					} else {
-						if (distance > DISTANCE_UNITAIRE) {
-							termine = true;
-							this.tourner(-errAngle);
-							this.tPrincipale.getCapteurs().tournerSonarAGauche();
-							this.diffPilot.setTravelSpeed(VITESSE_CROISIERE);
+						if( distPerteMur==0 ) {
+							if (distance > DISTANCE_UNITAIRE) {
+								termine = true;
+								this.tourner(tPrincipale,-errAngle);
+								tPrincipale.getCapteurs().tournerSonarAGauche(tPrincipale);
+								this.diffPilot.setTravelSpeed(VITESSE_CROISIERE);
+							}
+						}
+						else {
+							if ( distance > (distPerteMur+REG_DISTANCE_APRES_MUR) ) {
+								if (distance > DISTANCE_UNITAIRE-ERREUR_POSITION_CENTRE_CASE) {
+									termine = true;
+									this.tourner(tPrincipale,-errAngle);
+									tPrincipale.getCapteurs().tournerSonarAGauche(tPrincipale);
+									this.diffPilot.setTravelSpeed(VITESSE_CROISIERE);
+								}
+							}
 						}
 					}
-					
+				
+				// Sinon si on approche de la fin, on place le sonar devant
 				} else {
-					// Si on approche de la fin, on place le sonar devant
+					
 					if (distance > REGUL_DISTANCE_DANGER) {
 						this.diffPilot.setTravelSpeed(VITESSE_DANGER);
 						this.diffPilot.stop();
 						distance += Math.cos(Math.toRadians(errAngle)) * this.diffPilot.getMovement().getDistanceTraveled();
-						System.out.println(errAngle);
-						this.tourner(-errAngle);
-						this.tPrincipale.getCapteurs().tournerSonarDevant();						
+						this.tourner(tPrincipale,-errAngle);
+						tPrincipale.getCapteurs().tournerSonarDevant(tPrincipale);						
 					}
 				}
-				
+			
+			// Si on est en fastMode, on se contente de s'arreter lorsqu'on se considère au centre de la nouvelle case
 			} else {
-				if (distance > DISTANCE_UNITAIRE ) {
-					termine = true;
-					this.tourner(-errAngle);
+				if( distPerteMur==0 ) {
+					if (distance > DISTANCE_UNITAIRE) {
+						termine = true;
+						this.tourner(tPrincipale,-errAngle);
+						tPrincipale.getCapteurs().tournerSonarAGauche(tPrincipale);
+						this.diffPilot.setTravelSpeed(VITESSE_CROISIERE);
+					}
+				}
+				else {
+					if ( distance > (distPerteMur+REG_DISTANCE_APRES_MUR) ) {
+						if (distance > DISTANCE_UNITAIRE-ERREUR_POSITION_CENTRE_CASE) {
+							termine = true;
+							this.tourner(tPrincipale,-errAngle);
+							tPrincipale.getCapteurs().tournerSonarAGauche(tPrincipale);
+							this.diffPilot.setTravelSpeed(VITESSE_CROISIERE);
+						}
+					}
 				}
 			}
 		}
 		
-		// Mise à jour de l'environnement
-		this.tPrincipale.getEnv().setMurArriere(false);
-		this.tPrincipale.getCapteurs().miseAJourComplete();
-		this.tPrincipale.getEnv().majCoord();
+		// Mise à jour des données
+		tPrincipale.getEnv().setMurArriere(false);
+		tPrincipale.getCapteurs().miseAJourComplete(tPrincipale);
+		tPrincipale.getEnv().majCoord(tPrincipale);
 		
+		// Calcul de l'erreur de cap
+		if (nbMesureCap!=0) {
+				if ( Math.abs(sommeErrCap/nbMesureCap)<ERR_REF_ANGLE_MAX && Math.abs(sommeErrCap/nbMesureCap)>ERR_REF_ANGLE_MIN ) {
+					this.errRefAngle = sommeErrCap/nbMesureCap;
+				} else {
+					this.errRefAngle = 0;
+				}
+		} else {
+			this.errRefAngle = 0;
+		}
+		//System.out.println(this.errRefAngle);
+		
+		// Creation de la case décrivant l'environnement de la nouvelle case
 		if ( !this.fastMode ) {
-			this.tPrincipale.getEnv().enregistrerCaseActuelle();
+			tPrincipale.getEnv().enregistrerCaseActuelle(tPrincipale);
 		}
 	}
 
@@ -315,32 +457,33 @@ public class Mouvement {
 	 * régulation est analogue à une régulation angulaire basée sur un relais à
 	 * seuil pur. Met à jour la direction du robot et les variables qui
 	 * indiquent la présence eventuelle des 4 murs.
+	 * @param tPrincipale
 	 */
-	public void tournerADroite() {
+	public void tournerADroite(TachePrincipale tPrincipale) {
 		double err;
 
 		// Mise à jour de la variable qui indique la direction du robot dans le labyrinthe
-		this.tPrincipale.getEnv().majDirTourneADroite();
+		tPrincipale.getEnv().majDirTourneADroite();
 
-		// On change l'angle de référence
+		// Mise a jour de l'angle de référence
 		this.refAngleActuel = (this.refAngleActuel - 90) % 360;
 		if (this.refAngleActuel < 0) {
 			this.refAngleActuel = this.refAngleActuel + 360;
 		}
 
-		// On calcule l'angle à faire
-		err = this.refAngleActuel - this.tPrincipale.getCapteurs().getBoussole().getMoyData();
+		// Calcul de l'angle a réaliser
+		err = this.refAngleActuel - tPrincipale.getCapteurs().getBoussole().getMoyData();
 		if (err < -180) {
 			err = err + 360;
 		} else if (err > 180) {
 			err = err - 360;
 		}
 
-		this.tourner(-err);
+		this.tourner(tPrincipale,-err);
 
-		// Mise à jour de l'environnement
-		this.tPrincipale.getEnv().majMurTourneADroite();
-		this.tPrincipale.getCapteurs().miseAJourComplete();
+		// Mise à jour des données
+		tPrincipale.getEnv().majMurTourneADroite();
+		tPrincipale.getCapteurs().miseAJourComplete(tPrincipale);
 	}
 
 	/**
@@ -349,65 +492,67 @@ public class Mouvement {
 	 * régulation est analogue à une régulation angulaire basée sur un relais à
 	 * seuil pur. Met à jour la direction du robot et les variables qui
 	 * indiquent la présence eventuelle des 4 murs.
+	 * @param tPrincipale
 	 */
-	public void tournerAGauche() {
+	public void tournerAGauche(TachePrincipale tPrincipale) {
 		double err;
 
 		// Mise à jour de la variable qui indique la direction du robot dans le labyrinthe
-		this.tPrincipale.getEnv().majDirTourneAGauche();
+		tPrincipale.getEnv().majDirTourneAGauche();
 
-		// On change l'angle de référence
+		// Mise a jour de l'angle de référence
 		this.refAngleActuel = (this.refAngleActuel + 90) % 360;
 		if (this.refAngleActuel < 0) {
 			this.refAngleActuel = this.refAngleActuel + 360;
 		}
 
-		// On calcule l'angle à faire
-		err = this.refAngleActuel - this.tPrincipale.getCapteurs().getBoussole().getMoyData();
+		// Calcul de l'angle a réaliser
+		err = this.refAngleActuel - tPrincipale.getCapteurs().getBoussole().getMoyData();
 		if (err < -180) {
 			err = err + 360;
 		} else if (err > 180) {
 			err = err - 360;
 		}
 
-		this.tourner(-err);
+		this.tourner(tPrincipale,-err);
 
-		// Mise à jour de l'environnement
-		this.tPrincipale.getEnv().majMurTourneAGauche();
-		this.tPrincipale.getCapteurs().miseAJourComplete();
+		// Mise à jour des données
+		tPrincipale.getEnv().majMurTourneAGauche();
+		tPrincipale.getCapteurs().miseAJourComplete(tPrincipale);
 	}
 
 	/**
-	 * Fait faire un demi tour au (environ 180°) en régulant l'angle à l'aide de
-	 * la boussole (en se basant sur l'angle de référence). Met à jour la
-	 * direction du robot et les variables qui indiquent la présence eventuelle
-	 * des 4 murs.
+	 * Fait faire un demi tour au robot (environ 180°) en régulant l'angle à
+	 * l'aide de la boussole (en se basant sur l'angle de référence). Met à jour
+	 * la direction du robot et les variables qui indiquent la présence
+	 * eventuelle des 4 murs.
+	 * @param tPrincipale
 	 */
-	public void faireDemiTour() {
+	public void faireDemiTour(TachePrincipale tPrincipale) {
 		double err;
 
 		// Mise à jour de la variable qui indique la direction du robot dans le labyrinthe
-		this.tPrincipale.getEnv().majDirDemiTour();
+		tPrincipale.getEnv().majDirDemiTour();
 
-		// On change l'angle de référence
+		// Mise a jour de l'angle de référence
 		this.refAngleActuel = (this.refAngleActuel + 180) % 360;
 		if (this.refAngleActuel < 0) {
 			this.refAngleActuel = this.refAngleActuel + 360;
 		}
 
-		// On calcule l'angle à faire
-		err = this.refAngleActuel - this.tPrincipale.getCapteurs().getBoussole().getMoyData();
+		// Calcul de l'angle a réaliser
+		err = this.refAngleActuel - tPrincipale.getCapteurs().getBoussole().getMoyData();
 		if (err <= -180) {
 			err = err + 360;
 		} else if (err > 180) {
 			err = err - 360;
 		}
 
-		this.tourner(-err);
+		this.tourner(tPrincipale,-err);
 
-		// Mise à jour de l'environnement
-		this.tPrincipale.getEnv().majMurDemiTour();
-		this.tPrincipale.getCapteurs().miseAJourComplete();
+		// Mise à jour des données
+		tPrincipale.getEnv().majMurDemiTour();
+		tPrincipale.getCapteurs().miseAJourComplete(tPrincipale);
 	}
 
 	/**
@@ -415,15 +560,17 @@ public class Mouvement {
 	 * l'aide de la boussole (en se basant sur l'angle de référence). Cette
 	 * régulation est analogue à une régulation basée sur un relais à seuil pur.
 	 * 
+	 * @param tPrincipale
 	 * @param angle
 	 *            Angle à faire, en degrés, sens horaire.
 	 */
-	private int tourner(double angle) {
+	private int tourner(TachePrincipale tPrincipale, double angle) {
 		double err;
 
 		if(angle<=360 && angle>=-360) {
+			
 			// Calcul de l'angle absolu à atteindre
-			double desiredAngle = (this.tPrincipale.getCapteurs().getBoussole().getMoyData() - angle) % 360;
+			double desiredAngle = (tPrincipale.getCapteurs().getBoussole().getMoyData() - angle) % 360;
 			if (desiredAngle < 0) {
 				desiredAngle = desiredAngle + 360;
 			} else if (desiredAngle > 360) {
@@ -431,7 +578,7 @@ public class Mouvement {
 			}
 
 			// Calcul de l'erreur angulaire
-			err = desiredAngle - this.tPrincipale.getCapteurs().getBoussole().getMoyData();
+			err = desiredAngle - tPrincipale.getCapteurs().getBoussole().getMoyData();
 			if (err < -180) {
 				err = err + 360;
 			} else if (err > 180) {
@@ -457,8 +604,8 @@ public class Mouvement {
 				}
 
 				// Calcul de l'erreur angulaire
-				this.tPrincipale.getCapteurs().getBoussole().rafraichir();
-				err = desiredAngle - this.tPrincipale.getCapteurs().getBoussole().getMoyData();
+				tPrincipale.getCapteurs().getBoussole().rafraichir();
+				err = desiredAngle - tPrincipale.getCapteurs().getBoussole().getMoyData();
 				if (err < -180) {
 					err = err + 360;
 				} else if (err > 180) {
@@ -478,7 +625,7 @@ public class Mouvement {
 	}
 
 	/**
-	 * Force l'arret des moteurs
+	 * Force l'arret des moteurs.
 	 */
 	public void stop() {
 		this.diffPilot.stop();
@@ -488,7 +635,7 @@ public class Mouvement {
 	
 	/**
 	 * @param b
-	 * 		état de l'attribut fastMode
+	 * 		état de l'attribut fastMode.
 	 */
 	public void setFastMode(boolean b) {
 		this.fastMode = b;
@@ -497,24 +644,27 @@ public class Mouvement {
 	/**
 	 * Enregistre l'angle initial qui servira de référence pour la régulation
 	 * des mouvements.
+	 * 
+	 * @param tPrincipale
 	 */
-	public void setRefAngleInit() {
-		this.tPrincipale.getCapteurs().miseAJourComplete();
-		this.refAngleInit = this.tPrincipale.getCapteurs().getBoussole().getMoyData();
+	public void setRefAngleInit(TachePrincipale tPrincipale) {
+		tPrincipale.getCapteurs().miseAJourComplete(tPrincipale);
+		this.refAngleInit = tPrincipale.getCapteurs().getBoussole().getMoyData();
 		this.refAngleActuel = this.refAngleInit;
+		this.errRefAngle = 0;
 	}
 	
 	// ------------------------------------- GETTERS ----------------------------------------------
 
 	/**
-	 * @return la valeur de l'attribut refAngle
+	 * @return la valeur de l'attribut refAngle.
 	 */
 	public double getRefAngleActuel() {
 		return this.refAngleActuel;
 	}
 
 	/**
-	 * @return l'objet représentation le pilote différentiel
+	 * @return l'objet représentation le pilote différentiel.
 	 */
 	public DifferentialPilot getDiffPilot() {
 		return this.diffPilot;
@@ -528,7 +678,7 @@ public class Mouvement {
 	}
 
 	/**
-	 * @return l'état de l'attribut fastMode
+	 * @return l'état de l'attribut fastMode.
 	 */
 	public boolean getFastMode() {
 		return this.fastMode;

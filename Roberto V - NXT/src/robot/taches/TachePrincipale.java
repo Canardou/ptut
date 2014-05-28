@@ -39,32 +39,32 @@ public class TachePrincipale extends Thread {
 	// ------------------------------------- CONSTRUCTEUR -----------------------------------------
 
 	/**
-	 * Constructeur de Robot
+	 * Constructeur de TachePrincipale.
 	 */
 	public TachePrincipale() {
-		this.mouv = new Mouvement(this);
-		this.env = new Environnement(this);
-		this.capteurs = new Capteurs(this);
-		this.ordre = new Ordre(this);
+		this.mouv = new Mouvement();
+		this.env = new Environnement();
+		this.capteurs = new Capteurs();
+		this.ordre = new Ordre();
 		this.setPriority(5);
 	}
 	
 	// ------------------------------------- TACHE ------------------------------------------------
 
 	/**
-	 * Tache principale du robot
+	 * Tache principale du robot.
 	 */
 	public void run() {
 		while (true) {
-			this.ordre.choisirOrdreExploration();
-			this.ordre.executerOrdre();
+			this.ordre.choisirOrdre(this);
+			this.ordre.executerOrdre(this);
 		}
 	} 
 	
 	// ------------------------------------- GETTERS ----------------------------------------------
 
 	/**
-	 * @return la valeur de l'attribut mov.
+	 * @return la valeur de l'attribut mouv.
 	 */
 	public Mouvement getMouv() {
 		return this.mouv;

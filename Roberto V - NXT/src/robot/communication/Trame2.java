@@ -25,8 +25,6 @@ public class Trame2 {
 	private int X;
 	private int Y;
 
-	private ArrayList<Case> pile;
-
 	
 	private byte[] contenuT;
 
@@ -56,26 +54,26 @@ public class Trame2 {
 	
 	public Trame2(byte ID, ListCase listCase ){
 
-		
+		ArrayList<Case> pile;
 		
 		int i=2;
 		//this.tailleTrame=tailleTrame;
 		
 		this.ID=ID;
-		this.pile=listCase.getArrayList();
+		pile=listCase.getArrayList();
 		
 		this.typeTrame=1;
 		
 		
 		
-		this.contenuT= new byte[(byte)(this.pile.size()*3+3)];  //on récupère la taille du tab, chaque case contient 3 infos + taille trame, type et ID
+		this.contenuT= new byte[(byte)(pile.size()*3+3)];  //on récupère la taille du tab, chaque case contient 3 infos + taille trame, type et ID
 	
-		this.contenuT[0]=(byte)(this.pile.size()*3+3);
+		this.contenuT[0]=(byte)(pile.size()*3+3);
 		this.contenuT[1]=this.ID;
 
 	
 		
-		for (Case Case1 : this.pile){   
+		for (Case Case1 : pile){   
 			
 			this.contenuT[i]=(byte)Case1.getX();
 			this.contenuT[i+1]=(byte)Case1.getY();
@@ -113,7 +111,7 @@ public class Trame2 {
 	public Trame2(byte ID, Case firstCase, int direction){
 		this.ID=ID;
 		this.direction=direction;
-		this.typeTrame=8;
+		this.typeTrame=2;
 		this.X=firstCase.getX();
 		this.Y=firstCase.getY();
 		

@@ -2,7 +2,7 @@ package robot.environnement;
 
 import lejos.nxt.Sound;
 import robot.evenements.Ordre;
-import robot.taches.*;
+import robot.taches.TachePrincipale;
 
 /**
  * Classe permettant de décrire l'environnement du robot. Cette classe contient
@@ -38,16 +38,11 @@ public class Environnement {
 	
 	/**
 	 * Valeur renvoyé par le capteur de lumière a partir de laquelle on
-	 * considère qu'il voit la cible.
+	 * considère qu'il y a la cible.
 	 */
-	public static final double CIBLE_LUMIERE = 560;
+	public static final double CIBLE_LUMIERE = 540;
 	
 	// ------------------------------------- ATTRIBUTS --------------------------------------------
-
-	/**
-	 * Tache principale du robot.
-	 */
-	private TachePrincipale tPrincipale;
 
 	/**
 	 * Information sur la présence d'un mur à l'avant du robot. Attention cette
@@ -121,13 +116,10 @@ public class Environnement {
 	// ------------------------------------- CONSTRUCTEUR -----------------------------------------
 
 	/**
-	 * Constructeur de Environment.
-	 * 
-	 * @param tPrincipaleInit    
+	 * Constructeur de Environment. 
 	 */
-	public Environnement(TachePrincipale tPrincipaleInit) {
-		this.tPrincipale = tPrincipaleInit;
-		this.listCase = new ListCase(tPrincipaleInit);
+	public Environnement() {
+		this.listCase = new ListCase();
 		this.cibleIci = false;
 		this.cibleTrouvee = false;
 		this.xinit=0;
@@ -239,17 +231,21 @@ public class Environnement {
 
 	/**
 	 * Ajoute la case actuelle à la liste.
+	 * 
+	 * @param tPrincipale
 	 */
-	public synchronized void enregistrerCaseActuelle() {
-		this.listCase.ajouterCase(this.x, this.y, this.dir, murAvant, murGauche, murArriere, murDroit);
+	public synchronized void enregistrerCaseActuelle(TachePrincipale tPrincipale) {
+		this.listCase.ajouterCase(tPrincipale, this.x, this.y, this.dir, murAvant, murGauche, murArriere, murDroit);
 	}
 
 	/**
-	 * Met à jour les coordonées du robot en fonction de sa direction
+	 * Met à jour les coordonées du robot en fonction de sa direction.
+	 * 
+	 * @param tPrincipale
 	 * @return 0 si les coordonées ont été modifiées.
 	 */
-	public synchronized int majCoord() {
-		if (this.tPrincipale.getOrdre().getOrdreActuel() == Ordre.AVANCER) {
+	public synchronized int majCoord(TachePrincipale tPrincipale) {
+		if (tPrincipale.getOrdre().getOrdreActuel() == Ordre.AVANCER) {
 			if (this.dir == Case.RIGHT) {
 				this.x++;
 				return 0;
@@ -257,10 +253,10 @@ public class Environnement {
 				this.x--;
 				return 0;
 			} else if (this.dir == Case.UP) {
-				this.y++;
+				this.y--;
 				return 0;
 			} else if (this.dir == Case.DOWN) {
-				this.y--;
+				this.y++;
 				return 0;
 			} else {
 				System.out.println("majCoord:err dir");

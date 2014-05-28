@@ -1,8 +1,13 @@
 package robot.capteurs;
 
-import robot.taches.TachePrincipale;
 import lejos.nxt.SensorPort;
+import robot.taches.TachePrincipale;
 
+/**
+ * Cette classe permet de gerer les différents capteurs présent sur le robot.
+ * 
+ * @author Thomas
+ */
 public class Capteurs {
 	
 	// ------------------------------------- CONSTANTES -------------------------------------------
@@ -31,14 +36,9 @@ public class Capteurs {
 	 * Taille du tableau (nombre d'échantillons dans le filtre) des capteurs en
 	 * nombre d'éléments.
 	 */
-	public static final int TAB_NBDATA = 4;
+	public static final int TAB_NBDATA = 3;
 	
 	// ------------------------------------- ATTRIBUTS --------------------------------------------
-	
-	/**
-	 * Attribut représentant la tache principale.
-	 */
-	private TachePrincipale tPrincipale;
 
 	/**
 	 * Attribut représentant la boussole.
@@ -71,12 +71,9 @@ public class Capteurs {
 	
 	/**
 	 * Constructeur de Capteurs.
-	 * 
-	 * @param tPrincipaleInit
 	 */
-	public Capteurs(TachePrincipale tPrincipaleInit) {
-		this.tPrincipale=tPrincipaleInit;
-		this.boussole = new Boussole(PORT_BOUSSOLE, tPrincipaleInit);
+	public Capteurs() {
+		this.boussole = new Boussole(PORT_BOUSSOLE);
 		this.capteurLumiere = new Lumiere(PORT_LUMIERE);
 		this.sonarAvantGauche = new Sonar(PORT_SONARAVANTGAUCHE);
 		this.sonarDroit = new Sonar(PORT_SONARDROIT);
@@ -86,27 +83,31 @@ public class Capteurs {
 	// ------------------------------------- METHODES ---------------------------------------------
 	
 	/**
-	 * Met à jour les données issues de tout les capteurs.
+	 * Met à jour les données issues de tout les capteurs. Met aussi à jour la
+	 * présence ou non des murs scannés.
+	 * 
+	 * @param tPrincipale
 	 */
-	public void miseAJour() {
+	public void miseAJour(TachePrincipale tPrincipale) {
 		this.sonarAvantGauche.rafraichir();
 		this.sonarDroit.rafraichir();
 		this.boussole.rafraichir();
 		this.capteurLumiere.rafraichir();
 		if (this.sonarEstDevant) {
-			this.tPrincipale.getEnv().setMurAvant(this.sonarAvantGauche.getMoyData());
+			tPrincipale.getEnv().setMurAvant(this.sonarAvantGauche.getMoyData());
 		} else {
-			this.tPrincipale.getEnv().setMurGauche(this.sonarAvantGauche.getMoyData());
+			tPrincipale.getEnv().setMurGauche(this.sonarAvantGauche.getMoyData());
 		}
-		this.tPrincipale.getEnv().setMurDroit(this.sonarDroit.getMoyData());
-		this.tPrincipale.getEnv().setCibleIci(this.capteurLumiere.getMoyData());
-		
+		tPrincipale.getEnv().setMurDroit(this.sonarDroit.getMoyData());
+		tPrincipale.getEnv().setCibleIci(this.capteurLumiere.getMoyData());
 	}
 
 	/**
 	 * Met à jour les données issues de tout les capteurs en remplissant leur filtre.
+	 * 
+	 * @param tPrincipale
 	 */
-	public void miseAJourComplete() {
+	public void miseAJourComplete(TachePrincipale tPrincipale) {
 		for (int i = 0; i < TAB_NBDATA; i++) {
 			this.sonarAvantGauche.rafraichir();
 			this.sonarDroit.rafraichir();
@@ -114,30 +115,34 @@ public class Capteurs {
 			this.capteurLumiere.rafraichir();
 		}
 		if (this.sonarEstDevant) {
-			this.tPrincipale.getEnv().setMurAvant(this.sonarAvantGauche.getMoyData());
+			tPrincipale.getEnv().setMurAvant(this.sonarAvantGauche.getMoyData());
 		} else {
-			this.tPrincipale.getEnv().setMurGauche(this.sonarAvantGauche.getMoyData());
+			tPrincipale.getEnv().setMurGauche(this.sonarAvantGauche.getMoyData());
 		}
-		this.tPrincipale.getEnv().setMurDroit(this.sonarDroit.getMoyData());
-		this.tPrincipale.getEnv().setCibleIci(this.capteurLumiere.getMoyData());
+		tPrincipale.getEnv().setMurDroit(this.sonarDroit.getMoyData());
+		tPrincipale.getEnv().setCibleIci(this.capteurLumiere.getMoyData());
 	}
 
 	/**
 	 * Tourne le sonar rotatif en position avant.
+	 * 
+	 * @param tPrincipale
 	 */
-	public void tournerSonarDevant() {
-		this.tPrincipale.getMouv().getMoteurSonar().rotateTo(-90);
+	public void tournerSonarDevant(TachePrincipale tPrincipale) {
+		tPrincipale.getMouv().getMoteurSonar().rotateTo(-90);
 		this.sonarEstDevant = true;
-		this.miseAJourComplete();
+		this.miseAJourComplete(tPrincipale);
 	}
 
 	/**
 	 * Tourne le sonar rotatif en position gauche.
+	 * 
+	 * @param tPrincipale
 	 */
-	public void tournerSonarAGauche() {
-		this.tPrincipale.getMouv().getMoteurSonar().rotateTo(0);
+	public void tournerSonarAGauche(TachePrincipale tPrincipale) {
+		tPrincipale.getMouv().getMoteurSonar().rotateTo(0);
 		this.sonarEstDevant = false;
-		this.miseAJourComplete();
+		this.miseAJourComplete(tPrincipale);
 	}
 
 	// ------------------------------------- GETTERS ----------------------------------------------

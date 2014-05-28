@@ -17,17 +17,17 @@ public class ComBluetooth{
 	//	this.entitee1=entitee1;
 	}
 	
-	public void connexion() {
-		 try{
-			 this.initialisation();
-		 } catch (Exception e) {}
+	public void connexion() throws Exception {
+		this.initialisation();
 	}
 	
 	public Trame2 receive() {
 		Trame2 trame=null; 
 		 try{
 			 trame=this.ecouter();
-		 } catch (Exception e) {}
+		 } catch (Exception e) {
+			 System.out.println("Exception ecout.");
+		 }
 		 return trame;
 	}
 	
@@ -35,7 +35,9 @@ public class ComBluetooth{
 		
 		 try{
 			 this.envoyer(trame);
-		 } catch (Exception e) {}
+		 } catch (Exception e) {
+			 System.out.println("Exception env.");
+		 }
 		 
 	}
 	
@@ -44,11 +46,11 @@ public class ComBluetooth{
 	
 	public void initialisation() throws Exception{
 		//on se met en attende de connexion
-		System.out.println("Wow much wait...");
+		//System.out.println("Wow much wait...");
 		BTConnection connection = Bluetooth.waitForConnection();
 		if (connection == null)
 			throw new IOException("Epic fail connexion");
-		System.out.println("Wow very connexion !");
+		//System.out.println("Wow very connexion !");
 				
 		//si pas d'échec, on active les I/O bluetooth
 		this.entitee1.setInput(connection.openDataInputStream());
@@ -66,7 +68,6 @@ public class ComBluetooth{
 	
 	public Trame2 ecouter()throws Exception{
 				
-		
 		this.entitee1.getOutput().write(0);
 		this.entitee1.getOutput().flush();		
 		
@@ -95,6 +96,8 @@ public class ComBluetooth{
 		else if (trameRecue[tailleTrameRecue-1]==2){
 			Case firstCase= new Case(trameRecue[2],trameRecue[3]);
 			trameR= new Trame2(trameRecue[1],firstCase,trameRecue[4]);
+		} else  {
+			System.out.println("errType = "+trameRecue[tailleTrameRecue-1]);
 		}
 		
 		return trameR;

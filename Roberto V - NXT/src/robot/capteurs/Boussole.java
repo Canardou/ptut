@@ -26,11 +26,6 @@ public class Boussole extends CompassHTSensor {
 	public static final double VITESSE_ROTATION_CALIBRATION = 20;
 
 	// ------------------------------------- ATTRIBUTS --------------------------------------------
-	
-	/**
-	 * Tache principale du robot.
-	 */
-	private TachePrincipale tPrincipale;
 
 	/**
 	 * Tableau d'échantillons des données issues de la boussole.
@@ -50,15 +45,13 @@ public class Boussole extends CompassHTSensor {
 	// ------------------------------------- CONSTRUCTEUR -----------------------------------------
 
 	/**
-	 * Constructeur du capteur boussole.
+	 * Constructeur de Boussole.
 	 * 
 	 * @param port
 	 *            Port auquel le capteur est branché.
-	 * @param tPrincipaleInit
 	 */
-	public Boussole(I2CPort port, TachePrincipale tPrincipaleInit) {
+	public Boussole(I2CPort port) {
 		super(port);
-		this.tPrincipale = tPrincipaleInit;
 		this.data = new double[Capteurs.TAB_NBDATA];
 		this.idxData = 0;
 		this.moyData = 0;
@@ -68,14 +61,16 @@ public class Boussole extends CompassHTSensor {
 	
 	/**
 	 * Réalise la calibration de la boussole.
+	 * 
+	 * @param tPrincipale
 	 */
-	public void calibrer() {
+	public void calibrer(TachePrincipale tPrincipale) {
 		System.out.println("Cal. boussole");
-		this.tPrincipale.getMouv().getDiffPilot().setRotateSpeed(VITESSE_ROTATION_CALIBRATION);
+		tPrincipale.getMouv().getDiffPilot().setRotateSpeed(VITESSE_ROTATION_CALIBRATION);
 		this.startCalibration();
-		this.tPrincipale.getMouv().getDiffPilot().rotate(ANGLE_CAL);
+		tPrincipale.getMouv().getDiffPilot().rotate(ANGLE_CAL);
 		this.stopCalibration();
-		this.tPrincipale.getMouv().getDiffPilot().setRotateSpeed(Mouvement.VITESSE_ROTATION_CROISIERE);
+		tPrincipale.getMouv().getDiffPilot().setRotateSpeed(Mouvement.VITESSE_ROTATION_CROISIERE);
 	}
 	
 	/**

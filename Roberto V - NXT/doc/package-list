@@ -5,3 +5,4 @@ robot.communication
 robot.environnement
 robot.evenements
 robot.taches
+tests

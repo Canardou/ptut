@@ -18,7 +18,7 @@ public class Init {
 	/**
 	 * Volume sonore du robot. De 0 à 100
 	 */
-	public static final int VOLUME = 70; 
+	public static final int VOLUME = 40; 
 	
 	// ------------------------------------- CONSTRUCTEUR -----------------------------------------
 
@@ -29,7 +29,7 @@ public class Init {
 		TachePrincipale tPrincipale = new TachePrincipale();
 		TacheCom tCom = new TacheCom(tPrincipale);
 		this.init(tPrincipale);
-		this.initTest(tPrincipale); // A VIRER //////////////////////////////////////////////////////////////////////////////////////////
+		//this.initTest(tPrincipale); // A DEGAGER //////////////////////////////////////////////////////////////////////////////////////////
 		tPrincipale.start();
 		tCom.start();
 	}
@@ -67,21 +67,10 @@ public class Init {
 		tPrincipale.getMouv().getMoteurSonar().setSpeed(Mouvement.VITESSE_ROTATION_SONAR);
 
 		tPrincipale.getEnv().setInitPos(3, 3, 1);
-		tPrincipale.getOrdre().ajouterOrdre(Ordre.SETPOSITION);
-		tPrincipale.getOrdre().choisirOrdre();
-		tPrincipale.getOrdre().executerOrdre();
-		tPrincipale.getOrdre().ajouterOrdre(Ordre.ATTENDRE_BOUTON);
-		tPrincipale.getOrdre().choisirOrdre();
-		tPrincipale.getOrdre().executerOrdre();
-		tPrincipale.getOrdre().ajouterOrdre(Ordre.ATTENDRE_1SEC);
-		tPrincipale.getOrdre().choisirOrdre();
-		tPrincipale.getOrdre().executerOrdre();
-		tPrincipale.getOrdre().ajouterOrdre(Ordre.ENREGISTRER_ANGLE_REF);
-		tPrincipale.getOrdre().choisirOrdre();
-		tPrincipale.getOrdre().executerOrdre();
-		tPrincipale.getOrdre().ajouterOrdre(Ordre.EXPLORER_PREMIERE_CASE);
-		tPrincipale.getOrdre().choisirOrdre();
-		tPrincipale.getOrdre().executerOrdre();
+		tPrincipale.getOrdre().executerOrdre(tPrincipale, Ordre.SETPOSITION);
+		tPrincipale.getOrdre().executerOrdre(tPrincipale, Ordre.ATTENDRE_BOUTON);
+		tPrincipale.getOrdre().executerOrdre(tPrincipale, Ordre.ATTENDRE_1SEC);
+		tPrincipale.getOrdre().executerOrdre(tPrincipale, Ordre.ENREGISTRER_ANGLE_REF);
+		tPrincipale.getOrdre().executerOrdre(tPrincipale, Ordre.EXPLORER_PREMIERE_CASE);
 	}
-
 }

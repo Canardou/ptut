@@ -19,19 +19,13 @@ public class ListCase {
 	 */
 	private ArrayList<Case> list;
 	
-	/**
-	 * Attribut représentant la tache principale.
-	 */
-	private TachePrincipale tPrincipale;
-	
 	// ------------------------------------- CONSTRUCTEUR -----------------------------------------
 
 	/**
 	 * Constructeur de ListCase.
 	 */
-	public ListCase(TachePrincipale tPrincipaleInit) {
+	public ListCase() {
 		this.list = new ArrayList<Case>();
-		this.tPrincipale=tPrincipaleInit;
 	}
 	
 	// ------------------------------------- METHODES ---------------------------------------------
@@ -59,6 +53,7 @@ public class ListCase {
 	 * passer du repère relatif au robot au répère absolu du superviseur. Ainsi
 	 * la case ajoutée est directement utilisable par le superviseur.
 	 * 
+	 * @param tPrincipale
 	 * @param x
 	 *            Coordonée x de la case.
 	 * @param y
@@ -75,7 +70,7 @@ public class ListCase {
 	 *            Mur eventuel à l'arrière du robot (true si un mur est présent).
 	 * @return 0 si l'opération s'est bien déroulée.
 	 */
-	public synchronized int ajouterCase(int x, int y, int dir, boolean murAvant,
+	public synchronized int ajouterCase(TachePrincipale tPrincipale, int x, int y, int dir, boolean murAvant,
 			boolean murGauche, boolean murArriere, boolean murDroit) {
 		if (x >= 0
 				&& y >= 0
@@ -84,9 +79,9 @@ public class ListCase {
 			Case caseTemp = new Case(x, y);
 			caseTemp.setReveal();
 			
-			if(this.tPrincipale.getEnv().getCibleIci()) {
+			if(tPrincipale.getEnv().getCibleIci()) {
 				caseTemp.setMark();
-				this.tPrincipale.getEnv().setCibleIci(false);
+				tPrincipale.getEnv().setCibleIci(false);
 			}
 
 			if (dir == Case.RIGHT) {

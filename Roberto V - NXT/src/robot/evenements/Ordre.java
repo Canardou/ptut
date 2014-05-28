@@ -2,6 +2,7 @@ package robot.evenements;
 
 import java.util.ArrayList;
 import java.util.Random;
+
 import lejos.nxt.Button;
 import robot.taches.*;
 
@@ -105,11 +106,6 @@ public class Ordre {
 	 * Ordre actuel du robot.
 	 */
 	private int ordreActuel;
-
-	/**
-	 * Tache principale du robot.
-	 */
-	private TachePrincipale tPrincipale;
 	
 	/**
 	 * Indique si le robot est en train d'executer un ordre.
@@ -121,15 +117,17 @@ public class Ordre {
 	 */
 	private ArrayList<Integer> list;
 	
+	/**
+	 * Utiliser dans la méthode choisirOrdreRandom() pour les tests.
+	 */
+	private int ancienRandom=-1;
+	
 	// ------------------------------------- CONSTRUCTEUR -----------------------------------------
 
 	/**
 	 * Constructeur de Ordre.
-	 * 
-	 * @param tPrincipaleInit
 	 */
-	public Ordre(TachePrincipale tPrincipaleInit) {
-		this.tPrincipale = tPrincipaleInit;
+	public Ordre() {
 		this.list = new ArrayList<Integer>();
 		this.ordreActuel = STOP;
 		this.isBusy=1;
@@ -197,95 +195,151 @@ public class Ordre {
 	
 	/**
 	 * Méthode de test, algorithme d'exploration basique.
+	 * 
+	 * @param tPrincipale
 	 */
-	public void choisirOrdreExploration() {
-		if (!this.tPrincipale.getEnv().getMurAvant()) {
+	public void choisirOrdreExploration(TachePrincipale tPrincipale) {
+		if (!tPrincipale.getEnv().getMurAvant()) {
 			this.ajouterOrdre(AVANCER);
-		} else if (!this.tPrincipale.getEnv().getMurDroit()) {
+		} else if (!tPrincipale.getEnv().getMurDroit()) {
 			this.ajouterOrdre(TOURNER_A_DROITE);
-		} else if (!this.tPrincipale.getEnv().getMurGauche()) {
+		} else if (!tPrincipale.getEnv().getMurGauche()) {
 			this.ajouterOrdre(TOURNER_A_GAUCHE);
 		} else {
 			this.ajouterOrdre(DEMITOUR);
 		}
-		this.ordreActuel = this.getOrdreSuivant();
+		this.ordreActuel = this.getOrdreSuivant(tPrincipale);
 	}
 	
 	/**
 	 * Méthode de test, choix de la direction random (a condition qu'il n'y ait
 	 * pas de mur).
+	 * 
+	 * @param tPrincipale
 	 */
-	public void choisirOrdreRandom() {
+	public void choisirOrdreRandom(TachePrincipale tPrincipale) {
 		Random generateurRandom = new Random();
 		int valeurRandom;
 		boolean trouve=false;
 		
-		if(this.tPrincipale.getEnv().getMurAvant() && this.tPrincipale.getEnv().getMurGauche() && this.tPrincipale.getEnv().getMurDroit()) {
+		if(tPrincipale.getEnv().getMurAvant() && tPrincipale.getEnv().getMurGauche() && tPrincipale.getEnv().getMurDroit()) {
 			this.ajouterOrdre(DEMITOUR);
+			this.ancienRandom=DEMITOUR;
+		} else if(this.ancienRandom==DEMITOUR || this.ancienRandom==TOURNER_A_DROITE || this.ancienRandom==TOURNER_A_GAUCHE ) {
+			this.ajouterOrdre(AVANCER);
+			this.ancienRandom=AVANCER;
 		} else {
 			while(!trouve) {
 				valeurRandom = generateurRandom.nextInt(3);
 				if(valeurRandom==0){
-					if(!this.tPrincipale.getEnv().getMurAvant()) {
+					if(!tPrincipale.getEnv().getMurAvant()) {
 						this.ajouterOrdre(AVANCER);
+						this.ancienRandom=AVANCER;
 						trouve=true;
 					}
 				} else if(valeurRandom==1) {
-					if(!this.tPrincipale.getEnv().getMurDroit()) {
+					if(!tPrincipale.getEnv().getMurDroit()) {
 						this.ajouterOrdre(TOURNER_A_DROITE);
+						this.ancienRandom=TOURNER_A_DROITE;
 						trouve=true;
 					}
 				} else if(valeurRandom==2) {
-					if(!this.tPrincipale.getEnv().getMurGauche()) {
+					if(!tPrincipale.getEnv().getMurGauche()) {
 						this.ajouterOrdre(TOURNER_A_GAUCHE);
+						this.ancienRandom=TOURNER_A_GAUCHE;
 						trouve=true;
 					}
 				}	
 			}
 		}
+		this.ordreActuel = this.getOrdreSuivant(tPrincipale);
 	}
 
 	/**
 	 * Mettre à jour l'ordre à executer.
+	 * 
+	 * @param tPrincipale
 	 */
-	public void choisirOrdre() {
-		this.ordreActuel = this.getOrdreSuivant();
+	public void choisirOrdre(TachePrincipale tPrincipale) {
+		this.ordreActuel = this.getOrdreSuivant(tPrincipale);
 	}
 
 	/**
 	 * Execute l'ordre contenu dans ordreActuel.
+	 * 
+	 * @param tPrincipale
 	 */
-	public void executerOrdre() {
+	public void executerOrdre(TachePrincipale tPrincipale) {
 		if (this.ordreActuel == AVANCER) {
-			this.tPrincipale.getMouv().avancer();
+			tPrincipale.getMouv().avancer(tPrincipale);
 		} else if (this.ordreActuel == TOURNER_A_DROITE) {
-			this.tPrincipale.getMouv().tournerADroite();
+			tPrincipale.getMouv().tournerADroite(tPrincipale);
 		} else if (this.ordreActuel == TOURNER_A_GAUCHE) {
-			this.tPrincipale.getMouv().tournerAGauche();
+			tPrincipale.getMouv().tournerAGauche(tPrincipale);
 		} else if (this.ordreActuel == DEMITOUR) {
-			this.tPrincipale.getMouv().faireDemiTour();
+			tPrincipale.getMouv().faireDemiTour(tPrincipale);
 		} else if (this.ordreActuel == STOP) {
-			this.tPrincipale.getMouv().stop();
+			tPrincipale.getMouv().stop();
 		} else if (this.ordreActuel == CALIBRER_BOUSSOLE) {
-			this.tPrincipale.getCapteurs().getBoussole().calibrer();
+			tPrincipale.getCapteurs().getBoussole().calibrer(tPrincipale);
 		} else if (this.ordreActuel == ENREGISTRER_ANGLE_REF) {
-			this.tPrincipale.getMouv().setRefAngleInit();
+			tPrincipale.getMouv().setRefAngleInit(tPrincipale);
 		} else if (this.ordreActuel == EXPLORER_PREMIERE_CASE) {
-			this.tPrincipale.getMouv().tournerAGauche();
-			this.tPrincipale.getMouv().tournerADroite();
-			this.tPrincipale.getEnv().enregistrerCaseActuelle();
+			tPrincipale.getMouv().tournerAGauche(tPrincipale);
+			tPrincipale.getMouv().tournerADroite(tPrincipale);
+			tPrincipale.getEnv().enregistrerCaseActuelle(tPrincipale);
 		} else if (this.ordreActuel == ATTENDRE_BOUTON) {
 			this.pauseBouton();
 		} else if (this.ordreActuel == ATTENDRE_1SEC) {
 			this.pauseTemps(1000);
 		} else if (this.ordreActuel == FASTMODE) {
-			this.tPrincipale.getMouv().setFastMode(true);
+			tPrincipale.getMouv().setFastMode(true);
 		} else if (this.ordreActuel == NORMALMODE) {
-			this.tPrincipale.getMouv().setFastMode(false);
+			tPrincipale.getMouv().setFastMode(false);
 		} else if (this.ordreActuel == SETPOSITION) {
-			this.tPrincipale.getEnv().setPosition();
+			tPrincipale.getEnv().setPosition();
 		} else {
 			System.out.println("executerOrdre:\nerr ordre "+this.ordreActuel);
+		}
+	}
+	
+	/**
+	 * Execute l'ordre passé en argument.
+	 * 
+	 * @param tPrincipale
+	 * @param ordre
+	 */
+	public void executerOrdre(TachePrincipale tPrincipale, int ordre) {
+		if (ordre == AVANCER) {
+			tPrincipale.getMouv().avancer(tPrincipale);
+		} else if (ordre == TOURNER_A_DROITE) {
+			tPrincipale.getMouv().tournerADroite(tPrincipale);
+		} else if (ordre == TOURNER_A_GAUCHE) {
+			tPrincipale.getMouv().tournerAGauche(tPrincipale);
+		} else if (ordre == DEMITOUR) {
+			tPrincipale.getMouv().faireDemiTour(tPrincipale);
+		} else if (ordre == STOP) {
+			tPrincipale.getMouv().stop();
+		} else if (ordre == CALIBRER_BOUSSOLE) {
+			tPrincipale.getCapteurs().getBoussole().calibrer(tPrincipale);
+		} else if (ordre == ENREGISTRER_ANGLE_REF) {
+			tPrincipale.getMouv().setRefAngleInit(tPrincipale);
+		} else if (ordre == EXPLORER_PREMIERE_CASE) {
+			tPrincipale.getMouv().tournerAGauche(tPrincipale);
+			tPrincipale.getMouv().tournerADroite(tPrincipale);
+			tPrincipale.getEnv().enregistrerCaseActuelle(tPrincipale);
+		} else if (ordre == ATTENDRE_BOUTON) {
+			this.pauseBouton();
+		} else if (ordre == ATTENDRE_1SEC) {
+			this.pauseTemps(1000);
+		} else if (ordre == FASTMODE) {
+			tPrincipale.getMouv().setFastMode(true);
+		} else if (ordre == NORMALMODE) {
+			tPrincipale.getMouv().setFastMode(false);
+		} else if (ordre == SETPOSITION) {
+			tPrincipale.getEnv().setPosition();
+		} else {
+			System.out.println("executerOrdre:\nerr ordre "+ordre);
 		}
 	}
 
@@ -351,21 +405,20 @@ public class Ordre {
 		while ((System.currentTimeMillis() - initTime) < ms) {}
 	}
 	
-	// ------------------------------------- SETTERS ----------------------------------------------
-	
 	// ------------------------------------- GETTERS ----------------------------------------------
 
 	/**
 	 * Retire et renvoie l'ordre le plus ancien présent dans la liste.
 	 * 
+	 * @param tPrincipale
 	 * @return l'ordre le plus ancien présent dans la liste ou l'ordre STOP si la liste est vide.
 	 */
-	private synchronized Integer getOrdreSuivant() {
+	private synchronized Integer getOrdreSuivant(TachePrincipale tPrincipale) {
 		if (this.list.isEmpty()) {
 			if(this.isBusy!=0) {
 				this.isBusy=0;
-				if(this.tPrincipale.getMouv().getFastMode()) {
-					this.tPrincipale.getEnv().enregistrerCaseActuelle();
+				if(tPrincipale.getMouv().getFastMode()) {
+					tPrincipale.getEnv().enregistrerCaseActuelle(tPrincipale);
 				}
 			}
 			return Ordre.STOP;
