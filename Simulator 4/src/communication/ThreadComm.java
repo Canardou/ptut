@@ -130,7 +130,7 @@ public class ThreadComm extends Thread{
 						System.out.println("Robot " + this.recepteur.getID()+" Compteur explosé");
 					}
 						
-					if (Busy!=1 && Busy!=-2){
+					if (Busy!=1){
 						
 						//synchronized(this){
 						typeOrdre = this.lireOrdre();//}
