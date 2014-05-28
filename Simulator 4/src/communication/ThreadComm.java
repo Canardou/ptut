@@ -48,7 +48,7 @@ public class ThreadComm extends Thread{
 	}
 	
 	
-	// m�thode
+	// methode
 	
 	public void setOrdres(Queue<Integer> ordres){
 		synchronized(this){
@@ -61,7 +61,8 @@ public class ThreadComm extends Thread{
 		// Pour toujours:
 		while(true){
 				try {
-					this.wait(250);
+					synchronized(this){
+					this.wait(250);}
 				} catch (InterruptedException e2) {
 					// TODO Auto-generated catch block
 					e2.printStackTrace();
@@ -75,7 +76,7 @@ public class ThreadComm extends Thread{
 							this.connected=true;
 					//}
 					//...et on attend 1/2 seconde...
-					this.wait(500);}
+							synchronized(this){this.wait(500);}}
 				
 				//...sinon connected <= false
 				catch(ProblemeConnexion e){
@@ -89,7 +90,7 @@ public class ThreadComm extends Thread{
 				while(this.connected){
 					//...on attend 100ms...
 					try {
-						this.wait(100);
+						synchronized(this){this.wait(100);}
 					} 
 					catch (InterruptedException e1) {
 						
@@ -108,7 +109,7 @@ public class ThreadComm extends Thread{
 					
 					while(Busy==-2 && compteur < 10){
 						try {
-							this.wait(100);
+							synchronized(this){this.wait(100);}
 						}catch (InterruptedException e1) {
 						
 						//	e1.printStackTrace();
