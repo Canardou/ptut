@@ -178,7 +178,7 @@ public class Gui extends JFrame implements ActionListener {
 				@Override
 				public String doInBackground() {
 					try{
-					Gui.this.superviseur.destin();
+					Gui.this.superviseur.test();///////////////////////////////////////////////////////////
 					}catch(InterruptedException ie){
 						Dialogue.Warning("Arret de la supervision");
 					}catch(Exception e){

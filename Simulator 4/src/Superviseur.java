@@ -251,6 +251,87 @@ public class Superviseur {
 			Dialogue.Success("Simulation résolue ! Bilip !");
 	}
 	
+	public void test() throws InterruptedException{
+		//Déclaration de ce dont on a besoin
+				this.dessin.lock.lock();
+				this.carte.reset();
+				this.next_paths=null;
+				this.test.clear();
+				this.application.reset();
+				this.initialisation();
+				dessin.showMark(true);
+				int temps=0;
+				step=0;
+				boolean continuer=true;
+				this.dessin.lock.unlock();
+				InitPC comPCNXT = new InitPC();
+				int i;
+				Queue<Integer> ordres = new LinkedList<Integer>();
+				boolean caseVerifier = false;
+				boolean connexion ;
+				
+				//Pour chaque robot...
+				for(i=0;i<3;i++){
+					
+					
+					try{
+						//...on lance le thread de com correspondant
+						comPCNXT.setThreadComm(this.dessin.getRobot(i));
+						
+						System.out.println("robot "+ i +" attente connexion : ");
+						
+						//Tant que pas connecté, on bloque le superviseur
+							while(!(comPCNXT.getThreadComm(i).getConnected())){
+						
+							}
+						
+						}
+					catch(Exception e){
+						System.out.println(e);
+					}
+					
+				}
+
+				
+
+				//On prépare une queue de 3 ordres d'initialisation
+				((LinkedList<Integer>)ordres).addFirst(Order.TURNB);
+				
+				
+				//Pour chaque robot...
+				for(i=0;i<3;i++){
+					
+					//...on transmet au thread la liste d'ordres...
+					synchronized(comPCNXT.getThreadComm(i)){
+					comPCNXT.getThreadComm(i).setOrdres(ordres);}
+				}
+				//...éventuellement on affiche ces ordres.
+				System.out.println(ordres.toString());
+				
+				//on vide la queue préparée dans cette classe
+				ordres.clear();
+				
+				//tant que le thread ne lève pas le flag qui signale qu'il a reçu la compo de la première case
+				//caseVerifier = false;
+				//while(!caseVerifier){
+					
+					//...on attent...
+					try{
+						synchronized(comPCNXT.getThreadComm(i)){
+							while(!comPCNXT.getThreadComm(i).getEnvoye());
+						}
+						caseVerifier = true;}
+				
+					catch(Exception e){
+						//System.out.println(e);
+						caseVerifier = false;
+					}
+				//}
+					while(true){}
+				
+				
+	}
+	
 	public void destin() throws InterruptedException {
 		
 		//Affiche une jolie fenêtre de début 

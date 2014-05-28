@@ -58,7 +58,6 @@ public class ThreadComm extends Thread{
 	@Override
 	public void run(){
 		
-		
 		// Pour toujours:
 		while(true){
 				//...tentative connexion...
