@@ -347,6 +347,17 @@ public class Superviseur {
 				int y=0;
 				((LinkedList<Integer>)ordres).addFirst(Order.CASETOSEND);
 				for(int numero=0; numero<3; numero++){
+					if(!(comPCNXT.getThreadComm(i).getConnected())){
+					try{
+						comPCNXT.setThreadComm(this.dessin.getRobot(i));
+						
+					}
+					catch(Exception e){
+						System.out.println(e);
+					}
+					}
+					else{
+					
 					try{
 					comPCNXT.getThreadComm(i).setOrdres(ordres);}
 					catch(Exception e){
@@ -427,7 +438,7 @@ public class Superviseur {
 				switch(step){
 				case 0:
 				case 2:
-					for(int numero=0; numero<3; numero++){
+					for(numero=0; numero<3; numero++){
 						
 						if(comPCNXT.getThreadComm(numero).getQueue().isEmpty()){
 							ordres.add(Order.CASETOSEND);
@@ -555,6 +566,7 @@ public class Superviseur {
 					}
 					//temps+=2;
 					//System.out.println(temps/60+":"+temps%60);
+				}
 				}finally{
 					this.dessin.lock.unlock();
 				}
