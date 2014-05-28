@@ -282,7 +282,7 @@ public class Superviseur {
 						
 						//Tant que pas connecté, on bloque le superviseur
 							while(!(comPCNXT.getThreadComm(i).getConnected())){
-						
+								Thread.currentThread().wait(100);
 							}
 						
 						}
