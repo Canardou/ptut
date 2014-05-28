@@ -64,17 +64,17 @@ public class ThreadComm extends Thread{
 				try{
 					this.com.connexion();
 					//...si ça réussit...
-					synchronized(this){
+					//synchronized(this){
 						//...connected <= true...
 							this.connected=true;
-					}
+					//}
 					//...et on attend 1/2 seconde...
 					this.sleep(500);}
 				
 				//...sinon connected <= false
 				catch(ProblemeConnexion e){
-					synchronized(this){
-						this.connected=false;}
+				//	synchronized(this){
+						this.connected=false;//}
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}
@@ -111,12 +111,12 @@ public class ThreadComm extends Thread{
 						try{
 							Trame2 receiveIsBusy = this.com.receive();
 							Busy=receiveIsBusy.getBusy();
-							synchronized(this){
-								this.connected = true;}
+							//synchronized(this){
+								this.connected = true;//}
 							}
 						catch(Exception e){
-							synchronized(this){
-							compteur ++;}
+							//synchronized(this){
+							compteur ++;//}
 						}
 					}
 					
@@ -128,8 +128,8 @@ public class ThreadComm extends Thread{
 						
 					if (Busy!=1){
 						
-						synchronized(this){
-						typeOrdre = this.lireOrdre();}
+						//synchronized(this){
+						typeOrdre = this.lireOrdre();//}
 						if(typeOrdre !=-1){
 							System.out.println("Robot " + this.recepteur.getID()+": je lis mes odres" );
 							System.out.println("Ordre: "+typeOrdre );}
@@ -153,7 +153,7 @@ public class ThreadComm extends Thread{
 						break;
 	
 						case Order.SETPOSITION:
-						synchronized(this){
+						//synchronized(this){
 						if(this.recepteur.getID()==0) {
 							Trame2 sendPositionInit  = new Trame2((byte)0, this.caseInit, this.orientation);
 							System.out.println("Robot " +this.recepteur.getID()+ " init case, trame = "+sendPositionInit.toString());
@@ -167,7 +167,7 @@ public class ThreadComm extends Thread{
 							System.out.println("Robot " +this.recepteur.getID()+ " init case, trame = "+sendPositionInit.toString());
 							this.com.send (sendPositionInit);						
 						}
-						}
+						//}
 						
 						
 						System.out.println("Robot " + this.recepteur.getID()+": Position initiale OK" );
@@ -179,21 +179,21 @@ public class ThreadComm extends Thread{
 						if(this.recepteur.getID()==0) {
 							Trame2 sendCheckCase= new Trame2((byte)0,(byte)Order.CHECKFIRSTCASE);
 							this.com.send (sendCheckCase);
-							synchronized(this){
+							//synchronized(this){
 								this.envoye =true;
-							}
+							//}
 						} else if (this.recepteur.getID()==1) {
 							Trame2 sendCheckCase= new Trame2((byte)1,(byte)Order.CHECKFIRSTCASE);
 							this.com.send (sendCheckCase);
-							synchronized(this){
+							//synchronized(this){
 								this.envoye =true;
-							}
+							//}
 						} else if (this.recepteur.getID()==2) {
 							Trame2 sendCheckCase= new Trame2((byte)2,(byte)Order.CHECKFIRSTCASE);
 							this.com.send (sendCheckCase);	
-							synchronized(this){
+							//synchronized(this){
 								this.envoye =true;
-							}
+							//}
 							Trame2 receiveListCase=this.com.receive();
 							
 							
@@ -205,8 +205,8 @@ public class ThreadComm extends Thread{
 							}
 							
 							if(receiveListCase != null){
-								synchronized(this){
-								caseRecue = receiveListCase.toCase();}
+								//synchronized(this){
+								caseRecue = receiveListCase.toCase();//}
 								this.reception = true ;
 								System.out.println("Robot " + this.recepteur.getID()+ ": Detection murs case1 OK" );
 								System.out.println("Robot " +this.recepteur.getID()+ " case checked, trame = "+receiveListCase.toString());
@@ -214,8 +214,8 @@ public class ThreadComm extends Thread{
 							}
 							else{
 								System.out.println("Robot " + this.recepteur.getID()+": Rien reçu!");
-								synchronized(this){
-								caseRecue = null ;}
+								//synchronized(this){
+								caseRecue = null ;//}
 							}
 							
 						}
@@ -374,14 +374,14 @@ public class ThreadComm extends Thread{
 						}
 						Trame2 receiveListCase=this.com.receive();
 						if(receiveListCase != null){
-							synchronized(this){
-							caseRecue = receiveListCase.toCase();}
+							//synchronized(this){
+							caseRecue = receiveListCase.toCase();//}
 							this.reception = true ;
 						}
 						else{
 							System.out.println("Robot " + this.recepteur.getID()+": Rien reçu!");
-							synchronized(this){
-							caseRecue = null ;}
+							//synchronized(this){
+							caseRecue = null ;//}
 						}
 						break;
 						
@@ -400,7 +400,7 @@ public class ThreadComm extends Thread{
 	
 	public int lireOrdre(){
 		int i ;
-		synchronized(this){
+		//synchronized(this){
 		try{
 		i = ((LinkedList<Integer>)this.queueOrdres).getLast();
 		((LinkedList<Integer>)this.queueOrdres).removeLast();
@@ -409,36 +409,36 @@ public class ThreadComm extends Thread{
 		catch(NoSuchElementException e){
 			return -1;
 		}
-		}
+		//}
 	
 	}
 	
 	public Case getCaseRecue(){
-		synchronized(this){
-		return this.caseRecue;}
+		//synchronized(this){
+		return this.caseRecue;//}
 	}
 	
 	public Queue<Integer> getQueue(){
-		synchronized(this){
-		return this.queueOrdres;}
+		//synchronized(this){
+		return this.queueOrdres;//}
 	}
 
 	public boolean getEnvoye(){
-		synchronized(this){
+		//synchronized(this){
 		boolean b =this.envoye;
 		this.envoye = false ;
-		return b;}
+		return b;//}
 	}
 	public boolean getReception(){
-		synchronized(this){
+		//synchronized(this){
 		boolean b =this.reception;
 		this.reception = false ;
-		return b;}
+		return b;//}
 	}
 	
 	public boolean getConnected(){
-		synchronized(this){
-		return this.connected;}
+		//synchronized(this){
+		return this.connected;//}
 		
 	}
 	
