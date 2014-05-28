@@ -56,7 +56,7 @@ public class ThreadComm extends Thread{
 	}
 	
 	@Override
-	public void run(){
+	public synchronized void run(){
 		
 		// Pour toujours:
 		while(true){
