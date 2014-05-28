@@ -60,6 +60,12 @@ public class ThreadComm extends Thread{
 		
 		// Pour toujours:
 		while(true){
+				try {
+					this.wait(250);
+				} catch (InterruptedException e2) {
+					// TODO Auto-generated catch block
+					e2.printStackTrace();
+				}
 				//...tentative connexion...
 				try{
 					this.com.connexion();
@@ -69,7 +75,7 @@ public class ThreadComm extends Thread{
 							this.connected=true;
 					//}
 					//...et on attend 1/2 seconde...
-					this.sleep(500);}
+					this.wait(500);}
 				
 				//...sinon connected <= false
 				catch(ProblemeConnexion e){
@@ -83,7 +89,7 @@ public class ThreadComm extends Thread{
 				while(this.connected){
 					//...on attend 100ms...
 					try {
-						this.sleep(100);
+						this.wait(100);
 					} 
 					catch (InterruptedException e1) {
 						
@@ -100,9 +106,9 @@ public class ThreadComm extends Thread{
 						this.com.send (sendIsBusy);					
 					}
 					
-					while(Busy==-2 && compteur < 100){
+					while(Busy==-2 && compteur < 10){
 						try {
-							this.sleep(10);
+							this.wait(100);
 						}catch (InterruptedException e1) {
 						
 						//	e1.printStackTrace();
@@ -120,7 +126,7 @@ public class ThreadComm extends Thread{
 						}
 					}
 					
-					if(compteur>=100){
+					if(compteur>=10){
 						this.connected = false;
 						this.compteur=0;
 						System.out.println("Robot " + this.recepteur.getID()+" Compteur explosé");
@@ -198,7 +204,7 @@ public class ThreadComm extends Thread{
 							
 							
 							try {
-								this.sleep(200);
+								this.wait(200);
 							} catch (InterruptedException e1) {
 								// TODO Auto-generated catch block
 								e1.printStackTrace();
