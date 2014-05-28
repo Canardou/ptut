@@ -302,9 +302,9 @@ public class Superviseur {
 				for(i=0;i<3;i++){
 					
 					//...on transmet au thread la liste d'ordres...
-					synchronized(comPCNXT.getThreadComm(i)){
+					//synchronized(comPCNXT.getThreadComm(i)){
 					comPCNXT.getThreadComm(i).setOrdres(ordres);}
-				}
+				//}
 				//...éventuellement on affiche ces ordres.
 				System.out.println(ordres.toString());
 				
@@ -317,9 +317,9 @@ public class Superviseur {
 					
 					//...on attent...
 					try{
-						synchronized(comPCNXT.getThreadComm(i)){
+						//synchronized(comPCNXT.getThreadComm(i)){
 							while(!comPCNXT.getThreadComm(i).getEnvoye());
-						}
+					//	}
 						caseVerifier = true;}
 				
 					catch(Exception e){

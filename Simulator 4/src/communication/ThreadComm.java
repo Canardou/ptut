@@ -123,6 +123,7 @@ public class ThreadComm extends Thread{
 					if(compteur>=100){
 						this.connected = false;
 						this.compteur=0;
+						System.out.println("Robot " + this.recepteur.getID()+" Compteur explosé");
 					}
 						
 					if (Busy!=1){
