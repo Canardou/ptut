@@ -29,11 +29,8 @@ public class ListeChemin implements Comparable {
 		return this.previous;
 	}
 	
-	public void setPrevious(ListeChemin previous){
-		this.previous=previous;
-	}
-	
 	//From http://java.developpez.com
+	@Override
 	public int compareTo(Object other) { 
 		int nombre1 = ((ListeChemin)other).cout; 
 		int nombre2 = this.cout; 

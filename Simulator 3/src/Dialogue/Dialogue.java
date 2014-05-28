@@ -1,4 +1,5 @@
 package Dialogue;
+import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
 
 
@@ -15,7 +16,11 @@ public class Dialogue {
 		JOptionPane.showMessageDialog(null, s, "Avertissement", JOptionPane.WARNING_MESSAGE);
 	}
 	
+	public static void SuccessDoge(String s){
+		JOptionPane.showMessageDialog(null, s, "Succes", JOptionPane.INFORMATION_MESSAGE, new ImageIcon("success.gif"));
+	}
+	
 	public static void Success(String s){
-		JOptionPane.showMessageDialog(null, s, "Succes", JOptionPane.INFORMATION_MESSAGE);
+		JOptionPane.showMessageDialog(null, s, "Succes", JOptionPane.INFORMATION_MESSAGE, new ImageIcon("success.png"));
 	}
 }
