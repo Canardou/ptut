@@ -123,9 +123,11 @@ public class Chemin {
 				}
 				for(int k=0;k<4;k++){
 					Case temp=carte.getCase(this.get(i).getX(k),this.get(i).getY(k));
-					if(autre.route.contains(temp) && temp.isCrossable(temp.getDir(this.get(i))) && this.get(i).isCrossable(this.get(i).getDir(temp))){
-						if(ecart)
-							retour=i;
+					if(temp!=null){
+						if(autre.route.contains(temp) && temp.isCrossable(temp.getDir(this.get(i))) && this.get(i).isCrossable(this.get(i).getDir(temp))){
+							if(ecart)
+								retour=i;
+						}
 					}
 				}
 				i++;
