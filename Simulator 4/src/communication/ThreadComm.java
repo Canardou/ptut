@@ -132,12 +132,6 @@ public class ThreadComm extends Thread{
 				//	System.out.println("Demande isBusy success bis" );
 					synchronized(this){
 					this.connected = true;}
-					}
-					catch(Exception e){
-						synchronized(this){
-						this.connected = false;}
-						}
-					}
 					int typeOrdre;
 					if (Busy!=1){
 						
@@ -392,6 +386,13 @@ public class ThreadComm extends Thread{
 
 						
 				}
+					}
+					catch(Exception e){
+						synchronized(this){
+						this.connected = false;}
+						}
+					}
+					
 					
 			}
 		}			
