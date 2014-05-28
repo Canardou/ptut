@@ -19,9 +19,9 @@ public class InitPC {
 	}
 	public void setThreadComm(VirtualRobots robot){
 		if(robot.getID()==0){
-		this.tComF = new ThreadComm(this.IE.robotF,new Case(robot.getX(),robot.getY()),robot.getDir());
+		this.tComJ = new ThreadComm(this.IE.robotJ,new Case(robot.getX(),robot.getY()),robot.getDir());
 		System.out.println("Robot "+robot.getID()+" direction = "+robot.getDir());
-		this.tComF.start();
+		this.tComJ.start();
 		}
 		if(robot.getID()==1){
 		this.tComH = new ThreadComm(this.IE.robotH,new Case(robot.getX(),robot.getY()),robot.getDir());
@@ -29,9 +29,9 @@ public class InitPC {
 		this.tComH.start(); //ne fonctionne pas avec mon ordi
 		}
 		if(robot.getID()==2){
-		this.tComJ = new ThreadComm(this.IE.robotJ,new Case(robot.getX(),robot.getY()),robot.getDir());
+		this.tComF = new ThreadComm(this.IE.robotF,new Case(robot.getX(),robot.getY()),robot.getDir());
 		System.out.println("Robot "+robot.getID()+" direction = "+robot.getDir());
-		this.tComJ.start();
+		this.tComF.start();
 		}
 	}
 	public ThreadComm getThreadComm(int i){
