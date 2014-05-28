@@ -421,7 +421,7 @@ public class Superviseur {
 				 * TODO: construire current_paths_4ever
 				 */
 				try{
-				for(i=0;i<2;i++){
+				for(i=0;i<3;i++){
 					
 					for(int j=0;j<current_paths_4ever[i].size()-1;j++){
 							ordres.addAll(this.caseToOrder(current_paths_4ever[i].get(j), this.currentDir, current_paths_4ever[i].get(j+1)));
