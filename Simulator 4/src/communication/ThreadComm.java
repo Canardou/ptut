@@ -23,6 +23,7 @@ public class ThreadComm extends Thread{
 	private volatile boolean reception;
 	private volatile int orientation;
 	private volatile Queue<Integer> queueOrdres ;
+	private int Busy, compteur, typeOrdre;
 	
 
 
@@ -41,6 +42,8 @@ public class ThreadComm extends Thread{
 		this.caseRecue = new Case(-1,-1);
 		this.envoye = false;
 		this.reception = false;
+		this.Busy=-2;
+		this.compteur=0;
 
 	}
 	
@@ -55,7 +58,7 @@ public class ThreadComm extends Thread{
 	@Override
 	public void run(){
 		
-		int Busy=-2;
+		
 		// Pour toujours:
 		while(true){
 				//...tentative connexion...
@@ -97,20 +100,31 @@ public class ThreadComm extends Thread{
 						Trame2 sendIsBusy= new Trame2((byte)2,(byte)Order.SENDBUSY);
 						this.com.send (sendIsBusy);					
 					}
-							
-					try {
-						this.sleep(100);
-					}
-					catch (InterruptedException e1) {
+					
+					while(Busy==-2 || compteur != 50){
+						try {
+							this.sleep(100);
+						}catch (InterruptedException e1) {
 						
-						e1.printStackTrace();
+						//	e1.printStackTrace();
+						}
+					
+						try{
+							Trame2 receiveIsBusy = this.com.receive();
+							Busy=receiveIsBusy.getBusy();
+							synchronized(this){
+								this.connected = true;}
+							}
+						catch(Exception e){
+							synchronized(this){
+							compteur ++;}
+						}
 					}
-					try{
-						Trame2 receiveIsBusy = this.com.receive();
-						Busy=receiveIsBusy.getBusy();
-						synchronized(this){
-							this.connected = true;}
-						int typeOrdre;
+					
+					if(compteur>=50){
+						this.connected = false;
+						this.compteur=0;
+					}
 						
 						if (Busy!=1){
 						
@@ -378,11 +392,7 @@ public class ThreadComm extends Thread{
 
 						
 					}
-				}
-				catch(Exception e){
-						synchronized(this){
-						this.connected = false;}
-				}
+				
 			}	
 					
 		}			

@@ -309,11 +309,11 @@ public class Superviseur {
 		//Pour chaque robot...
 		for(i=0;i<3;i++){
 			
-			//on envoie transmet au thread la liste d'ordres.
+			//...on transmet au thread la liste d'ordres...
 			synchronized(comPCNXT.getThreadComm(i)){
 			comPCNXT.getThreadComm(i).setOrdres(ordres);}
 		}
-		//éventuellement on affiche ces ordres
+		//...éventuellement on affiche ces ordres.
 		System.out.println(ordres.toString());
 		
 		//on vide la queue préparée dans cette classe
@@ -323,7 +323,7 @@ public class Superviseur {
 		caseVerifier = false;
 		while(!caseVerifier){
 			
-			//on attent...
+			//...on attent...
 			try{
 				synchronized(comPCNXT.getThreadComm(i)){
 					while(!comPCNXT.getThreadComm(i).getEnvoye());
