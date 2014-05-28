@@ -43,9 +43,7 @@ public class ComBluetooth{
 		Trame2 trame=null; 
 		 try{
 			 trame=this.ecouter();
-		 } catch (Exception e) {
-			 System.out.println("Exception ecout.");
-		 }
+		 } catch (Exception e) {		 }
 		 return trame;
 	}
 	

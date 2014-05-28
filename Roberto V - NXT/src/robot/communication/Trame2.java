@@ -167,27 +167,8 @@ public class Trame2 {
 		this.contenuT[5]=(byte)this.typeTrame;
 		
 	}
-	/**
-	 * Trame qui contient l'état du robot : occupé ou non
-	 * @param ID
-	 * @param isBusy
-	 */
-	
-		public Trame2(byte ID, int isBusy){
-			this.ID=ID;
-			this.isBusy=isBusy;
-			this.typeTrame=9;
-			
-			this.contenuT= new byte[3];
-			
-			this.contenuT[0]=3;
-			this.contenuT[1]=this.ID;
-			this.contenuT[2]=(byte)this.isBusy;
-			
-		}
 		
-	
-		// ------------------------------------- METHODES --------------------------------------------
+	// ------------------------------------- METHODES --------------------------------------------
 	/**
 	 * 
 	 * @return un tableau qui contient les informations sur une trame

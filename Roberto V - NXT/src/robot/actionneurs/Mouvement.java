@@ -4,7 +4,6 @@ import java.lang.Math;
 
 import lejos.nxt.Motor;
 import lejos.nxt.NXTRegulatedMotor;
-import lejos.nxt.Sound;
 import lejos.robotics.navigation.DifferentialPilot;
 import lejos.robotics.RegulatedMotor;
 import robot.taches.TachePrincipale;
@@ -109,7 +108,7 @@ public class Mouvement {
 	 * Valeur en dessus de laquelle on considère qu'il n'y a pas d'erreur.
 	 * Utilisé lorsque le robot avance. En degrés.
 	 */
-	public static final double ERR_REF_ANGLE_MIN = 10 ;
+	public static final double ERR_REF_ANGLE_MIN = 6 ;
 
 	/**
 	 * Distance a partir de laquelle le robot prend des mesures pour calculer
@@ -120,7 +119,7 @@ public class Mouvement {
 	/**
 	 * Distance entre 2 cases en cm.
 	 */
-	public static final double DISTANCE_UNITAIRE = 32;
+	public static final double DISTANCE_UNITAIRE = 30;
 	
 	/**
 	 * Erreur concernant la position du robot lorsqu'il s'arrete au milieu d'une
@@ -135,7 +134,19 @@ public class Mouvement {
 	 * lorsque le robot avance, en fin de mouvement s'il n'y a pas de mur devant
 	 * et des murs manquant sur le coté.
 	 */
-	public static final double REG_DISTANCE_APRES_MUR = 11 ;
+	public static final double REG_DISTANCE_APRES_MUR = 10 ;
+	
+	/**
+	 * Distance maximale parcouru où il est admissible de detecter la perte d'un
+	 * mur lateral. En cm.
+	 */
+	public static final double REG_DISTANCE_PERTE_MUR_MAX = 28;
+	
+	/**
+	 * Distance minimale parcouru où il est admissible de detecter la perte d'un
+	 * mur lateral. En cm.
+	 */
+	public static final double REG_DISTANCE_PERTE_MUR_MIN = 14;
 
 	/**
 	 * Offset modélisant le fait que les sonars ne soient pas à la même distance
@@ -241,6 +252,7 @@ public class Mouvement {
 		this.diffPilot = new DifferentialPilot(DIAMETRE_ROUE, DISTANCE_ENTRE_ROUE, PORT_MOTEUR_GAUCHE, PORT_MOTEUR_DROIT, false);
 		this.moteurSonar = PORT_MOTEUR_SONAR;
 		this.fastMode = false;
+		this.errRefAngle=0;
 	}
 	
 	// ------------------------------------- METHODES ---------------------------------------------
@@ -324,8 +336,7 @@ public class Mouvement {
 			// complémentaire sur la position du robot.
 			if( ((ancienMurDroit && !tPrincipale.getEnv().getMurDroit())
 					|| (ancienMurGauche && !tPrincipale.getEnv().getMurGauche())) 
-					&& distance > 14 && distance < 26 ) {
-				Sound.beep();
+					&& distance > REG_DISTANCE_PERTE_MUR_MIN && distance < REG_DISTANCE_PERTE_MUR_MAX ) {
 				distPerteMur = distance ;
 			}
 			ancienMurDroit = tPrincipale.getEnv().getMurDroit() ;
@@ -366,7 +377,7 @@ public class Mouvement {
 						}						
 						if ((tPrincipale.getCapteurs().getSonarAvantGauche().getMoyData() < REGUL_DISTANCE_MUR_AVANT) || (distance > (DISTANCE_UNITAIRE + 2*ERREUR_POSITION_CENTRE_CASE))) {
 							termine = true;
-							this.tourner(tPrincipale,-errAngle);
+							this.tourner(tPrincipale,-errAngle-this.errRefAngle);
 							tPrincipale.getCapteurs().tournerSonarAGauche(tPrincipale);
 							this.diffPilot.setTravelSpeed(VITESSE_CROISIERE);
 						}
@@ -376,7 +387,7 @@ public class Mouvement {
 						if( distPerteMur==0 ) {
 							if (distance > DISTANCE_UNITAIRE) {
 								termine = true;
-								this.tourner(tPrincipale,-errAngle);
+								this.tourner(tPrincipale,-errAngle-this.errRefAngle);
 								tPrincipale.getCapteurs().tournerSonarAGauche(tPrincipale);
 								this.diffPilot.setTravelSpeed(VITESSE_CROISIERE);
 							}
@@ -385,7 +396,7 @@ public class Mouvement {
 							if ( distance > (distPerteMur+REG_DISTANCE_APRES_MUR) ) {
 								if (distance > DISTANCE_UNITAIRE-ERREUR_POSITION_CENTRE_CASE) {
 									termine = true;
-									this.tourner(tPrincipale,-errAngle);
+									this.tourner(tPrincipale,-errAngle-this.errRefAngle);
 									tPrincipale.getCapteurs().tournerSonarAGauche(tPrincipale);
 									this.diffPilot.setTravelSpeed(VITESSE_CROISIERE);
 								}
@@ -397,10 +408,21 @@ public class Mouvement {
 				} else {
 					
 					if (distance > REGUL_DISTANCE_DANGER) {
+						// Calcul de l'erreur de cap
+						if (nbMesureCap!=0) {
+								if ( Math.abs(sommeErrCap/nbMesureCap)<ERR_REF_ANGLE_MAX && Math.abs(sommeErrCap/nbMesureCap)>ERR_REF_ANGLE_MIN ) {
+									this.errRefAngle = sommeErrCap/nbMesureCap;
+								} else {
+									this.errRefAngle = 0;
+								}
+						} else {
+							this.errRefAngle = 0;
+						}
+						
 						this.diffPilot.setTravelSpeed(VITESSE_DANGER);
 						this.diffPilot.stop();
 						distance += Math.cos(Math.toRadians(errAngle)) * this.diffPilot.getMovement().getDistanceTraveled();
-						this.tourner(tPrincipale,-errAngle);
+						this.tourner(tPrincipale,-errAngle-this.errRefAngle);
 						tPrincipale.getCapteurs().tournerSonarDevant(tPrincipale);						
 					}
 				}
@@ -432,18 +454,6 @@ public class Mouvement {
 		tPrincipale.getEnv().setMurArriere(false);
 		tPrincipale.getCapteurs().miseAJourComplete(tPrincipale);
 		tPrincipale.getEnv().majCoord(tPrincipale);
-		
-		// Calcul de l'erreur de cap
-		if (nbMesureCap!=0) {
-				if ( Math.abs(sommeErrCap/nbMesureCap)<ERR_REF_ANGLE_MAX && Math.abs(sommeErrCap/nbMesureCap)>ERR_REF_ANGLE_MIN ) {
-					this.errRefAngle = sommeErrCap/nbMesureCap;
-				} else {
-					this.errRefAngle = 0;
-				}
-		} else {
-			this.errRefAngle = 0;
-		}
-		//System.out.println(this.errRefAngle);
 		
 		// Creation de la case décrivant l'environnement de la nouvelle case
 		if ( !this.fastMode ) {
@@ -479,7 +489,7 @@ public class Mouvement {
 			err = err - 360;
 		}
 
-		this.tourner(tPrincipale,-err);
+		this.tourner(tPrincipale,-err-this.errRefAngle);
 
 		// Mise à jour des données
 		tPrincipale.getEnv().majMurTourneADroite();
@@ -514,7 +524,7 @@ public class Mouvement {
 			err = err - 360;
 		}
 
-		this.tourner(tPrincipale,-err);
+		this.tourner(tPrincipale,-err-this.errRefAngle);
 
 		// Mise à jour des données
 		tPrincipale.getEnv().majMurTourneAGauche();
@@ -548,7 +558,7 @@ public class Mouvement {
 			err = err - 360;
 		}
 
-		this.tourner(tPrincipale,-err);
+		this.tourner(tPrincipale,-err-this.errRefAngle);
 
 		// Mise à jour des données
 		tPrincipale.getEnv().majMurDemiTour();

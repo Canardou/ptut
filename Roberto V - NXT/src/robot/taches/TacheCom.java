@@ -105,7 +105,7 @@ public class TacheCom extends Thread {
 							this.com.send(new Trame2((byte) this.idRobot,this.tPrincipale.getEnv().getListCase()));
 							this.tPrincipale.getEnv().getListCase().vider();
 						} else if(trame.getOrdre() == Ordre.ENVOYER_ISBUSY) {
-							this.com.send(new Trame2((byte) this.idRobot,this.tPrincipale.getOrdre().getIsBusy()));
+							this.com.send(new Trame2((byte) this.idRobot,(byte)this.tPrincipale.getOrdre().getIsBusy()));
 						} else {
 							this.tPrincipale.getOrdre().ajouterOrdre(trame.getOrdre());							
 						}
@@ -117,7 +117,7 @@ public class TacheCom extends Thread {
 					}
 				}
 				else {
-					this.connected=false;
+					//this.connected=false;
 				}
 			}
 		}
