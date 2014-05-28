@@ -101,9 +101,9 @@ public class ThreadComm extends Thread{
 						this.com.send (sendIsBusy);					
 					}
 					
-					while(Busy==-2 && compteur < 50){
+					while(Busy==-2 && compteur < 100){
 						try {
-							this.sleep(100);
+							this.sleep(10);
 						}catch (InterruptedException e1) {
 						
 						//	e1.printStackTrace();
@@ -121,7 +121,7 @@ public class ThreadComm extends Thread{
 						}
 					}
 					
-					if(compteur>=50){
+					if(compteur>=100){
 						this.connected = false;
 						this.compteur=0;
 					}
