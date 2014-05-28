@@ -1,8 +1,1 @@
-robot
-robot.actionneurs
-robot.capteurs
 robot.communication
-robot.environnement
-robot.evenements
-robot.taches
-tests
