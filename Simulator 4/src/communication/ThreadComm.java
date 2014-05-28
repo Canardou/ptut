@@ -42,7 +42,7 @@ public class ThreadComm extends Thread{
 		this.caseRecue = new Case(-1,-1);
 		this.envoye = false;
 		this.reception = false;
-		this.Busy=-2;
+		this.Busy=1;
 		this.compteur=0;
 
 	}
@@ -62,6 +62,7 @@ public class ThreadComm extends Thread{
 		while(true){
 			
 				//...tentative connexion...
+			if(this.connected != true){
 				try{
 					this.com.connexion();
 					//...si ça réussit...
@@ -79,7 +80,7 @@ public class ThreadComm extends Thread{
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}
-				
+			}
 				//Tant que connected = true...
 				while(this.connected){
 					
@@ -104,13 +105,7 @@ public class ThreadComm extends Thread{
 						this.com.send (sendIsBusy);					
 					}
 					
-					while(Busy==-2 && compteur < 10){
-						try {
-							this.wait(100);
-						}catch (InterruptedException e1) {
-						
-						//	e1.printStackTrace();
-						}
+					
 					
 						try{
 							Trame2 receiveIsBusy = this.com.receive();
@@ -122,13 +117,7 @@ public class ThreadComm extends Thread{
 							//synchronized(this){
 							compteur ++;//}
 						}
-					}
 					
-					if(compteur>=10){
-						//this.connected = false;
-						this.compteur=0;
-						System.out.println("Robot " + this.recepteur.getID()+" Compteur explosé");
-					}
 						
 					if (Busy!=1){
 						
