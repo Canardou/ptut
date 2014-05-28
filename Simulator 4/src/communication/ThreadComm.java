@@ -60,10 +60,14 @@ public class ThreadComm extends Thread{
 				try{this.com.connexion();
 				synchronized(this){
 				this.connected=true;
-				}}
+				}
+				this.sleep(500);}
 				catch(ProblemeConnexion e){
 					synchronized(this){
 					this.connected=false;}
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
 				}
 				
 				/*
