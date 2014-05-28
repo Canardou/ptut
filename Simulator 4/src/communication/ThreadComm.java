@@ -101,7 +101,7 @@ public class ThreadComm extends Thread{
 						this.com.send (sendIsBusy);					
 					}
 					
-					while(Busy==-2 || compteur != 50){
+					while(Busy==-2 && compteur < 50){
 						try {
 							this.sleep(100);
 						}catch (InterruptedException e1) {
@@ -126,7 +126,7 @@ public class ThreadComm extends Thread{
 						this.compteur=0;
 					}
 						
-						if (Busy!=1){
+					if (Busy!=1){
 						
 						synchronized(this){
 						typeOrdre = this.lireOrdre();}
@@ -228,13 +228,13 @@ public class ThreadComm extends Thread{
 						case Order.STOP:
 							// envoie ordre STOP
 							if(this.recepteur.getID()==0) {
-								Trame2 sendIsBusy= new Trame2((byte)1,(byte)Order.STOP);  // ajouter dans Ordre et g�rer cette commande dans robot
+								Trame2 sendIsBusy= new Trame2((byte)1,(byte)Order.STOP);  
 								this.com.send (sendIsBusy);
 							} else if (this.recepteur.getID()==1) {
-								Trame2 sendIsBusy= new Trame2((byte)1,(byte)Order.STOP);  // ajouter dans Ordre et g�rer cette commande dans robot
+								Trame2 sendIsBusy= new Trame2((byte)1,(byte)Order.STOP);  
 								this.com.send (sendIsBusy);
 							} else if (this.recepteur.getID()==2) {
-								Trame2 sendIsBusy= new Trame2((byte)1,(byte)Order.STOP);  // ajouter dans Ordre et g�rer cette commande dans robot
+								Trame2 sendIsBusy= new Trame2((byte)1,(byte)Order.STOP);  
 								this.com.send (sendIsBusy);					
 							}
 							
@@ -243,13 +243,13 @@ public class ThreadComm extends Thread{
 						case Order.FORWARD:
 							// Demande au robot d'avancer
 							if(this.recepteur.getID()==0) {
-								Trame2 sendIsBusy= new Trame2((byte)1,(byte)Order.FORWARD);  // ajouter dans Ordre et g�rer cette commande dans robot
+								Trame2 sendIsBusy= new Trame2((byte)1,(byte)Order.FORWARD);  
 								this.com.send (sendIsBusy);
 							} else if (this.recepteur.getID()==1) {
-								Trame2 sendIsBusy= new Trame2((byte)1,(byte)Order.FORWARD);  // ajouter dans Ordre et g�rer cette commande dans robot
+								Trame2 sendIsBusy= new Trame2((byte)1,(byte)Order.FORWARD); 
 								this.com.send (sendIsBusy);
 							} else if (this.recepteur.getID()==2) {
-								Trame2 sendIsBusy= new Trame2((byte)1,(byte)Order.FORWARD);  // ajouter dans Ordre et g�rer cette commande dans robot
+								Trame2 sendIsBusy= new Trame2((byte)1,(byte)Order.FORWARD); 
 								this.com.send (sendIsBusy);					
 							}
 							
@@ -258,13 +258,13 @@ public class ThreadComm extends Thread{
 						case Order.TURNL:
 							// Demande au robot de tourner à gauche
 							if(this.recepteur.getID()==0) {
-								Trame2 sendIsBusy= new Trame2((byte)1,(byte)Order.TURNL);  // ajouter dans Ordre et g�rer cette commande dans robot
+								Trame2 sendIsBusy= new Trame2((byte)1,(byte)Order.TURNL);  
 								this.com.send (sendIsBusy);
 							} else if (this.recepteur.getID()==1) {
-								Trame2 sendIsBusy= new Trame2((byte)1,(byte)Order.TURNL);  // ajouter dans Ordre et g�rer cette commande dans robot
+								Trame2 sendIsBusy= new Trame2((byte)1,(byte)Order.TURNL);  
 								this.com.send (sendIsBusy);
 							} else if (this.recepteur.getID()==2) {
-								Trame2 sendIsBusy= new Trame2((byte)1,(byte)Order.TURNL);  // ajouter dans Ordre et g�rer cette commande dans robot
+								Trame2 sendIsBusy= new Trame2((byte)1,(byte)Order.TURNL);  
 								this.com.send (sendIsBusy);					
 							}
 							
@@ -273,13 +273,13 @@ public class ThreadComm extends Thread{
 						case Order.TURNR:
 							// Demande au robot de tourner à droite
 							if(this.recepteur.getID()==0) {
-								Trame2 sendIsBusy= new Trame2((byte)1,(byte)Order.TURNR);  // ajouter dans Ordre et g�rer cette commande dans robot
+								Trame2 sendIsBusy= new Trame2((byte)1,(byte)Order.TURNR);  
 								this.com.send (sendIsBusy);
 							} else if (this.recepteur.getID()==1) {
-								Trame2 sendIsBusy= new Trame2((byte)1,(byte)Order.TURNR);  // ajouter dans Ordre et g�rer cette commande dans robot
+								Trame2 sendIsBusy= new Trame2((byte)1,(byte)Order.TURNR);  
 								this.com.send (sendIsBusy);
 							} else if (this.recepteur.getID()==2) {
-								Trame2 sendIsBusy= new Trame2((byte)1,(byte)Order.TURNR);  // ajouter dans Ordre et g�rer cette commande dans robot
+								Trame2 sendIsBusy= new Trame2((byte)1,(byte)Order.TURNR);  
 								this.com.send (sendIsBusy);					
 							}
 							
@@ -288,13 +288,13 @@ public class ThreadComm extends Thread{
 						case Order.TURNB:
 							// Demande au robot de faire demi tour
 							if(this.recepteur.getID()==0) {
-								Trame2 sendIsBusy= new Trame2((byte)1,(byte)Order.TURNB);  // ajouter dans Ordre et g�rer cette commande dans robot
+								Trame2 sendIsBusy= new Trame2((byte)1,(byte)Order.TURNB);  
 								this.com.send (sendIsBusy);
 							} else if (this.recepteur.getID()==1) {
-								Trame2 sendIsBusy= new Trame2((byte)1,(byte)Order.TURNB);  // ajouter dans Ordre et g�rer cette commande dans robot
+								Trame2 sendIsBusy= new Trame2((byte)1,(byte)Order.TURNB);  
 								this.com.send (sendIsBusy);
 							} else if (this.recepteur.getID()==2) {
-								Trame2 sendIsBusy= new Trame2((byte)1,(byte)Order.TURNB);  // ajouter dans Ordre et g�rer cette commande dans robot
+								Trame2 sendIsBusy= new Trame2((byte)1,(byte)Order.TURNB);  
 								this.com.send (sendIsBusy);					
 							}
 							
@@ -303,13 +303,13 @@ public class ThreadComm extends Thread{
 						case Order.CALCOMPASS:
 							// Demande au robot de calibrer la boussole
 							if(this.recepteur.getID()==0) {
-								Trame2 sendIsBusy= new Trame2((byte)1,(byte)Order.CALCOMPASS);  // ajouter dans Ordre et g�rer cette commande dans robot
+								Trame2 sendIsBusy= new Trame2((byte)1,(byte)Order.CALCOMPASS);  
 								this.com.send (sendIsBusy);
 							} else if (this.recepteur.getID()==1) {
-								Trame2 sendIsBusy= new Trame2((byte)1,(byte)Order.CALCOMPASS);  // ajouter dans Ordre et g�rer cette commande dans robot
+								Trame2 sendIsBusy= new Trame2((byte)1,(byte)Order.CALCOMPASS);  
 								this.com.send (sendIsBusy);
 							} else if (this.recepteur.getID()==2) {
-								Trame2 sendIsBusy= new Trame2((byte)1,(byte)Order.CALCOMPASS);  // ajouter dans Ordre et g�rer cette commande dans robot
+								Trame2 sendIsBusy= new Trame2((byte)1,(byte)Order.CALCOMPASS);  
 								this.com.send (sendIsBusy);					
 							}
 							
@@ -318,13 +318,13 @@ public class ThreadComm extends Thread{
 						case Order.CLEARLISTORDER:
 							// Demande au robot de vider le buffer d'ordres non executes
 							if(this.recepteur.getID()==0) {
-								Trame2 sendIsBusy= new Trame2((byte)1,(byte)Order.CLEARLISTORDER);  // ajouter dans Ordre et g�rer cette commande dans robot
+								Trame2 sendIsBusy= new Trame2((byte)1,(byte)Order.CLEARLISTORDER);
 								this.com.send (sendIsBusy);
 							} else if (this.recepteur.getID()==1) {
-								Trame2 sendIsBusy= new Trame2((byte)1,(byte)Order.CLEARLISTORDER);  // ajouter dans Ordre et g�rer cette commande dans robot
+								Trame2 sendIsBusy= new Trame2((byte)1,(byte)Order.CLEARLISTORDER);
 								this.com.send (sendIsBusy);
 							} else if (this.recepteur.getID()==2) {
-								Trame2 sendIsBusy= new Trame2((byte)1,(byte)Order.CLEARLISTORDER);  // ajouter dans Ordre et g�rer cette commande dans robot
+								Trame2 sendIsBusy= new Trame2((byte)1,(byte)Order.CLEARLISTORDER);
 								this.com.send (sendIsBusy);					
 							}
 							
@@ -333,13 +333,13 @@ public class ThreadComm extends Thread{
 						case Order.WAITBUTTON:
 							// Demande au robot d'attendre un appuie du bouton
 							if(this.recepteur.getID()==0) {
-								Trame2 sendIsBusy= new Trame2((byte)1,(byte)Order.WAITBUTTON);  // ajouter dans Ordre et g�rer cette commande dans robot
+								Trame2 sendIsBusy= new Trame2((byte)1,(byte)Order.WAITBUTTON);  
 								this.com.send (sendIsBusy);
 							} else if (this.recepteur.getID()==1) {
-								Trame2 sendIsBusy= new Trame2((byte)1,(byte)Order.WAITBUTTON);  // ajouter dans Ordre et g�rer cette commande dans robot
+								Trame2 sendIsBusy= new Trame2((byte)1,(byte)Order.WAITBUTTON);  
 								this.com.send (sendIsBusy);
 							} else if (this.recepteur.getID()==2) {
-								Trame2 sendIsBusy= new Trame2((byte)1,(byte)Order.WAITBUTTON);  // ajouter dans Ordre et g�rer cette commande dans robot
+								Trame2 sendIsBusy= new Trame2((byte)1,(byte)Order.WAITBUTTON);  
 								this.com.send (sendIsBusy);					
 							}
 							
@@ -348,13 +348,13 @@ public class ThreadComm extends Thread{
 						case Order.WAIT1SEC:
 							// Demande au robot d'attendre 1 seconde
 							if(this.recepteur.getID()==0) {
-								Trame2 sendIsBusy= new Trame2((byte)1,(byte)Order.WAIT1SEC);  // ajouter dans Ordre et g�rer cette commande dans robot
+								Trame2 sendIsBusy= new Trame2((byte)1,(byte)Order.WAIT1SEC);  
 								this.com.send (sendIsBusy);
 							} else if (this.recepteur.getID()==1) {
-								Trame2 sendIsBusy= new Trame2((byte)1,(byte)Order.WAIT1SEC);  // ajouter dans Ordre et g�rer cette commande dans robot
+								Trame2 sendIsBusy= new Trame2((byte)1,(byte)Order.WAIT1SEC);  
 								this.com.send (sendIsBusy);
 							} else if (this.recepteur.getID()==2) {
-								Trame2 sendIsBusy= new Trame2((byte)1,(byte)Order.WAIT1SEC);  // ajouter dans Ordre et g�rer cette commande dans robot
+								Trame2 sendIsBusy= new Trame2((byte)1,(byte)Order.WAIT1SEC);  
 								this.com.send (sendIsBusy);					
 							}
 							
