@@ -212,7 +212,7 @@ public class Superviseur {
 					//...pour chaque case du chemin qu'il doit parcourir...
 					for(int j=0;j<current_paths_4ever[i].size()-1;j++){
 						//...on convertit le chemin en ordres
-						ordres.addAll(this.caseToOrder(current_paths_4ever[i].get(j), this.currentDir, current_paths_4ever[i].get(j+1)));
+						((LinkedList<Integer>)ordres).addAll(0,this.caseToOrder(current_paths_4ever[i].get(j), this.currentDir, current_paths_4ever[i].get(j+1)));
 						this.currentDir = current_paths_4ever[i].get(j).getDir(current_paths_4ever[i].get(j+1));
 						if(j==current_paths_4ever[i].size()-2){
 
