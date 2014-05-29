@@ -210,16 +210,18 @@ public class Superviseur {
 
 				for(int i=0;i<3;i++){
 					//...pour chaque case du chemin qu'il doit parcourir...
-					for(int j=0;j<current_paths_4ever[i].size()-1;j++){
-						//...on convertit le chemin en ordres
-						((LinkedList<Integer>)ordres).addAll(0,this.caseToOrder(current_paths_4ever[i].get(j), this.currentDir, current_paths_4ever[i].get(j+1)));
-						this.currentDir = current_paths_4ever[i].get(j).getDir(current_paths_4ever[i].get(j+1));
-						if(j==current_paths_4ever[i].size()-2){
+					if(!comPCNXT.getThreadComm(i).getEnMouvement()){
+						for(int j=0;j<current_paths_4ever[i].size()-1;j++){
+							//...on convertit le chemin en ordres
+							((LinkedList<Integer>)ordres).addAll(0,this.caseToOrder(current_paths_4ever[i].get(j), this.currentDir, current_paths_4ever[i].get(j+1)));
+							this.currentDir = current_paths_4ever[i].get(j).getDir(current_paths_4ever[i].get(j+1));
+							if(j==current_paths_4ever[i].size()-2){
 
-							//On envoie les ordres de déplacement aux 3 robots et on reset la queue d'ordre
+								//On envoie les ordres de déplacement aux 3 robots et on reset la queue d'ordre
 
-							comPCNXT.getThreadComm(i).setOrdres(ordres);
-							ordres.clear();
+								comPCNXT.getThreadComm(i).setOrdres(ordres);
+								ordres.clear();
+							}
 						}
 					}
 				}
