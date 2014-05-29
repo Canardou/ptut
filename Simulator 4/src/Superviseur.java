@@ -400,10 +400,12 @@ public Queue<Integer> caseToOrder(Case current, int dir, Case next){
 									temp.beforeBlock(carte, current_paths[j],true);
 									}
 								}
-								current_paths[numero]=temp;
-								current_paths[numero].setValue(numero);
-								dessin.getRobot(numero).walkPath(new Chemin(current_paths[numero]));
-								current_paths_4ever[numero]=new Chemin(current_paths[numero]);
+								if(temp.getX(0)==(int)(positions[numero].getX()) && temp.getY(0)==(int)(positions[numero].getY())){
+									current_paths[numero]=temp;
+									current_paths[numero].setValue(numero);
+									dessin.getRobot(numero).walkPath(new Chemin(temp));
+									current_paths_4ever[numero]=new Chemin(temp);
+								}
 						}
 					}
 				}
@@ -420,19 +422,20 @@ public Queue<Integer> caseToOrder(Case current, int dir, Case next){
 						y= dessin.getRobot(numero).getY();
 						int k=1;
 						boolean retry=false;
+						Chemin temp=carte.closestDiscover(x, y, k);
 						if(carte.closestDiscover(x, y, k)!=null){//Comportement de closest discover lorsque plus de cases � visiter peut �tre probl�matique
 							do{
 								retry=false;
 								if(carte.closestDiscover(x, y, k)!=null){
-									current_paths[numero]=carte.closestDiscover(x, y, k);
+									temp=carte.closestDiscover(x, y, k);
 								}
 								//Envois infos
 								for(int j=0;j<3;j++){
 									if(j!=numero){
-										if(current_paths[numero].collision(carte, current_paths[j],true)<Math.max(current_paths[numero].size(),2)){
+										if(temp.collision(carte, current_paths[j],true)<Math.max(current_paths[numero].size(),2)){
 											retry=true;
 										}
-									current_paths[numero].beforeBlock(carte, current_paths[j],true);
+									temp.beforeBlock(carte, current_paths[j],true);
 									}
 								}
 							k++;
@@ -441,21 +444,23 @@ public Queue<Integer> caseToOrder(Case current, int dir, Case next){
 								Chemin aux =carte.createPath(x, y, carte.rand.nextInt(this.carte.getWidth()),carte.rand.nextInt(this.carte.getHeight()));
 								
 								if(aux!=null){
-									current_paths[numero]=aux;
-									current_paths[numero].stopToVisibility();
+									temp=aux;
+									temp.stopToVisibility();
 									for(int j=0;j<3;j++){
 										if(j!=numero){
-											if(current_paths[numero].collision(carte, current_paths[j],true)<current_paths[numero].size()){
+											if(temp.collision(carte, current_paths[j],true)<current_paths[numero].size()){
 												retry=true;
 											}
-										current_paths[numero].beforeBlock(carte, current_paths[j],true);
+										temp.beforeBlock(carte, current_paths[j],true);
 										}
 									}
 								}
 							}
-						current_paths[numero].setValue(numero);
-						dessin.getRobot(numero).walkPath(new Chemin(current_paths[numero]));
-						current_paths_4ever[numero]=new Chemin(current_paths[numero]);
+							temp.setValue(numero);
+							if(temp.getX(0)==(int)(positions[numero].getX()) && temp.getY(0)==(int)(positions[numero].getY())){
+								dessin.getRobot(numero).walkPath(new Chemin(temp));
+								current_paths_4ever[numero]=new Chemin(temp);
+							}
 						}
 					}
 				}
