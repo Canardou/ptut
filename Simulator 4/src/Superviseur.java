@@ -197,7 +197,8 @@ public class Superviseur {
 						positions[numero].setLocation(comPCNXT.getThreadComm(numero).getCaseRecue().getX(), comPCNXT.getThreadComm(numero).getCaseRecue().getY());
 						int x=(int)positions[numero].getX();
 						int y=(int)positions[numero].getY();
-						this.dessin.getRobot(numero).moveTo(x, y);
+						if(!comPCNXT.getThreadComm(numero).getEnMouvement())
+							this.dessin.getRobot(numero).moveTo(x, y);
 						if(this.carte.getCase(x, y)!=null){
 							if(!this.carte.getCase(x, y).isRevealed())
 								this.carte.update(x, y, comPCNXT.getThreadComm(numero).getCaseRecue().getCompo());
@@ -280,7 +281,7 @@ public Queue<Integer> caseToOrder(Case current, int dir, Case next){
 						}
 					}
 				
-					if (next.getY()>current.getY() && next.getX() == current.getX()){
+					if (next.getY()<current.getY() && next.getX() == current.getX()){
 						switch(dir){
 							case Case.UP:
 								((LinkedList<Integer>)ordre).addFirst(Order.FORWARD);
@@ -299,7 +300,7 @@ public Queue<Integer> caseToOrder(Case current, int dir, Case next){
 							break;
 						}
 					}
-					if (next.getY()<current.getY() && next.getX() == current.getX()){
+					if (next.getY()>current.getY() && next.getX() == current.getX()){
 						switch(dir){
 							case Case.UP:
 								((LinkedList<Integer>)ordre).addFirst(Order.TURNB);
@@ -380,7 +381,7 @@ public Queue<Integer> caseToOrder(Case current, int dir, Case next){
 						step=3;
 				}
 			}
-			System.out.println("Etape "+step);
+			//System.out.println("Etape "+step);
 			
 			
 			int x,y;

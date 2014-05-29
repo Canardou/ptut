@@ -82,7 +82,7 @@ public class ThreadComm extends Thread {
 					this.com.send(sendIsBusy);
 					Trame2 receiveIsBusy = this.com.receive();
 					Busy = receiveIsBusy.getOrdre();
-					System.out.println("Robot "+this.recepteur.getID()+" : Reception isBusy "+Busy);
+					//System.out.println("Robot "+this.recepteur.getID()+" : Reception isBusy "+Busy);
 				} catch (Exception e) {
 					System.out.println("Robot "+this.recepteur.getID()+" : Probleme de reception isBusy");
 					this.connected=false;					

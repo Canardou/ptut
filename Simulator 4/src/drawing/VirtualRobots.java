@@ -9,7 +9,7 @@ public class VirtualRobots {
 	 * Attributs
 	 */
 	
-	public static int speed=10;
+	public static int speed=1;
 
 	private int id;
 	private int type;
