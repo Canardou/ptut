@@ -120,7 +120,7 @@ public class ThreadComm extends Thread {
 						}
 					}
 					
-					else {						
+					else {
 						typeOrdre = this.lireOrdre();
 						
 						if (typeOrdre != -1) {
