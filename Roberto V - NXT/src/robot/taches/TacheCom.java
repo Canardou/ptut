@@ -85,9 +85,11 @@ public class TacheCom extends Thread {
 			System.out.println("tCom:Attente co.");
 			try {
 				this.com.connexion();
-				System.out.println("tCom:connexion");
+				System.out.println("tCom:Co. OK");
 				this.connected=true;
-			} catch (Exception e) {}
+			} catch (Exception e) {
+				 System.out.println("tCom:Echec co.");
+			}
 			
 			while (this.connected) {	
 				trame = this.com.receive();
@@ -117,7 +119,7 @@ public class TacheCom extends Thread {
 					}
 				}
 				else {
-					//this.connected=false;
+					this.connected=false;
 				}
 			}
 		}

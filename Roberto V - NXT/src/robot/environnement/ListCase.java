@@ -87,41 +87,53 @@ public class ListCase {
 			if (dir == Case.RIGHT) {
 				if (murAvant) {
 					caseTemp.close(Case.RIGHT);
-				} else if (murGauche) {
+				}
+				if (murGauche) {
 					caseTemp.close(Case.UP);
-				} else if (murArriere) {
+				}
+				if (murArriere) {
 					caseTemp.close(Case.LEFT);
-				} else if (murDroit) {
+				}
+				if (murDroit) {
 					caseTemp.close(Case.DOWN);
 				}
 			} else if (dir == Case.UP) {
 				if (murAvant) {
 					caseTemp.close(Case.UP);
-				} else if (murGauche) {
+				}
+				if (murGauche) {
 					caseTemp.close(Case.LEFT);
-				} else if (murArriere) {
+				}
+				if (murArriere) {
 					caseTemp.close(Case.DOWN);
-				} else if (murDroit) {
+				}
+				if (murDroit) {
 					caseTemp.close(Case.RIGHT);
 				}
 			} else if (dir == Case.LEFT) {
 				if (murAvant) {
 					caseTemp.close(Case.LEFT);
-				} else if (murGauche) {
+				}
+				if (murGauche) {
 					caseTemp.close(Case.DOWN);
-				} else if (murArriere) {
+				}
+				if (murArriere) {
 					caseTemp.close(Case.RIGHT);
-				} else if (murDroit) {
+				}
+				if (murDroit) {
 					caseTemp.close(Case.UP);
 				}
 			} else if (dir == Case.DOWN) {
 				if (murAvant) {
 					caseTemp.close(Case.DOWN);
-				} else if (murGauche) {
+				}
+				if (murGauche) {
 					caseTemp.close(Case.RIGHT);
-				} else if (murArriere) {
+				}
+				if (murArriere) {
 					caseTemp.close(Case.UP);
-				} else if (murDroit) {
+				}
+				if (murDroit) {
 					caseTemp.close(Case.LEFT);
 				}
 			}

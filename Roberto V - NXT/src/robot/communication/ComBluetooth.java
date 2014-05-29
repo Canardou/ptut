@@ -43,7 +43,9 @@ public class ComBluetooth{
 		Trame2 trame=null; 
 		 try{
 			 trame=this.ecouter();
-		 } catch (Exception e) {		 }
+		 } catch (Exception e) {
+			 System.out.println("receive:except.");
+		 }
 		 return trame;
 	}
 	
@@ -56,7 +58,7 @@ public class ComBluetooth{
 		 try{
 			 this.envoyer(trame);
 		 } catch (Exception e) {
-			 System.out.println("Exception env.");
+			 System.out.println("send:exception");
 		 }
 		 
 	}
@@ -70,7 +72,7 @@ public class ComBluetooth{
 		
 		BTConnection connection = Bluetooth.waitForConnection();
 		if (connection == null)
-			throw new IOException("Epic fail connexion");
+			throw new IOException("connexion:echec");
 		
 		this.entitee.setInput(connection.openDataInputStream());
 		this.entitee.setOutput(connection.openDataOutputStream());		
@@ -108,7 +110,7 @@ public class ComBluetooth{
 			trameR= new Trame2(trameRecue[1],firstCase,trameRecue[4]);
 		}
 		else  {
-			System.out.println("errType = "+trameRecue[tailleTrameRecue-1]);
+			System.out.println("ecoute:Type="+trameRecue[tailleTrameRecue-1]);
 		}
 		return trameR;
 	}

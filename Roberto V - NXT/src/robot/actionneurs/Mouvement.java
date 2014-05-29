@@ -49,7 +49,7 @@ public class Mouvement {
 	/**
 	 * Vitesse de croisière. Utilisé lorsque le robot avance. De 0 à 36 cm/s.
 	 */
-	public static final double VITESSE_CROISIERE = 18;
+	public static final double VITESSE_CROISIERE = 16;
 	
 	/**
 	 * Vitesse du robot lorsqu'il est en fin de mouvement. Utilisé lorsque le
@@ -119,7 +119,7 @@ public class Mouvement {
 	/**
 	 * Distance entre 2 cases en cm.
 	 */
-	public static final double DISTANCE_UNITAIRE = 30;
+	public static final double DISTANCE_UNITAIRE = 31;
 	
 	/**
 	 * Erreur concernant la position du robot lorsqu'il s'arrete au milieu d'une

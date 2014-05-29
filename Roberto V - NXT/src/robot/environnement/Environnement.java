@@ -22,19 +22,19 @@ public class Environnement {
 	 * Limite en dessous de laquelle on considère qu'il y a un mur à gauche. En
 	 * cm.
 	 */
-	public static final double DISTANCE_MUR_GAUCHE = 19;
+	public static final double DISTANCE_MUR_GAUCHE = 20;
 
 	/**
 	 * Limite en dessous de laquelle on considère qu'il y a un mur à droite. En
 	 * cm.
 	 */
-	public static final double DISTANCE_MUR_DROIT = 19;
+	public static final double DISTANCE_MUR_DROIT = 20;
 	
 	/**
 	 * Limite en dessous de laquelle on considère qu'il y a un mur en face. En
 	 * cm.
 	 */
-	public static final double DISTANCE_MUR_AVANT = 17;
+	public static final double DISTANCE_MUR_AVANT = 20;
 	
 	/**
 	 * Valeur renvoyé par le capteur de lumière a partir de laquelle on
