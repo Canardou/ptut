@@ -53,12 +53,10 @@ public class BluetoothCommPC2 extends Thread{
 		 }
 	}
 	
-	public Trame2 receive() {
+	public Trame2 receive() throws Exception {
 		Trame2 trame=null; 
-		 try{
-			 trame=this.receiveTrameNXT();
-		 } catch (Exception e) {}
-		 return trame;
+	    trame=this.receiveTrameNXT();
+		return trame;
 	}
 	
 	public void send(Trame2 trame) {

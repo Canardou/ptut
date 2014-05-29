@@ -395,25 +395,33 @@ public class Superviseur {
 			comPCNXT.getThreadComm(i).setOrdres(ordres);
 		}
 		//...éventuellement on affiche ces ordres.
-		System.out.println(ordres.toString());
+		System.out.println("Superviseur : Initialisations envoy�es");
 		
 		//on vide la queue préparée dans cette classe
 		ordres.clear();
 		
 		//tant que le thread ne lève pas le flag qui signale qu'il a reçu la compo de la première case
 		caseVerifier = false;
-		while(!caseVerifier){
-			
-			//...on attent...
-			try{
-				while(!comPCNXT.getThreadComm(i).getEnvoye());
-				caseVerifier = true;}
 		
-			catch(Exception e){
-				//System.out.println(e);
-				caseVerifier = false;
+		for (i = 0; i < 3; i++) {
+			while (!caseVerifier) {
+				// ...on attent...
+				try {
+					while (!comPCNXT.getThreadComm(i).getEnvoye()) {}
+					System.out.println("Superviseur : info init termin�e pour le robot "+i);
+					caseVerifier = true;
+				}
+				catch (Exception e) {
+					// System.out.println(e);
+					caseVerifier = false;
+				}
 			}
+			caseVerifier=false;
 		}
+		System.out.println("Superviseur : Code d'Olivier 1");
+		
+		
+		
 		//Code d'Olivier
 		for(i=0;i<3;i++){
 			
@@ -423,7 +431,7 @@ public class Superviseur {
 			current_paths[i].setValue(i);
 			//this.currentDir = this.dessin.getRobot(i).getDir();
 		}
-		
+
 		
 		
 		//Code d'Olivier

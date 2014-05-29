@@ -47,27 +47,30 @@ public class ThreadComm extends Thread {
 	public synchronized void run() {
 		
 		boolean waitReceive = false;
-
+		
 		// Pour toujours:
 		while (true) {
 
-			
 			if (this.connected != true) {
-				
-				// ...tentative connexion...
+				// Connexion
 				try {
+					System.out.println("Robot "+this.recepteur.getID()+" : Connexion tentative");
 					this.com.connexion();
+					System.out.println("Robot "+this.recepteur.getID()+" : Connexion reussi");
 					this.connected = true;
-					this.wait(500);
-				} catch (ProblemeConnexion e) {
+				} catch (ProblemeConnexion e1) {
+					System.out.println("Robot "+this.recepteur.getID()+" : Connexion echec");
 					this.connected = false;
-				} catch (InterruptedException e) {}
+					try {
+						this.wait(500);
+					} catch (InterruptedException e2) {}
+				}
 			}
 			
-			// Tant que connected = true...
-			while (this.connected) {
 
-				// ...on attend 200ms...
+			while (this.connected) {
+				
+				// Periode des emissions/receptions
 				try {
 					this.wait(200);
 				} catch (InterruptedException e1) {	}
@@ -78,13 +81,14 @@ public class ThreadComm extends Thread {
 					this.com.send(sendIsBusy);
 					Trame2 receiveIsBusy = this.com.receive();
 					Busy = receiveIsBusy.getOrdre();
-					this.connected = true;
-					System.out.println("Robot "+this.recepteur.getID()+" : ReceiveBusy : "+Busy);
+					System.out.println("Robot "+this.recepteur.getID()+" : Reception isBusy "+Busy);
 				} catch (Exception e) {
-					System.out.println("Robot "+this.recepteur.getID()+" : EchecBusy");
+					System.out.println("Robot "+this.recepteur.getID()+" : Probleme de reception isBusy");
+					this.connected=false;					
 				}
-
-				if (Busy != 1) {
+				
+				//
+				if (Busy != 1 && this.connected) {
 
 					// Reception eventuelle
 					if(waitReceive) {
@@ -94,17 +98,23 @@ public class ThreadComm extends Thread {
 						
 						Trame2 receiveListCase = null;
 						while(receiveListCase==null) {
-							receiveListCase = this.com.receive();
+							try {
+								receiveListCase = this.com.receive();
+								System.out.println("Robot "+this.recepteur.getID()+" : Reception case : "+receiveListCase.toCase());
+								this.caseRecue = receiveListCase.toCase();
+								this.envoye = true;
+								waitReceive=false;
+							} catch (Exception e) {
+								System.out.println("Robot "+this.recepteur.getID()+" : Probleme de reception case");
+							}
 						}
-						System.out.println("Robot "+this.recepteur.getID()+" : Reception case : "+receiveListCase.toCase());
-						waitReceive=false;
-						
-					} else {
-						
+					}
+					
+					else {						
 						typeOrdre = this.lireOrdre();
 						
 						if (typeOrdre != -1) {
-							System.out.println("Robot "+this.recepteur.getID()+" : Lecture de l'ordre : "+typeOrdre);
+							System.out.println("Robot "+this.recepteur.getID()+" : Lecture de l'ordre a envoyer : "+Order.printOrdre(typeOrdre));
 						}
 						
 						// Emission de l'ordre
@@ -124,9 +134,7 @@ public class ThreadComm extends Thread {
 							Trame2 orderToSend = new Trame2((byte)  this.recepteur.getID(), (byte) typeOrdre);
 							System.out.println("Robot "+this.recepteur.getID()+" : Emission de l'ordre "+Order.printOrdre(typeOrdre));
 							this.com.send(orderToSend);
-							if(typeOrdre==Order.CHECKFIRSTCASE) {
-								this.envoye = true;
-							}
+							
 							if(typeOrdre == Order.CASETOSEND
 								||typeOrdre == Order.CHECKFIRSTCASE) {
 								waitReceive=true;
