@@ -188,14 +188,16 @@ public class Superviseur {
 			this.dessin.lock.lock();
 			try{
 				for(int numero=0; numero<3; numero++){
-					positions[numero].setLocation(comPCNXT.getThreadComm(i).getCaseRecue().getX(), comPCNXT.getThreadComm(i).getCaseRecue().getY());
-					int x=(int)positions[numero].getX();
-					int y=(int)positions[numero].getY();
-					this.dessin.getRobot(numero).moveTo(x, y);
-					if(this.carte.getCase(x, y)!=null){
-						if(!this.carte.getCase(x, y).isRevealed())
-							this.carte.update(x, y, comPCNXT.getThreadComm(i).getCaseRecue().getCompo());
-						this.carte.reveal(x, y);
+					if(comPCNXT.getThreadComm(i).getCaseRecue()!=null){
+						positions[numero].setLocation(comPCNXT.getThreadComm(i).getCaseRecue().getX(), comPCNXT.getThreadComm(i).getCaseRecue().getY());
+						int x=(int)positions[numero].getX();
+						int y=(int)positions[numero].getY();
+						this.dessin.getRobot(numero).moveTo(x, y);
+						if(this.carte.getCase(x, y)!=null){
+							if(!this.carte.getCase(x, y).isRevealed())
+								this.carte.update(x, y, comPCNXT.getThreadComm(i).getCaseRecue().getCompo());
+							this.carte.reveal(x, y);
+						}
 					}
 				}
 
