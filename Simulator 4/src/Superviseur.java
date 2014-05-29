@@ -129,7 +129,6 @@ public class Superviseur {
 		//A virer
 		this.test.clear();
 
-		this.dessin.lock.unlock();
 		InitPC comPCNXT = new InitPC();
 		int i;
 		Queue<Integer> ordres = new LinkedList<Integer>();
@@ -144,7 +143,7 @@ public class Superviseur {
 				// On demarre la tache de com du robot
 				comPCNXT.setThreadComm(this.dessin.getRobot(i));
 
-				// On attend que le robot soit connecté
+				// On attend que le robot soit connectï¿½
 				while(!(comPCNXT.getThreadComm(i).getConnected())){}
 			}
 			catch(Exception e){}			
@@ -160,27 +159,27 @@ public class Superviseur {
 			comPCNXT.getThreadComm(i).setOrdres(ordres);
 		}
 
-		System.out.println("Superviseur : Initialisations envoyées");
+		System.out.println("Superviseur : Initialisations envoyï¿½es");
 
 		// On vide le buffer d'ordre
 		ordres.clear();
 
 		// On attend la fin de l'initialisation des robots, c'est a dire que
-		// tout les robots aient renvoyé la case correspondant a la case
+		// tout les robots aient renvoyï¿½ la case correspondant a la case
 		// (initiale)
 		caseVerifier = false;		
 		for (i = 0; i < 3; i++) {
 			while (!caseVerifier) {
 				try {
 					while (!comPCNXT.getThreadComm(i).getEnvoye()) {}
-					System.out.println("Superviseur : info init terminée pour le robot "+i);
+					System.out.println("Superviseur : info init terminï¿½e pour le robot "+i);
 					caseVerifier = true;
 				}
 				catch (Exception e) {}
 			}
 			caseVerifier=false;
 		}
-		System.out.println("Superviseur : Initialisation des robots terminée");
+		System.out.println("Superviseur : Initialisation des robots terminï¿½e");
 
 		// -------------------------------------- DEBUT DE L'EXPLORATION --------------------------
 		continuer=true;
@@ -224,55 +223,10 @@ public class Superviseur {
 				this.dessin.lock.unlock();
 			}
 		}
-
-		while(continuer){
-			this.dessin.lock.lock();
-			try{
-				int x=0;
-				int y=0;
-				//On ajoute dans une queue l'ordre d'envoyer une case
-				((LinkedList<Integer>)ordres).addFirst(Order.CASETOSEND);
-
-				//pour chaque robot...
-				for(int numero=0; numero<3; numero++){
-
-					//...on transmet cette queue au thread de com...
-					try{
-						comPCNXT.getThreadComm(i).setOrdres(ordres);}
-					catch(Exception e){
-
-					}
-
-					//...puis on regarde le flag qui indique s'il y a eu reception d'info...
-					try{
-
-						if(comPCNXT.getThreadComm(i).getReception()){
-
-							//...si oui, on rÃ©cupÃ¨re x,y et compo et Olivier fait des trucs...
-							x= comPCNXT.getThreadComm(i).getCaseRecue().getX();
-							y= comPCNXT.getThreadComm(i).getCaseRecue().getY();
-							current_paths[numero].cut(carte.getCase(x, y));
-							if(current_paths[numero].size()<=1){
-								current_paths[numero]=new Chemin(carte.getCase(x, y));
-								current_paths[numero].setValue(numero);
-							}
-							if(this.carte.getCase(x, y)!=null){
-								if (!this.carte.getCase(x, y).isRevealed()) {
-									this.carte.update(x, y, comPCNXT.getThreadComm(i).getCaseRecue().getCompo()/* <- */);// Il faut la composition ici !!
-									this.carte.reveal(x, y);
-								}
-							}
-							this.carte.setExit();
-						}
-					}
-					catch(Exception e){
-
-					}
-				}
-			}finally{
-				this.dessin.lock.unlock();
-			}
-		}
+	if(this.dessin.getDoge())
+		Dialogue.SuccessDoge("Such success ! Ouaf !");
+	else
+		Dialogue.Success("Mission accomplie Ã´ maÃ®tre ! Bilip !");
 	}
 
 public Queue<Integer> caseToOrder(Case current, int dir, Case next){
@@ -371,7 +325,7 @@ public Queue<Integer> caseToOrder(Case current, int dir, Case next){
 
 	public void initialisation(int seed){
 		this.carte.rand.setSeed(seed);
-		//Remet la carte à 0
+		//Remet la carte ï¿½ 0
 		this.carte.reset();
 		this.next_paths=null;
 		this.application.reset();
