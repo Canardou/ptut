@@ -10,7 +10,7 @@ import labyrinth.Case;
 public class ThreadComm extends Thread {
 
 	EntiteeBT recepteur;
-	private volatile boolean connected;
+	private volatile boolean connected, enMouvement;
 	private BluetoothCommPC2 com;
 	private Case caseInit;
 	private volatile Case caseRecue;
@@ -33,6 +33,7 @@ public class ThreadComm extends Thread {
 		this.envoye = false;
 		this.reception = false;
 		this.Busy = 1;
+		this.enMouvement=false;
 
 	}
 
@@ -87,9 +88,14 @@ public class ThreadComm extends Thread {
 					this.connected=false;					
 				}
 				
-				//
+				// Si le robot est libre
 				if (Busy != 1 && this.connected) {
 
+					if(this.enMouvement){ 
+						this.enMouvement=false;
+						System.out.println("Robot "+this.recepteur.getID()+" : Fin de mouvement");
+					}
+					
 					// Reception eventuelle
 					if(waitReceive) {
 						Trame2 orderToSend = new Trame2((byte)  this.recepteur.getID(), (byte) Order.CASETOSEND);
@@ -139,9 +145,22 @@ public class ThreadComm extends Thread {
 							System.out.println("Robot "+this.recepteur.getID()+" : Emission de l'ordre "+Order.printOrdre(typeOrdre));
 							this.com.send(orderToSend);
 							
+							// Regarder si le PC doit recevoir des données ensuite
 							if(typeOrdre == Order.CASETOSEND
-								||typeOrdre == Order.CHECKFIRSTCASE) {
+								|| typeOrdre == Order.CHECKFIRSTCASE
+								|| typeOrdre == Order.FORWARD) {
 								waitReceive=true;
+							}
+							
+							// Regarder si on a envoyé un ordre de mouvement
+							if(typeOrdre == Order.STOP
+									|| typeOrdre == Order.FORWARD
+									|| typeOrdre == Order.TURNL
+									|| typeOrdre == Order.TURNR
+									|| typeOrdre == Order.TURNB
+									|| typeOrdre == Order.CHECKFIRSTCASE) {
+								this.enMouvement=true;
+								System.out.println("Robot "+this.recepteur.getID()+" : Debut de mouvement");
 							}
 							
 						} else if(typeOrdre == Order.SETPOSITION) {
@@ -202,10 +221,15 @@ public class ThreadComm extends Thread {
 		return this.connected;// }
 
 	}
+	
+	public synchronized boolean getEnMouvement() {
+		return this.enMouvement;
+	}
 
 	public void setCaseInit(int x, int y, int dir) {
 		this.caseInit = new Case(x, y);
 		this.orientation = dir;
 
 	}
+	
 }
