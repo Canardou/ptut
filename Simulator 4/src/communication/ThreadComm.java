@@ -18,7 +18,7 @@ public class ThreadComm extends Thread {
 	private volatile boolean reception;
 	private volatile int orientation;
 	private volatile Queue<Integer> queueOrdres;
-	private int Busy, compteur, typeOrdre;
+	private int Busy, typeOrdre;
 
 	// constructeur
 	public ThreadComm(EntiteeBT robot, Case caseinit, int orientation) {
@@ -73,7 +73,7 @@ public class ThreadComm extends Thread {
 				// Periode des emissions/receptions
 				try {
 					this.wait(200);
-				} catch (InterruptedException e1) {	}
+				} catch (InterruptedException e1) {}
 
 				// Récuperation du isBusy du robot
 				try {
@@ -102,7 +102,11 @@ public class ThreadComm extends Thread {
 								receiveListCase = this.com.receive();
 								System.out.println("Robot "+this.recepteur.getID()+" : Reception case : "+receiveListCase.toCase());
 								this.caseRecue = receiveListCase.toCase();
-								this.envoye = true;
+								
+								// On indique que l'initialisation des robots est terminée
+								if(this.envoye==false) {
+									this.envoye = true;
+								}
 								waitReceive=false;
 							} catch (Exception e) {
 								System.out.println("Robot "+this.recepteur.getID()+" : Probleme de reception case");

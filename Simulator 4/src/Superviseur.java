@@ -358,74 +358,57 @@ public class Superviseur {
 		boolean caseVerifier = false;
 		boolean connexion ;
 		
-		//Pour chaque robot...
-		for(i=0;i<3;i++){
-			
-			
-			try{
-				//...on lance le thread de com correspondant
-				comPCNXT.setThreadComm(this.dessin.getRobot(i));
-				
-				System.out.println("robot "+ i +" attente connexion : ");
-				
-				//Tant que pas connectÃ©, on bloque le superviseur
-					while(!(comPCNXT.getThreadComm(i).getConnected())){
-				
-					}
-				
-				}
-			catch(Exception e){
-				System.out.println(e);
-			}
-			
-		}
-
 		
+		// -------------------------------------- INITIALISATION DES ROBOTS -----------------------
+		for(i=0;i<3;i++){
+			try{
+				// On demarre la tache de com du robot
+				comPCNXT.setThreadComm(this.dessin.getRobot(i));
 
-		//On prÃ©pare une queue de 3 ordres d'initialisation
+				// On attend que le robot soit connecté
+				while(!(comPCNXT.getThreadComm(i).getConnected())){}
+			}
+			catch(Exception e){}			
+		}
+		
+		// Ajout des ordres d'initialisation dans le buffer
 		((LinkedList<Integer>)ordres).addFirst(Order.SETPOSITION);
 		((LinkedList<Integer>)ordres).addFirst(Order.SAVEREFANGLE);
 		((LinkedList<Integer>)ordres).addFirst(Order.CHECKFIRSTCASE);
 		
-		//Pour chaque robot...
+		// Envoie des ordres d'initialisation aux taches de com des robots
 		for(i=0;i<3;i++){
-			
-			//...on transmet au thread la liste d'ordres...
-			
 			comPCNXT.getThreadComm(i).setOrdres(ordres);
 		}
-		//...Ã©ventuellement on affiche ces ordres.
+		
 		System.out.println("Superviseur : Initialisations envoyées");
 		
-		//on vide la queue prÃ©parÃ©e dans cette classe
+		// On vide le buffer d'ordre
 		ordres.clear();
-		
-		//tant que le thread ne lÃ¨ve pas le flag qui signale qu'il a reÃ§u la compo de la premiÃ¨re case
-		caseVerifier = false;
-		
+
+		// On attend la fin de l'initialisation des robots, c'est a dire que
+		// tout les robots aient renvoyé la case correspondant a la case
+		// (initiale)
+		caseVerifier = false;		
 		for (i = 0; i < 3; i++) {
 			while (!caseVerifier) {
-				// ...on attent...
 				try {
 					while (!comPCNXT.getThreadComm(i).getEnvoye()) {}
 					System.out.println("Superviseur : info init terminée pour le robot "+i);
 					caseVerifier = true;
 				}
-				catch (Exception e) {
-					// System.out.println(e);
-					caseVerifier = false;
-				}
+				catch (Exception e) {}
 			}
 			caseVerifier=false;
 		}
-		System.out.println("Superviseur : Code d'Olivier 1");
+		System.out.println("Superviseur : Initialisation des robots terminée");
 		
-		
+		// -------------------------------------- DEBUT DE L'EXPLORATION --------------------------
 		
 		//Code d'Olivier
 		for(i=0;i<3;i++){
 			
-			//this.dessin.getRobot(i).moveTo(this.dessin.getRobot(i).getX(),this.dessin.getRobot(i).getY(),this.dessin.getRobot(i).getDir());
+			this.dessin.getRobot(i).moveTo(this.dessin.getRobot(i).getX(),this.dessin.getRobot(i).getY(),this.dessin.getRobot(i).getDir());
 			//this.dessin.getRobot(i).setVisible(true);
 			current_paths[i]=new Chemin(this.carte.getCase(this.dessin.getRobot(i).getX(), this.dessin.getRobot(i).getY()));
 			current_paths[i].setValue(i);
@@ -468,8 +451,10 @@ public class Superviseur {
 							current_paths[numero].setValue(numero);
 						}
 						if(this.carte.getCase(x, y)!=null){
-							this.carte.update(x, y, comPCNXT.getThreadComm(i).getCaseRecue().getCompo()/*<-*/);//Il faut la composition ici !!
-							this.carte.reveal(x, y);
+								if (!this.carte.getCase(x, y).isRevealed()) {
+									this.carte.update(x, y, comPCNXT.getThreadComm(i).getCaseRecue().getCompo()/* <- */);// Il faut la composition ici !!
+									this.carte.reveal(x, y);
+								}
 						}
 						this.carte.setExit();
 					}
