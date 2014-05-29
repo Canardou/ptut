@@ -130,7 +130,7 @@ public class Superviseur {
 		this.test.clear();
 
 		InitPC comPCNXT = new InitPC();
-		int i;
+		
 		Queue<Integer> ordres = new LinkedList<Integer>();
 		boolean caseVerifier = false;
 
@@ -138,7 +138,7 @@ public class Superviseur {
 		// -------------------------------------- INITIALISATION DES ROBOTS -----------------------
 		this.currentDir=0;
 		this.ready = false;
-		for(i=0;i<3;i++){
+		for(int i=0;i<3;i++){
 			try{
 				// On demarre la tache de com du robot
 				comPCNXT.setThreadComm(this.dessin.getRobot(i));
@@ -155,7 +155,7 @@ public class Superviseur {
 		((LinkedList<Integer>)ordres).addFirst(Order.CHECKFIRSTCASE);
 
 		// Envoie des ordres d'initialisation aux taches de com des robots
-		for(i=0;i<3;i++){
+		for(int i=0;i<3;i++){
 			comPCNXT.getThreadComm(i).setOrdres(ordres);
 		}
 
@@ -168,7 +168,7 @@ public class Superviseur {
 		// tout les robots aient renvoy� la case correspondant a la case
 		// (initiale)
 		caseVerifier = false;		
-		for (i = 0; i < 3; i++) {
+		for (int i = 0; i < 3; i++) {
 			while (!caseVerifier) {
 				try {
 					while (!comPCNXT.getThreadComm(i).getEnvoye()) {}
@@ -180,6 +180,12 @@ public class Superviseur {
 			caseVerifier=false;
 		}
 		System.out.println("Superviseur : Initialisation des robots termin�e");
+		
+		
+		for(int i=0;i<3;i++){
+			current_paths[i]=new Chemin(this.carte.getCase(this.dessin.getRobot(i).getX(), this.dessin.getRobot(i).getY()));
+			current_paths[i].setValue(i);
+		}
 
 		// -------------------------------------- DEBUT DE L'EXPLORATION --------------------------
 		continuer=true;
@@ -201,7 +207,7 @@ public class Superviseur {
 
 				this.cooperation();
 
-				for(i=0;i<3;i++){
+				for(int i=0;i<3;i++){
 					//...pour chaque case du chemin qu'il doit parcourir...
 					for(int j=0;j<current_paths_4ever[i].size()-1;j++){
 						//...on convertit le chemin en ordres
