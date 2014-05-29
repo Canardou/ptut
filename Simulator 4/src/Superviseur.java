@@ -1,4 +1,5 @@
 
+import java.awt.Point;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedList;
@@ -19,7 +20,6 @@ public class Superviseur {
 	private Carte carte;
 	private DessinCarte dessin;
 	private Chemin [] current_paths;
-	private int [] priority;
 	private ListeChemin next_paths;
 	private ArrayList<Chemin> test;
 	private int step;
@@ -30,17 +30,19 @@ public class Superviseur {
 	private int currentDir ;
 	private boolean ready;
 	
+	private int number;
+	private boolean continuer;
+	
+	private Point [] positions;
+	
 	public Superviseur(Carte carte){
 		this.current_paths=new Chemin[agent];
 		this.current_paths_4ever=new Chemin[agent];
-		this.priority=new int[agent];
 		this.test=new ArrayList<Chemin>();
 		this.next_paths=null;
 		this.carte=carte;
 		this.dessin=new DessinCarte(carte);
 		this.dessin.launch();
-		this.currentDir=0;
-		this.ready = false;
 		
 		application = new Gui(this);
 		application.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -50,197 +52,58 @@ public class Superviseur {
 		
 	}
 	
-	public void simulation(int seed) throws InterruptedException { 
-		
-		/*TODO 
-		 * cas 234 à voir...
-		 */
+	public void simulation(int seed) throws InterruptedException {
 		Dialogue.Warning("Lancement d'une simulation");
-		this.dessin.lock.lock();
 		
-		this.carte.rand.setSeed(seed);
+		this.dessin.lock.lock();
+		this.initialisation(seed);
+		
+		//<Simulation-
 		Carte labyrinth=new Carte(this.carte.getWidth(),this.carte.getHeight());
 		labyrinth.rand.setSeed(carte.rand.nextInt());
 		labyrinth.randomMaze(0);
-		this.carte.reset();
-		this.next_paths=null;
-		this.test.clear();
-		this.application.reset();
-
+		int temps=0;
 		for(int i=0;i<3;i++){
 			this.dessin.getRobot(i).moveTo(carte.rand.nextInt(this.carte.getWidth()),this.carte.rand.nextInt(this.carte.getHeight()),this.carte.rand.nextInt(4));
 			this.dessin.getRobot(i).setVisible(true);
 			current_paths[i]=new Chemin(this.carte.getCase(this.dessin.getRobot(i).getX(), this.dessin.getRobot(i).getY()));
 			current_paths[i].setValue(i);
 		}
-		this.initialisation();
-		dessin.showMark(true);
-		int temps=0;
-		step=0;
-		//Les diff�rentes �tapes sont :
-		//0 - Exploration
-		//1 - Aller chercher la balle, quand un trajet robot 0 - balle existe
-		//2 - Sortir, quand un trajet robot 0 - sortie existe
-		boolean continuer=true;
+		//-Simulation>
+		
+		//A virer
+		this.test.clear();
+		
+		continuer=true;
 		this.dessin.lock.unlock();
 		while(continuer){
 			this.dessin.lock.lock();
 			try{
-				int x=0;
-				int y=0;
 				for(int numero=0; numero<3; numero++){
-					x= dessin.getRobot(numero).getX();
-					y= dessin.getRobot(numero).getY();
-					current_paths[numero].cut(carte.getCase(x, y));
-					if(current_paths[numero].size()<=1){
-						current_paths[numero]=new Chemin(carte.getCase(x, y));
-						current_paths[numero].setValue(numero);
-					}
+					positions[numero].setLocation(dessin.getRobot(numero).getX(), dessin.getRobot(numero).getY());
+					int x=(int)positions[numero].getX();
+					int y=(int)positions[numero].getY();
 					if(this.carte.getCase(x, y)!=null){
+						if(!this.carte.getCase(x, y).isRevealed())
 						this.carte.update(x, y, labyrinth.getCase(x, y).getCompo());
 						this.carte.reveal(x, y);
 					}
-					this.carte.setExit();
-				}
-				if(step<2 && carte.getCase(dessin.getRobot(0).getX(), dessin.getRobot(0).getY())==carte.getMark()){
-					dessin.getRobot(0).changeType(dessin.getRobot(0).getType()+3);
-					dessin.showMark(false);
-					step=2;
-					next_paths=null;
-				}
-				Chemin trajet=carte.pathToMark(dessin.getRobot(0).getX(), dessin.getRobot(0).getY());
-				if(trajet!=null && step==0){
-						step=1;
-				}
-				if(carte.exit()){
-					trajet=carte.pathToExit(dessin.getRobot(0).getX(), dessin.getRobot(0).getY());
-					if(trajet!=null && step==2){
-							step=3;
-					}
 				}
 				
-				System.out.println("Etape "+step);
+				this.cooperation();
 				
+				this.application.updatePanel();
 				
-				
-				
-				switch(step){
-				case 0:
-				case 2:
-					for(int numero=0; numero<3; numero++){
-						if(!dessin.getRobot(numero).busy()){
-							x= dessin.getRobot(numero).getX();
-							y= dessin.getRobot(numero).getY();
-							int k=1;
-							boolean retry=false;
-							if(carte.closestDiscover(x, y, k)!=null){//Comportement de closest discover lorsque plus de cases � visiter peut �tre probl�matique
-								do{
-									retry=false;
-									if(carte.closestDiscover(x, y, k)!=null){
-										current_paths[numero]=carte.closestDiscover(x, y, k);
-									}
-									//Envois infos
-									for(int j=0;j<3;j++){
-										if(j!=numero){
-											if(current_paths[numero].collision(carte, current_paths[j],true)<Math.max(current_paths[numero].size(),2)){
-												retry=true;
-											}
-										current_paths[numero].beforeBlock(carte, current_paths[j],true);
-										}
-									}
-								k++;
-								}while(retry && k<5);
-								if(retry=true && k==5){
-									Chemin aux =carte.createPath(x, y, carte.rand.nextInt(this.carte.getWidth()),carte.rand.nextInt(this.carte.getHeight()));
-									
-									if(aux!=null){
-										current_paths[numero]=aux;
-										current_paths[numero].stopToVisibility();
-										for(int j=0;j<3;j++){
-											if(j!=numero){
-												if(current_paths[numero].collision(carte, current_paths[j],true)<current_paths[numero].size()){
-													retry=true;
-												}
-											current_paths[numero].beforeBlock(carte, current_paths[j],true);
-											}
-										}
-									}
-								}
-							current_paths[numero].setValue(numero);
-							dessin.getRobot(numero).walkPath(new Chemin(current_paths[numero]));
-							}
-						}
-					}
-					break;
-				case 1:
-					if(next_paths==null){
-						if(!dessin.getRobot(0).busy() && !dessin.getRobot(1).busy() && !dessin.getRobot(2).busy()){
-							next_paths=this.resolution(null, current_paths[0], current_paths[1], current_paths[2], this.carte.getMark(), null, null, true);
-							while(next_paths.previous()!=null){
-								test.add(0,next_paths.current());
-								next_paths=next_paths.previous();
-							}
-						}
-					}
-					else{
-						if(!test.isEmpty()){
-							if(!dessin.getRobot(0).busy() && !dessin.getRobot(1).busy() && !dessin.getRobot(2).busy()){
-								if(test.get(0)!=null){
-									if(test.get(0).get(0)==carte.getCase(dessin.getRobot(test.get(0).getValue()).getX(), dessin.getRobot(test.get(0).getValue()).getY())){
-										dessin.getRobot(test.get(0).getValue()).walkPath(test.get(0));
-										current_paths[test.get(0).getValue()]=test.get(0);
-										this.application.putLog(test.get(0).getValue(),"Woof !");
-										System.out.println(test.get(0));
-									}
-									test.remove(0);
-								}
-							}
-						}
-						else
-							next_paths=null;
-					}
-					break;
-				case 3:
-					if(next_paths==null && this.carte.getCase(dessin.getRobot(0).getX(),dessin.getRobot(0).getY())!=null){
-						if(!dessin.getRobot(0).busy() && !dessin.getRobot(1).busy() && !dessin.getRobot(2).busy()){
-							next_paths=this.resolution(null, current_paths[0], current_paths[1], current_paths[2], this.carte.setExit(), null, null, true);
-							while(next_paths.current()!=null){
-								test.add(0,next_paths.current());
-								next_paths=next_paths.previous();
-							}
-						}
-					}
-					else{
-						if(!test.isEmpty()){
-							if(!dessin.getRobot(0).busy() && !dessin.getRobot(1).busy() && !dessin.getRobot(2).busy()){
-								if(test.get(0)!=null){
-									if(test.get(0).get(0)==carte.getCase(dessin.getRobot(test.get(0).getValue()).getX(), dessin.getRobot(test.get(0).getValue()).getY())){
-										dessin.getRobot(test.get(0).getValue()).walkPath(test.get(0));
-										current_paths[test.get(0).getValue()]=test.get(0);
-										System.out.println(test.get(0));
-									}
-								}
-								test.remove(0);
-							}
-						}
-						else if(this.carte.getCase(dessin.getRobot(0).getX(),dessin.getRobot(0).getY())==null)
-							continuer=false;
-						else
-							next_paths=null;
-					}
-					break;
+				//<Simulation-
+				int steps=0;
+				while(steps<20){
+					this.dessin.step.await();
+					steps++;
 				}
-					
+				temps+=2;
+				System.out.println(temps/60+":"+temps%60);
+				//-Simulation>
 				
-				
-					this.application.updatePanel();
-					int steps=0;
-					while(steps<20){
-						this.dessin.step.await();
-						steps++;
-					}
-					temps+=2;
-					System.out.println(temps/60+":"+temps%60);
 				}finally{
 					this.dessin.lock.unlock();
 				}
@@ -251,115 +114,31 @@ public class Superviseur {
 			Dialogue.Success("Simulation résolue ! Bilip !");
 	}
 	
-	public void test() throws InterruptedException{
-		//Déclaration de ce dont on a besoin
-				this.dessin.lock.lock();
-				this.carte.reset();
-				this.next_paths=null;
-				this.test.clear();
-				this.application.reset();
-				this.initialisation();
-				dessin.showMark(true);
-				int temps=0;
-				step=0;
-				boolean continuer=true;
-				this.dessin.lock.unlock();
-				InitPC comPCNXT = new InitPC();
-				int i;
-				Queue<Integer> ordres = new LinkedList<Integer>();
-				boolean caseVerifier = false;
-				boolean connexion ;
-				
-				//Pour chaque robot...
-				for(i=0;i<3;i++){
-					
-					
-					try{
-						//...on lance le thread de com correspondant
-						comPCNXT.setThreadComm(this.dessin.getRobot(i));
-						
-						System.out.println("robot "+ i +" attente connexion : ");
-						
-						//Tant que pas connecté, on bloque le superviseur
-							while(!(comPCNXT.getThreadComm(i).getConnected())){
-								Thread.currentThread().wait(100);
-							}
-						
-						}
-					catch(Exception e){
-						System.out.println(e);
-					}
-					
-				}
-
-				
-
-				//On prépare une queue de 3 ordres d'initialisation
-				((LinkedList<Integer>)ordres).addFirst(Order.TURNB);
-				
-				
-				//Pour chaque robot...
-				for(i=0;i<3;i++){
-					
-					//...on transmet au thread la liste d'ordres...
-					//synchronized(comPCNXT.getThreadComm(i)){
-					comPCNXT.getThreadComm(i).setOrdres(ordres);}
-				//}
-				//...éventuellement on affiche ces ordres.
-				System.out.println(ordres.toString());
-				
-				//on vide la queue préparée dans cette classe
-				ordres.clear();
-				
-				//tant que le thread ne lève pas le flag qui signale qu'il a reçu la compo de la première case
-				//caseVerifier = false;
-				//while(!caseVerifier){
-					
-					//...on attent...
-					try{
-						//synchronized(comPCNXT.getThreadComm(i)){
-							while(!comPCNXT.getThreadComm(i).getEnvoye());
-					//	}
-						caseVerifier = true;}
-				
-					catch(Exception e){
-						//System.out.println(e);
-						caseVerifier = false;
-					}
-				//}
-					while(true){}
-				
-				
-	}
-	
 	public void destin() throws InterruptedException {
-		
+
 		//Affiche une jolie fenêtre de début 
 		if(this.dessin.getDoge())
 			Dialogue.Warning("Who let the dogs out ?");
 		else
 			Dialogue.Warning("Début de la résolution, suivez votre destin !");
-		
+
 		//Déclaration de ce dont on a besoin
 		this.dessin.lock.lock();
-		this.carte.reset();
-		this.next_paths=null;
-		this.test.clear();
-		this.application.reset();
 		this.initialisation();
-		dessin.showMark(true);
-		int temps=0;
-		step=0;
-		boolean continuer=true;
+
+		//A virer
+		this.test.clear();
+
 		this.dessin.lock.unlock();
 		InitPC comPCNXT = new InitPC();
 		int i;
 		Queue<Integer> ordres = new LinkedList<Integer>();
 		boolean caseVerifier = false;
-		boolean connexion ;
-		
-		
+
+
 		// -------------------------------------- INITIALISATION DES ROBOTS -----------------------
+		this.currentDir=0;
+		this.ready = false;
 		for(i=0;i<3;i++){
 			try{
 				// On demarre la tache de com du robot
@@ -370,19 +149,19 @@ public class Superviseur {
 			}
 			catch(Exception e){}			
 		}
-		
+
 		// Ajout des ordres d'initialisation dans le buffer
 		((LinkedList<Integer>)ordres).addFirst(Order.SETPOSITION);
 		((LinkedList<Integer>)ordres).addFirst(Order.SAVEREFANGLE);
 		((LinkedList<Integer>)ordres).addFirst(Order.CHECKFIRSTCASE);
-		
+
 		// Envoie des ordres d'initialisation aux taches de com des robots
 		for(i=0;i<3;i++){
 			comPCNXT.getThreadComm(i).setOrdres(ordres);
 		}
-		
+
 		System.out.println("Superviseur : Initialisations envoy�es");
-		
+
 		// On vide le buffer d'ordre
 		ordres.clear();
 
@@ -402,23 +181,50 @@ public class Superviseur {
 			caseVerifier=false;
 		}
 		System.out.println("Superviseur : Initialisation des robots termin�e");
-		
+
 		// -------------------------------------- DEBUT DE L'EXPLORATION --------------------------
-		
-		//Code d'Olivier
-		for(i=0;i<3;i++){
-			
-			this.dessin.getRobot(i).moveTo(this.dessin.getRobot(i).getX(),this.dessin.getRobot(i).getY(),this.dessin.getRobot(i).getDir());
-			//this.dessin.getRobot(i).setVisible(true);
-			current_paths[i]=new Chemin(this.carte.getCase(this.dessin.getRobot(i).getX(), this.dessin.getRobot(i).getY()));
-			current_paths[i].setValue(i);
-			//this.currentDir = this.dessin.getRobot(i).getDir();
+		continuer=true;
+		this.dessin.lock.unlock();
+		while(continuer){
+			this.dessin.lock.lock();
+			try{
+				for(int numero=0; numero<3; numero++){
+					positions[numero].setLocation(comPCNXT.getThreadComm(i).getCaseRecue().getX(), comPCNXT.getThreadComm(i).getCaseRecue().getY());
+					int x=(int)positions[numero].getX();
+					int y=(int)positions[numero].getY();
+					this.dessin.getRobot(numero).moveTo(x, y);
+					if(this.carte.getCase(x, y)!=null){
+						if(!this.carte.getCase(x, y).isRevealed())
+							this.carte.update(x, y, comPCNXT.getThreadComm(i).getCaseRecue().getCompo());
+						this.carte.reveal(x, y);
+					}
+				}
+
+				this.cooperation();
+
+				for(i=0;i<3;i++){
+					//...pour chaque case du chemin qu'il doit parcourir...
+					for(int j=0;j<current_paths_4ever[i].size()-1;j++){
+						//...on convertit le chemin en ordres
+						ordres.addAll(this.caseToOrder(current_paths_4ever[i].get(j), this.currentDir, current_paths_4ever[i].get(j+1)));
+						this.currentDir = current_paths_4ever[i].get(j).getDir(current_paths_4ever[i].get(j+1));
+						if(j==current_paths_4ever[i].size()-2){
+
+							//On envoie les ordres de déplacement aux 3 robots et on reset la queue d'ordre
+
+							comPCNXT.getThreadComm(i).setOrdres(ordres);
+							ordres.clear();
+						}
+					}
+				}
+
+				this.application.updatePanel();
+
+			}finally{
+				this.dessin.lock.unlock();
+			}
 		}
 
-		
-		
-		//Code d'Olivier
-		
 		while(continuer){
 			this.dessin.lock.lock();
 			try{
@@ -426,242 +232,48 @@ public class Superviseur {
 				int y=0;
 				//On ajoute dans une queue l'ordre d'envoyer une case
 				((LinkedList<Integer>)ordres).addFirst(Order.CASETOSEND);
-				
+
 				//pour chaque robot...
 				for(int numero=0; numero<3; numero++){
-					
+
 					//...on transmet cette queue au thread de com...
 					try{
-					comPCNXT.getThreadComm(i).setOrdres(ordres);}
+						comPCNXT.getThreadComm(i).setOrdres(ordres);}
 					catch(Exception e){
-						
+
 					}
-					
+
 					//...puis on regarde le flag qui indique s'il y a eu reception d'info...
 					try{
-						
-					if(comPCNXT.getThreadComm(i).getReception()){
-						
-						//...si oui, on récupère x,y et compo et Olivier fait des trucs...
-						x= comPCNXT.getThreadComm(i).getCaseRecue().getX();
-						y= comPCNXT.getThreadComm(i).getCaseRecue().getY();
-						current_paths[numero].cut(carte.getCase(x, y));
-						if(current_paths[numero].size()<=1){
-							current_paths[numero]=new Chemin(carte.getCase(x, y));
-							current_paths[numero].setValue(numero);
-						}
-						if(this.carte.getCase(x, y)!=null){
+
+						if(comPCNXT.getThreadComm(i).getReception()){
+
+							//...si oui, on récupère x,y et compo et Olivier fait des trucs...
+							x= comPCNXT.getThreadComm(i).getCaseRecue().getX();
+							y= comPCNXT.getThreadComm(i).getCaseRecue().getY();
+							current_paths[numero].cut(carte.getCase(x, y));
+							if(current_paths[numero].size()<=1){
+								current_paths[numero]=new Chemin(carte.getCase(x, y));
+								current_paths[numero].setValue(numero);
+							}
+							if(this.carte.getCase(x, y)!=null){
 								if (!this.carte.getCase(x, y).isRevealed()) {
 									this.carte.update(x, y, comPCNXT.getThreadComm(i).getCaseRecue().getCompo()/* <- */);// Il faut la composition ici !!
 									this.carte.reveal(x, y);
 								}
+							}
+							this.carte.setExit();
 						}
-						this.carte.setExit();
-					}
 					}
 					catch(Exception e){
-						
+
 					}
 				}
-				
-				//on vide la queue d'ordres
-				ordres.clear();
-				
-				//Tambouille d'Olivier
-				try{
-				if(step<2 && carte.getCase(comPCNXT.getThreadComm(i).getCaseRecue().getX(), comPCNXT.getThreadComm(i).getCaseRecue().getY())==carte.getMark()){
-					dessin.getRobot(0).changeType(dessin.getRobot(0).getType()+3);
-					dessin.showMark(false);
-					step=2;
-					next_paths=null;
-				}
-				Chemin trajet=carte.pathToMark(comPCNXT.getThreadComm(0).getCaseRecue().getX(), comPCNXT.getThreadComm(0).getCaseRecue().getY());
-				if(trajet!=null && step==0){
-						step=1;
-				}
-				if(carte.exit()){
-					trajet=carte.pathToExit(comPCNXT.getThreadComm(0).getCaseRecue().getX(), comPCNXT.getThreadComm(0).getCaseRecue().getY());
-					if(trajet!=null && step==2){
-							step=3;
-					}
-				}
-				
-				System.out.println("Etape "+step);}
-				catch(Exception e){
-					
-				}
-			
-				//Pour chaque robot...
-				try{
-				for(i=0;i<3;i++){
-					//...pour chaque case du chemin qu'il doit parcourir...
-					for(int j=0;j<current_paths_4ever[i].size()-1;j++){
-							//...on convertit le chemin en ordres
-							ordres.addAll(this.caseToOrder(current_paths_4ever[i].get(j), this.currentDir, current_paths_4ever[i].get(j+1)));
-							this.currentDir = current_paths_4ever[i].get(j).getDir(current_paths_4ever[i].get(j+1));
-							if(j==current_paths_4ever[i].size()-2){
-								
-								//On envoie les ordres de déplacement aux 3 robots et on reset la queue d'ordre
-								
-								comPCNXT.getThreadComm(i).setOrdres(ordres);
-								ordres.clear();
-							}
-					}
-					
-					
-				}
-				}
-				catch(Exception e){
-					
-				}
-				
-			
-				switch(step){
-				case 0:
-				case 2:
-					//Pour chaque robot...
-					for(int numero=0; numero<3; numero++){
-						//si la file d'ordres est vide,
-						if(comPCNXT.getThreadComm(numero).getQueue().isEmpty()){
-							ordres.add(Order.CASETOSEND);
-							//...on fait une demande d'envoi de case
-							try{
-								synchronized(comPCNXT.getThreadComm(i)){
-								comPCNXT.getThreadComm(i).setOrdres(ordres);}
-								ordres.clear();
-								
-								//on lit les infos de la case
-								x= comPCNXT.getThreadComm(i).getCaseRecue().getX();
-								y= comPCNXT.getThreadComm(i).getCaseRecue().getY();}
-							catch(Exception e){
-								
-							}
-							
-							//Code Olivier
-							int k=1;
-							boolean retry=false;
-							if(carte.closestDiscover(x, y, k)!=null){//Comportement de closest discover lorsque plus de cases � visiter peut �tre probl�matique
-								do{
-									retry=false;
-									if(carte.closestDiscover(x, y, k)!=null){
-										current_paths[numero]=carte.closestDiscover(x, y, k);
-									}
-									
-									
-									//Commentaire Olivier: Envoi infos
-									for(int j=0;j<3;j++){
-										if(j!=numero){
-											if(current_paths[numero].collision(carte, current_paths[j],true)<Math.max(current_paths[numero].size(),2)){
-												retry=true;
-											}
-										current_paths[numero].beforeBlock(carte, current_paths[j],true);
-										}
-									}
-								k++;
-								}while(retry && k<5);
-								if(retry=true && k==5){
-									Chemin aux =carte.createPath(x, y, carte.rand.nextInt(this.carte.getWidth()),carte.rand.nextInt(this.carte.getHeight()));
-									
-									if(aux!=null){
-										current_paths[numero]=aux;
-										current_paths[numero].stopToVisibility();
-										for(int j=0;j<3;j++){
-											if(j!=numero){
-												if(current_paths[numero].collision(carte, current_paths[j],true)<current_paths[numero].size()){
-													retry=true;
-												}
-											current_paths[numero].beforeBlock(carte, current_paths[j],true);
-											}
-										}
-									}
-								}
-							current_paths[numero].setValue(numero);
-							dessin.getRobot(numero).walkPath(new Chemin(current_paths[numero]));
-							current_paths_4ever[numero]=new Chemin(current_paths[numero]);
-							}
-						}
-						
-					}
-					break;
-				case 1:
-					if(next_paths==null){
-						if(!dessin.getRobot(0).busy() && !dessin.getRobot(1).busy() && !dessin.getRobot(2).busy()){
-							next_paths=this.resolution(null, current_paths[0], current_paths[1], current_paths[2], this.carte.getMark(), null, null, true);
-							while(next_paths.previous()!=null){
-								test.add(0,next_paths.current());
-								next_paths=next_paths.previous();
-							}
-						}
-					}
-					else{
-						if(!test.isEmpty()){
-							if(!dessin.getRobot(0).busy() && !dessin.getRobot(1).busy() && !dessin.getRobot(2).busy()){
-								if(test.get(0)!=null){
-									if(test.get(0).get(0)==carte.getCase(dessin.getRobot(test.get(0).getValue()).getX(), dessin.getRobot(test.get(0).getValue()).getY())){
-										dessin.getRobot(test.get(0).getValue()).walkPath(test.get(0));
-										current_paths_4ever[test.get(0).getValue()]=new Chemin(test.get(0));
-										current_paths[test.get(0).getValue()]=test.get(0);
-										this.application.putLog(test.get(0).getValue(),"Woof !");
-										System.out.println(test.get(0));
-									}
-									test.remove(0);
-								}
-							}
-						}
-						else
-							next_paths=null;
-					}
-					break;
-				case 3:
-					if(next_paths==null && this.carte.getCase(dessin.getRobot(0).getX(),dessin.getRobot(0).getY())!=null){
-						if(!dessin.getRobot(0).busy() && !dessin.getRobot(1).busy() && !dessin.getRobot(2).busy()){
-							next_paths=this.resolution(null, current_paths[0], current_paths[1], current_paths[2], this.carte.setExit(), null, null, true);
-							while(next_paths.current()!=null){
-								test.add(0,next_paths.current());
-								next_paths=next_paths.previous();
-							}
-						}
-					}
-					else{
-						if(!test.isEmpty()){
-							if(!dessin.getRobot(0).busy() && !dessin.getRobot(1).busy() && !dessin.getRobot(2).busy()){
-								if(test.get(0)!=null){
-									if(test.get(0).get(0)==carte.getCase(dessin.getRobot(test.get(0).getValue()).getX(), dessin.getRobot(test.get(0).getValue()).getY())){
-										dessin.getRobot(test.get(0).getValue()).walkPath(test.get(0));
-										current_paths_4ever[test.get(0).getValue()]=new Chemin(test.get(0));
-										current_paths[test.get(0).getValue()]=test.get(0);
-										System.out.println(test.get(0));
-									}
-								}
-								test.remove(0);
-							}
-						}
-						else if(this.carte.getCase(dessin.getRobot(0).getX(),dessin.getRobot(0).getY())==null)
-							continuer=false;
-						else
-							next_paths=null;
-					}
-					break;
-				}
-					
-				
-				
-					this.application.updatePanel();
-					int steps=0;
-					while(steps<20){
-						this.dessin.step.await();
-						steps++;
-					}
-				}finally{
-					this.dessin.lock.unlock();
-				}
+			}finally{
+				this.dessin.lock.unlock();
 			}
-		if(this.dessin.getDoge())
-			Dialogue.SuccessDoge("Simulation résolue ! Ouaf !");
-		else
-			Dialogue.Success("Simulation résolue ! Bilip !");
-				
 		}
+	}
 
 public Queue<Integer> caseToOrder(Case current, int dir, Case next){
 		
@@ -753,17 +365,215 @@ public Queue<Integer> caseToOrder(Case current, int dir, Case next){
 		return ordre;	
 	}
 	
-	
 	public void initialisation(){
+		this.initialisation(100);
+	}
+
+	public void initialisation(int seed){
+		this.carte.rand.setSeed(seed);
+		//Remet la carte � 0
+		this.carte.reset();
+		this.next_paths=null;
+		this.application.reset();
 		//Red�fini l'�tat comme initial
-		for(int k=0;k<this.priority.length;k++)
-			this.priority[k]=k;
 		this.step=0;
 		//Enl�ve la balle au robot
 		if(dessin.getRobot(0).getType()==3 || dessin.getRobot(0).getType()==7)
 			dessin.getRobot(0).changeType(dessin.getRobot(0).getType()-3);
+		this.dessin.showMark(true);
+		this.step=0;
+		this.positions=new Point[3];
+		for(int i=0;i<3;i++)
+			positions[i]=new Point();
+		this.number=0;
 	}
 	
+	public void cooperation() {
+		for(int numero=0; numero<3; numero++){
+			int x =(int)positions[numero].getX();
+			int y= (int)positions[numero].getY();
+			current_paths[numero].cut(carte.getCase(x, y));
+			if(current_paths[numero].size()<=1){
+				if(step==1)
+					number++;
+				if(step==3)
+					number++;
+				current_paths[numero]=new Chemin(carte.getCase(x, y));
+				current_paths[numero].setValue(numero);
+			}
+		}
+		this.carte.setExit();
+			
+			if(step<2 && carte.getCase(dessin.getRobot(0).getX(), dessin.getRobot(0).getY())==carte.getMark()){
+				dessin.getRobot(0).changeType(dessin.getRobot(0).getType()+3);
+				dessin.showMark(false);
+				step=2;
+				next_paths=null;
+			}
+			Chemin trajet=carte.pathToMark(dessin.getRobot(0).getX(), dessin.getRobot(0).getY());
+			if(trajet!=null && step==0){
+					step=1;
+			}
+			if(carte.exit()){
+				trajet=carte.pathToExit(dessin.getRobot(0).getX(), dessin.getRobot(0).getY());
+				if(trajet!=null && step==2){
+						step=3;
+				}
+			}
+			System.out.println("Etape "+step);
+			
+			
+			int x,y;
+			
+			switch(step){
+			case 4:
+			case 5:
+				for(int numero=0; numero<3; numero++){
+					if(!dessin.getRobot(numero).busy()){
+						x= dessin.getRobot(numero).getX();
+						y= dessin.getRobot(numero).getY();
+						Chemin temp=carte.createPath(x, y, carte.rand.nextInt(this.carte.getWidth()),this.carte.rand.nextInt(this.carte.getHeight()));
+						if(temp!=null){//Comportement de closest discover lorsque plus de cases � visiter peut �tre probl�matique
+								for(int j=0;j<3;j++){
+									if(j!=numero){
+									temp.beforeBlock(carte, current_paths[j],true);
+									}
+								}
+								current_paths[numero]=temp;
+								current_paths[numero].setValue(numero);
+								dessin.getRobot(numero).walkPath(new Chemin(current_paths[numero]));
+								current_paths_4ever[numero]=new Chemin(current_paths[numero]);
+						}
+					}
+				}
+				if(step==4)
+					step=1;
+				if(step==5)
+					step=3;
+				break;
+			case 0:
+			case 2:
+				for(int numero=0; numero<3; numero++){
+					if(!dessin.getRobot(numero).busy()){
+						x= dessin.getRobot(numero).getX();
+						y= dessin.getRobot(numero).getY();
+						int k=1;
+						boolean retry=false;
+						if(carte.closestDiscover(x, y, k)!=null){//Comportement de closest discover lorsque plus de cases � visiter peut �tre probl�matique
+							do{
+								retry=false;
+								if(carte.closestDiscover(x, y, k)!=null){
+									current_paths[numero]=carte.closestDiscover(x, y, k);
+								}
+								//Envois infos
+								for(int j=0;j<3;j++){
+									if(j!=numero){
+										if(current_paths[numero].collision(carte, current_paths[j],true)<Math.max(current_paths[numero].size(),2)){
+											retry=true;
+										}
+									current_paths[numero].beforeBlock(carte, current_paths[j],true);
+									}
+								}
+							k++;
+							}while(retry && k<5);
+							if(retry=true && k==5){
+								Chemin aux =carte.createPath(x, y, carte.rand.nextInt(this.carte.getWidth()),carte.rand.nextInt(this.carte.getHeight()));
+								
+								if(aux!=null){
+									current_paths[numero]=aux;
+									current_paths[numero].stopToVisibility();
+									for(int j=0;j<3;j++){
+										if(j!=numero){
+											if(current_paths[numero].collision(carte, current_paths[j],true)<current_paths[numero].size()){
+												retry=true;
+											}
+										current_paths[numero].beforeBlock(carte, current_paths[j],true);
+										}
+									}
+								}
+							}
+						current_paths[numero].setValue(numero);
+						dessin.getRobot(numero).walkPath(new Chemin(current_paths[numero]));
+						current_paths_4ever[numero]=new Chemin(current_paths[numero]);
+						}
+					}
+				}
+				break;
+			case 1:
+				if(next_paths==null){
+					if(!dessin.getRobot(0).busy() && !dessin.getRobot(1).busy() && !dessin.getRobot(2).busy()){
+						next_paths=this.resolution(null, current_paths[0], current_paths[1], current_paths[2], this.carte.getMark(), null, null, true);
+						while(next_paths.previous()!=null){
+							test.add(0,next_paths.current());
+							next_paths=next_paths.previous();
+						}
+					}
+				}
+				else{
+					if(!test.isEmpty()){
+						if(!dessin.getRobot(0).busy() && !dessin.getRobot(1).busy() && !dessin.getRobot(2).busy()){
+							if(test.get(0)!=null){
+								if(test.get(0).get(0)==carte.getCase(dessin.getRobot(test.get(0).getValue()).getX(), dessin.getRobot(test.get(0).getValue()).getY())){
+									for(int j=0;j<3;j++){
+										if(j!=test.get(0).getValue()){
+											test.get(0).beforeBlock(carte, current_paths[j],true);
+										}
+									}
+									dessin.getRobot(test.get(0).getValue()).walkPath(test.get(0));
+									current_paths_4ever[test.get(0).getValue()]=new Chemin(test.get(0));
+									current_paths[test.get(0).getValue()]=test.get(0);
+									this.application.putLog(test.get(0).getValue(),"Woof !");
+									System.out.println(test.get(0));
+								}
+								test.remove(0);
+							}
+						}
+					}
+					else
+						next_paths=null;
+				}
+				break;
+			case 3:
+				if(next_paths==null && this.carte.getCase(dessin.getRobot(0).getX(),dessin.getRobot(0).getY())!=null){
+					if(!dessin.getRobot(0).busy() && !dessin.getRobot(1).busy() && !dessin.getRobot(2).busy()){
+						next_paths=this.resolution(null, current_paths[0], current_paths[1], current_paths[2], this.carte.setExit(), null, null, true);
+						while(next_paths.current()!=null){
+							test.add(0,next_paths.current());
+							next_paths=next_paths.previous();
+						}
+					}
+				}
+				else{
+					if(!test.isEmpty()){
+						if(!dessin.getRobot(0).busy() && !dessin.getRobot(1).busy() && !dessin.getRobot(2).busy()){
+							if(test.get(0)!=null){
+								if(test.get(0).get(0)==carte.getCase(dessin.getRobot(test.get(0).getValue()).getX(), dessin.getRobot(test.get(0).getValue()).getY())){
+									for(int j=0;j<3;j++){
+										if(j!=test.get(0).getValue()){
+											test.get(0).beforeBlock(carte, current_paths[j],true);
+										}
+									}
+									dessin.getRobot(test.get(0).getValue()).walkPath(test.get(0));
+									current_paths_4ever[test.get(0).getValue()]=new Chemin(test.get(0));
+									current_paths[test.get(0).getValue()]=test.get(0);
+									System.out.println(test.get(0));
+								}
+							}
+							test.remove(0);
+						}
+					}
+					else if(this.carte.getCase(dessin.getRobot(0).getX(),dessin.getRobot(0).getY())==null)
+						continuer=false;
+					else
+						next_paths=null;
+				}
+				break;
+			}
+			if(number==3 && step==1 && next_paths==null)
+				step=4;
+			if(number==3 && step==3 && next_paths==null)
+				step=5;
+	}
 	
 	public DessinCarte dessinCarte(){
 		return this.dessin;
