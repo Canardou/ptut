@@ -225,7 +225,7 @@ public class Superviseur {
 				}
 
 				this.application.updatePanel();
-
+				this.dessin.step.await();
 			}finally{
 				this.dessin.lock.unlock();
 			}
