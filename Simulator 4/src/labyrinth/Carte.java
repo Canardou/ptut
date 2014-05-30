@@ -616,6 +616,12 @@ public class Carte {
 	public void update(int x, int y, byte importation){
 		if(checkCoord(x,y)){
 			this.map[x][y].update(importation);
+			for(int i=0;i<4;i++){
+				if(!this.map[x][y].isCrossable(i))
+					this.map[x][y].close(i);
+				else
+					this.map[x][y].bound(i);
+			}
 			if(this.map[x][y].isMark())
 				this.mark(x,y);
 		}

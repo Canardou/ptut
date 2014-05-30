@@ -228,8 +228,8 @@ public class Superviseur {
 			this.MAJTabIsBusy(comPCNXT);
 			this.dessin.lock.lock();
 			try{
-				//if(enMouvementGeneral || laPremiereFois)
-				this.cooperation();
+				if(!enMouvementGeneral || laPremiereFois)
+					this.cooperation();
 				this.dessin.step.await();
 			}finally{
 				this.dessin.lock.unlock();
@@ -498,7 +498,7 @@ public Queue<Integer> caseToOrder(Case current, int dir, Case next){
 			case 1:
 				if(next_paths==null){
 					if(!this.tabIsBusy[0] && !this.tabIsBusy[1] && !this.tabIsBusy[2]){
-						next_paths=this.resolution(null, current_paths[0], current_paths[1], current_paths[2], this.carte.getMark(), null, null, true);
+						next_paths=this.resolution(null, current_paths[0], current_paths[1], current_paths[2], this.carte.getMark(), null, null, false);
 						while(next_paths.previous()!=null){
 							test.add(0,next_paths.current());
 							next_paths=next_paths.previous();
