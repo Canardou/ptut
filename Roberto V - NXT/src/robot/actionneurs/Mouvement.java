@@ -173,14 +173,14 @@ public class Mouvement {
 	 * n'y a qu'un mur droit de disponible pour réguler. Utilisé lorsque le
 	 * robot avance. En cm.
 	 */
-	public static final double REGUL_DISTANCE_MUR_DROIT = 6.5;
+	public static final double REGUL_DISTANCE_MUR_DROIT = 7.5;
 
 	/**
 	 * Distance souhaitée par rapport au mur gauche. Utilisée uniquement
 	 * lorsqu'il n'y a que le mur gauche de disponible et que le sonar rotatif
 	 * est en position gauche. Utilisé lorsque le robot avance. En cm.
 	 */
-	public static final double REGUL_DISTANCE_MUR_GAUCHE = 6.5;
+	public static final double REGUL_DISTANCE_MUR_GAUCHE = 7.5;
 
 	/**
 	 * Distance, par rapport au mur devant, à laquelle le robot va s'arreter

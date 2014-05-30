@@ -72,9 +72,7 @@ public class ListCase {
 	 */
 	public synchronized int ajouterCase(TachePrincipale tPrincipale, int x, int y, int dir, boolean murAvant,
 			boolean murGauche, boolean murArriere, boolean murDroit) {
-		if (x >= 0
-				&& y >= 0
-				&& (dir == Case.UP || dir == Case.RIGHT || dir == Case.LEFT || dir == Case.DOWN)) {
+		if (dir == Case.UP || dir == Case.RIGHT || dir == Case.LEFT || dir == Case.DOWN) {
 
 			Case caseTemp = new Case(x, y);
 			caseTemp.setReveal();

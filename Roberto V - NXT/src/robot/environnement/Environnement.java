@@ -22,25 +22,25 @@ public class Environnement {
 	 * Limite en dessous de laquelle on considère qu'il y a un mur à gauche. En
 	 * cm.
 	 */
-	public static final double DISTANCE_MUR_GAUCHE = 20;
+	public static final double DISTANCE_MUR_GAUCHE = 21;
 
 	/**
 	 * Limite en dessous de laquelle on considère qu'il y a un mur à droite. En
 	 * cm.
 	 */
-	public static final double DISTANCE_MUR_DROIT = 20;
+	public static final double DISTANCE_MUR_DROIT = 21;
 	
 	/**
 	 * Limite en dessous de laquelle on considère qu'il y a un mur en face. En
 	 * cm.
 	 */
-	public static final double DISTANCE_MUR_AVANT = 20;
+	public static final double DISTANCE_MUR_AVANT = 21;
 	
 	/**
 	 * Valeur renvoyé par le capteur de lumière a partir de laquelle on
 	 * considère qu'il y a la cible.
 	 */
-	public static final double CIBLE_LUMIERE = 540;
+	public static final double CIBLE_LUMIERE = 525;
 	
 	// ------------------------------------- ATTRIBUTS --------------------------------------------
 

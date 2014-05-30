@@ -42,7 +42,6 @@ public class Init {
 	 */
 	public static void main(String[] args) {
 		new Init();
-		//new Tests(16);
 	}
 	
 	// ------------------------------------- METHODES ---------------------------------------------

@@ -118,7 +118,10 @@ public class Tests {
 	public void test4() {
 		System.out.println("test4:demarrage");
 		while (!Button.ESCAPE.isDown()) {
-
+			this.tPrincipale.getCapteurs().miseAJour(this.tPrincipale);
+			this.tPrincipale.getEnv().setCibleIci(this.tPrincipale.getCapteurs().getCapteurLumiere().getMoyData());
+			System.out.println(this.tPrincipale.getCapteurs().getCapteurLumiere().getMoyData());
+			
 		}
 	}
 
