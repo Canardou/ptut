@@ -59,6 +59,7 @@ public class RobotPanel extends JPanel implements ActionListener {
 		x.setFont(this.comic.deriveFont(12f));
 		horizontalBox_1.add(x);
 		x.setColumns(2);
+		x.setText(Integer.toString(id*2));
 		
 		Component verticalStrut = Box.createHorizontalStrut(2);
 		horizontalBox_1.add(verticalStrut);
@@ -71,6 +72,7 @@ public class RobotPanel extends JPanel implements ActionListener {
 		y.setFont(this.comic.deriveFont(12f));
 		horizontalBox_1.add(y);
 		y.setColumns(2);
+		y.setText(Integer.toString(id*2));
 		
 		Component verticalStrut2 = Box.createHorizontalStrut(2);
 		horizontalBox_1.add(verticalStrut2);

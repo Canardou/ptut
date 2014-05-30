@@ -85,6 +85,7 @@ public class Superviseur {
 					positions[numero].setLocation(dessin.getRobot(numero).getX(), dessin.getRobot(numero).getY());
 					int x=(int)positions[numero].getX();
 					int y=(int)positions[numero].getY();
+					this.tabIsBusy[numero]=this.dessin.getRobot(numero).busy();
 					if(this.carte.getCase(x, y)!=null){
 						if(!this.carte.getCase(x, y).isRevealed())
 						this.carte.update(x, y, labyrinth.getCase(x, y).getCompo());
@@ -127,7 +128,7 @@ public class Superviseur {
 		//Déclaration de ce dont on a besoin
 		this.dessin.lock.lock();
 		this.initialisation();
-
+		this.dessin.lock.unlock();
 		//A virer
 		this.test.clear();
 
@@ -143,10 +144,13 @@ public class Superviseur {
 		for(int i=0;i<3;i++){
 			try{
 				// On demarre la tache de com du robot
+				this.dessin.lock.lock();
 				comPCNXT.setThreadComm(this.dessin.getRobot(i));
+				
 
 				// On attend que le robot soit connect�
 				while(!(comPCNXT.getThreadComm(i).getConnected())){}
+				this.dessin.lock.unlock();
 			}
 			catch(Exception e){}			
 		}
@@ -183,60 +187,76 @@ public class Superviseur {
 		}
 		System.out.println("Superviseur : Initialisation des robots terminee");
 		
-		
+		this.dessin.lock.lock();
 		for(int i=0;i<3;i++){
 			current_paths[i]=new Chemin(this.carte.getCase(this.dessin.getRobot(i).getX(), this.dessin.getRobot(i).getY()));
 			current_paths[i].setValue(i);
+			positions[i].setLocation(dessin.getRobot(i).getX(), dessin.getRobot(i).getY());
 			this.currentDir[i]=this.dessin.getRobot(i).getDir();
+			
 		}
-
+		this.dessin.lock.unlock();
 		// -------------------------------------- DEBUT DE L'EXPLORATION --------------------------
 		continuer=true;
 		
-		this.dessin.lock.unlock();
+		boolean laPremiereFois=true;
 		while(continuer){
+			boolean enMouvementGeneral = false;
+			for(int numero=0; numero<3; numero++){
+				
+				int x=(int)positions[numero].getX();
+				int y=(int)positions[numero].getY();
+				
+				
+				
+				if(!comPCNXT.getThreadComm(numero).getEnMouvement() && (comPCNXT.getThreadComm(numero).getCaseRecue().getX()!=x  || comPCNXT.getThreadComm(numero).getCaseRecue().getY()!=y)){
+					enMouvementGeneral = true;
+					positions[numero].setLocation(comPCNXT.getThreadComm(numero).getCaseRecue().getX(), comPCNXT.getThreadComm(numero).getCaseRecue().getY());
+				System.out.println(positions[numero]);
+				x=(int)positions[numero].getX();
+				y=(int)positions[numero].getY();
+				
+				//	this.dessin.getRobot(numero).moveTo(x, y);
+				}
+				if(this.carte.getCase(x, y)!=null){
+					if(!this.carte.getCase(x, y).isRevealed())
+						this.carte.update(x, y, comPCNXT.getThreadComm(numero).getCaseRecue().getCompo());
+					this.carte.reveal(x, y);
+				}
+				
+			}
+			this.MAJTabIsBusy(comPCNXT);
 			this.dessin.lock.lock();
 			try{
-				for(int numero=0; numero<3; numero++){
-						positions[numero].setLocation(comPCNXT.getThreadComm(numero).getCaseRecue().getX(), comPCNXT.getThreadComm(numero).getCaseRecue().getY());
-						int x=(int)positions[numero].getX();
-						int y=(int)positions[numero].getY();
-						if(!comPCNXT.getThreadComm(numero).getEnMouvement())
-							this.dessin.getRobot(numero).moveTo(x, y);
-						if(this.carte.getCase(x, y)!=null){
-							if(!this.carte.getCase(x, y).isRevealed())
-								this.carte.update(x, y, comPCNXT.getThreadComm(numero).getCaseRecue().getCompo());
-							this.carte.reveal(x, y);
-						}
-				}
-
+				//if(enMouvementGeneral || laPremiereFois)
 				this.cooperation();
-
-				for(int i=0;i<3;i++){
-					ordres.clear();
-					//...pour chaque case du chemin qu'il doit parcourir...
-					if(!comPCNXT.getThreadComm(i).getEnMouvement() && comPCNXT.getThreadComm(i).getQueue().isEmpty()){
-						for(int j=0;j<current_paths_4ever[i].size()-1;j++){
-							//...on convertit le chemin en ordres
-							((LinkedList<Integer>)ordres).addAll(0,this.caseToOrder(current_paths_4ever[i].get(j), this.currentDir[i], current_paths_4ever[i].get(j+1)));
-							this.currentDir[i] = current_paths_4ever[i].get(j).getDir(current_paths_4ever[i].get(j+1));
-							if(j==current_paths_4ever[i].size()-2){
-
-								//On envoie les ordres de déplacement aux 3 robots et on reset la queue d'ordre
-								System.out.println("Robot "+ i +" path: "+current_paths_4ever[i]);
-								System.out.println("Robot "+ i +" suite ordres: "+ordres.toString());
-								comPCNXT.getThreadComm(i).setOrdres(ordres);
-								ordres.clear();
-							}
-						}
-					}
-				}
-
-				this.application.updatePanel();
 				this.dessin.step.await();
 			}finally{
 				this.dessin.lock.unlock();
 			}
+			
+			for(int i=0;i<3;i++){
+				ordres.clear();
+				//...pour chaque case du chemin qu'il doit parcourir...
+				if(!comPCNXT.getThreadComm(i).getEnMouvement() && comPCNXT.getThreadComm(i).getCaseRecue().getX()==current_paths_4ever[i].getX(0) && comPCNXT.getThreadComm(i).getCaseRecue().getY()==current_paths_4ever[i].getY(0) && comPCNXT.getThreadComm(i).getQueue().isEmpty()){
+					for(int j=0;j<current_paths_4ever[i].size()-1;j++){
+						//...on convertit le chemin en ordres
+						((LinkedList<Integer>)ordres).addAll(0,this.caseToOrder(current_paths_4ever[i].get(j), this.currentDir[i], current_paths_4ever[i].get(j+1)));
+						this.currentDir[i] = current_paths_4ever[i].get(j).getDir(current_paths_4ever[i].get(j+1));
+						if(j==current_paths_4ever[i].size()-2){
+
+							//On envoie les ordres de déplacement aux 3 robots et on reset la queue d'ordre
+							System.out.println("Robot "+ i +" path: "+current_paths_4ever[i]);
+							System.out.println("Robot "+ i +" suite ordres: "+ordres.toString());
+							comPCNXT.getThreadComm(i).setOrdres(ordres);
+							current_paths_4ever[i].setValue(-1);
+							ordres.clear();
+						}
+					}
+				}
+			}
+			this.application.updatePanel();
+			laPremiereFois=false;
 		}
 	if(this.dessin.getDoge())
 		Dialogue.SuccessDoge("Such success ! Ouaf !");
@@ -358,62 +378,63 @@ public Queue<Integer> caseToOrder(Case current, int dir, Case next){
 	}
 	
 	public void cooperation() {
-		for(int numero=0; numero<3; numero++){
-			int x =(int)positions[numero].getX();
-			int y= (int)positions[numero].getY();
-			current_paths[numero].cut(carte.getCase(x, y));
-			if(current_paths[numero].size()<=1){
-				if(step==1)
-					number++;
-				if(step==3)
-					number++;
-				current_paths[numero]=new Chemin(carte.getCase(x, y));
-				current_paths[numero].setValue(numero);
+		if(!(this.tabIsBusy[0] || this.tabIsBusy[1] || this.tabIsBusy[2])){
+			Integer x [] = new Integer[3];
+			Integer y [] = new Integer[3];
+			for(int numero=0; numero<3; numero++){
+				x[numero] =(int)positions[numero].getX();
+				y[numero]= (int)positions[numero].getY();
+				current_paths[numero].cut(carte.getCase(x[numero], y[numero]));
+				if(current_paths[numero].size()<=1){
+					if(step==1)
+						number++;
+					if(step==3)
+						number++;
+					current_paths[numero]=new Chemin(carte.getCase(x[numero], y[numero]));
+					current_paths[numero].setValue(numero);
+				}
 			}
-		}
-		this.carte.setExit();
+			this.carte.setExit();
 			
-			if(step<2 && carte.getCase(dessin.getRobot(0).getX(), dessin.getRobot(0).getY())==carte.getMark()){
+			
+
+			if(step<2 && carte.getCase(x[0], y[0])==carte.getMark()){
 				dessin.getRobot(0).changeType(dessin.getRobot(0).getType()+3);
 				dessin.showMark(false);
 				step=2;
 				next_paths=null;
 			}
-			Chemin trajet=carte.pathToMark(dessin.getRobot(0).getX(), dessin.getRobot(0).getY());
+			Chemin trajet=carte.pathToMark(x[0], y[0]);
 			if(trajet!=null && step==0){
-					step=1;
+				step=1;
 			}
 			if(carte.exit()){
-				trajet=carte.pathToExit(dessin.getRobot(0).getX(), dessin.getRobot(0).getY());
+				trajet=carte.pathToExit(x[0], x[0]);
 				if(trajet!=null && step==2){
-						step=3;
+					step=3;
 				}
 			}
 			//System.out.println("Etape "+step);
-			
-			
-			int x,y;
-			
+
 			switch(step){
 			case 4:
 			case 5:
 				for(int numero=0; numero<3; numero++){
-					if(!dessin.getRobot(numero).busy()){
-						x= dessin.getRobot(numero).getX();
-						y= dessin.getRobot(numero).getY();
-						Chemin temp=carte.createPath(x, y, carte.rand.nextInt(this.carte.getWidth()),this.carte.rand.nextInt(this.carte.getHeight()));
+					if(!this.tabIsBusy[numero]){
+						Chemin temp=carte.createPath(x[numero],y[numero], carte.rand.nextInt(this.carte.getWidth()),this.carte.rand.nextInt(this.carte.getHeight()));
 						if(temp!=null){//Comportement de closest discover lorsque plus de cases � visiter peut �tre probl�matique
-								for(int j=0;j<3;j++){
-									if(j!=numero){
+							for(int j=0;j<3;j++){
+								if(j!=numero){
 									temp.beforeBlock(carte, current_paths[j],true);
-									}
 								}
-								if(temp.getX(0)==(int)(positions[numero].getX()) && temp.getY(0)==(int)(positions[numero].getY())){
-									current_paths[numero]=temp;
-									current_paths[numero].setValue(numero);
-									dessin.getRobot(numero).walkPath(new Chemin(temp));
-									current_paths_4ever[numero]=new Chemin(temp);
-								}
+							}
+							if(temp.getX(0)==x[numero] && temp.getY(0)==y[numero]){
+								current_paths[numero]=temp;
+								current_paths[numero].setValue(numero);
+								//this.dessin.getRobot(numero).moveTo(x[numero], y[numero]);
+								this.dessin.getRobot(numero).walkPath(new Chemin(temp));
+								current_paths_4ever[numero]=new Chemin(temp);
+							}
 						}
 					}
 				}
@@ -425,17 +446,15 @@ public Queue<Integer> caseToOrder(Case current, int dir, Case next){
 			case 0:
 			case 2:
 				for(int numero=0; numero<3; numero++){
-					if(!dessin.getRobot(numero).busy()){
-						x= dessin.getRobot(numero).getX();
-						y= dessin.getRobot(numero).getY();
+					if(!this.tabIsBusy[numero]){
 						int k=1;
 						boolean retry=false;
-						Chemin temp=carte.closestDiscover(x, y, k);
-						if(carte.closestDiscover(x, y, k)!=null){//Comportement de closest discover lorsque plus de cases � visiter peut �tre probl�matique
+						Chemin temp=carte.closestDiscover(x[numero], y[numero], k);
+						if(carte.closestDiscover(x[numero], y[numero], k)!=null){//Comportement de closest discover lorsque plus de cases � visiter peut �tre probl�matique
 							do{
 								retry=false;
-								if(carte.closestDiscover(x, y, k)!=null){
-									temp=carte.closestDiscover(x, y, k);
+								if(carte.closestDiscover(x[numero], y[numero], k)!=null){
+									temp=carte.closestDiscover(x[numero], y[numero], k);
 								}
 								//Envois infos
 								for(int j=0;j<3;j++){
@@ -443,14 +462,14 @@ public Queue<Integer> caseToOrder(Case current, int dir, Case next){
 										if(temp.collision(carte, current_paths[j],true)<Math.max(current_paths[numero].size(),2)){
 											retry=true;
 										}
-									temp.beforeBlock(carte, current_paths[j],true);
+										temp.beforeBlock(carte, current_paths[j],true);
 									}
 								}
-							k++;
+								k++;
 							}while(retry && k<5);
 							if(retry=true && k==5){
-								Chemin aux =carte.createPath(x, y, carte.rand.nextInt(this.carte.getWidth()),carte.rand.nextInt(this.carte.getHeight()));
-								
+								Chemin aux =carte.createPath(x[numero], y[numero], carte.rand.nextInt(this.carte.getWidth()),carte.rand.nextInt(this.carte.getHeight()));
+
 								if(aux!=null){
 									temp=aux;
 									temp.stopToVisibility();
@@ -459,14 +478,17 @@ public Queue<Integer> caseToOrder(Case current, int dir, Case next){
 											if(temp.collision(carte, current_paths[j],true)<current_paths[numero].size()){
 												retry=true;
 											}
-										temp.beforeBlock(carte, current_paths[j],true);
+											temp.beforeBlock(carte, current_paths[j],true);
 										}
 									}
 								}
 							}
 							temp.setValue(numero);
-							if(temp.getX(0)==(int)(positions[numero].getX()) && temp.getY(0)==(int)(positions[numero].getY())){
-								dessin.getRobot(numero).walkPath(new Chemin(temp));
+							if(temp.getX(0)==x[numero] && temp.getY(0)==y[numero]){
+								//this.dessin.getRobot(numero).moveTo(x[numero], y[numero]);
+								this.dessin.getRobot(numero).walkPath(new Chemin(temp));
+								current_paths[numero]=temp;
+								current_paths[numero].setValue(numero);
 								current_paths_4ever[numero]=new Chemin(temp);
 							}
 						}
@@ -475,7 +497,7 @@ public Queue<Integer> caseToOrder(Case current, int dir, Case next){
 				break;
 			case 1:
 				if(next_paths==null){
-					if(!dessin.getRobot(0).busy() && !dessin.getRobot(1).busy() && !dessin.getRobot(2).busy()){
+					if(!this.tabIsBusy[0] && !this.tabIsBusy[1] && !this.tabIsBusy[2]){
 						next_paths=this.resolution(null, current_paths[0], current_paths[1], current_paths[2], this.carte.getMark(), null, null, true);
 						while(next_paths.previous()!=null){
 							test.add(0,next_paths.current());
@@ -485,17 +507,19 @@ public Queue<Integer> caseToOrder(Case current, int dir, Case next){
 				}
 				else{
 					if(!test.isEmpty()){
-						if(!dessin.getRobot(0).busy() && !dessin.getRobot(1).busy() && !dessin.getRobot(2).busy()){
+						if(!this.tabIsBusy[0] && !this.tabIsBusy[1] && !this.tabIsBusy[2]){
 							if(test.get(0)!=null){
-								if(test.get(0).get(0)==carte.getCase(dessin.getRobot(test.get(0).getValue()).getX(), dessin.getRobot(test.get(0).getValue()).getY())){
+								if(test.get(0).get(0)==carte.getCase(x[test.get(0).getValue()], y[test.get(0).getValue()])){
 									for(int j=0;j<3;j++){
 										if(j!=test.get(0).getValue()){
 											test.get(0).beforeBlock(carte, current_paths[j],true);
 										}
 									}
-									dessin.getRobot(test.get(0).getValue()).walkPath(test.get(0));
+									//this.dessin.getRobot(test.get(0).getValue()).moveTo(x[test.get(0).getValue()], y[test.get(0).getValue()]);
+									this.dessin.getRobot(test.get(0).getValue()).walkPath(test.get(0));
 									current_paths_4ever[test.get(0).getValue()]=new Chemin(test.get(0));
 									current_paths[test.get(0).getValue()]=test.get(0);
+									
 									this.application.putLog(test.get(0).getValue(),"Woof !");
 									System.out.println(test.get(0));
 								}
@@ -508,8 +532,8 @@ public Queue<Integer> caseToOrder(Case current, int dir, Case next){
 				}
 				break;
 			case 3:
-				if(next_paths==null && this.carte.getCase(dessin.getRobot(0).getX(),dessin.getRobot(0).getY())!=null){
-					if(!dessin.getRobot(0).busy() && !dessin.getRobot(1).busy() && !dessin.getRobot(2).busy()){
+				if(next_paths==null && this.carte.getCase(x[0],y[0])!=null){
+					if(!this.tabIsBusy[0] && !this.tabIsBusy[1] && !this.tabIsBusy[2]){
 						next_paths=this.resolution(null, current_paths[0], current_paths[1], current_paths[2], this.carte.setExit(), null, null, true);
 						while(next_paths.current()!=null){
 							test.add(0,next_paths.current());
@@ -519,15 +543,16 @@ public Queue<Integer> caseToOrder(Case current, int dir, Case next){
 				}
 				else{
 					if(!test.isEmpty()){
-						if(!dessin.getRobot(0).busy() && !dessin.getRobot(1).busy() && !dessin.getRobot(2).busy()){
+						if(!this.tabIsBusy[0] && !this.tabIsBusy[1] && !this.tabIsBusy[2]){
 							if(test.get(0)!=null){
-								if(test.get(0).get(0)==carte.getCase(dessin.getRobot(test.get(0).getValue()).getX(), dessin.getRobot(test.get(0).getValue()).getY())){
+								if(test.get(0).get(0)==carte.getCase(x[test.get(0).getValue()], y[test.get(0).getValue()])){
 									for(int j=0;j<3;j++){
 										if(j!=test.get(0).getValue()){
 											test.get(0).beforeBlock(carte, current_paths[j],true);
 										}
 									}
-									dessin.getRobot(test.get(0).getValue()).walkPath(test.get(0));
+									//this.dessin.getRobot(test.get(0).getValue()).moveTo(x[test.get(0).getValue()], y[test.get(0).getValue()]);
+									this.dessin.getRobot(test.get(0).getValue()).walkPath(test.get(0));
 									current_paths_4ever[test.get(0).getValue()]=new Chemin(test.get(0));
 									current_paths[test.get(0).getValue()]=test.get(0);
 									System.out.println(test.get(0));
@@ -536,7 +561,7 @@ public Queue<Integer> caseToOrder(Case current, int dir, Case next){
 							test.remove(0);
 						}
 					}
-					else if(this.carte.getCase(dessin.getRobot(0).getX(),dessin.getRobot(0).getY())==null)
+					else if(this.carte.getCase(x[0],y[0])==null)
 						continuer=false;
 					else
 						next_paths=null;
@@ -547,6 +572,7 @@ public Queue<Integer> caseToOrder(Case current, int dir, Case next){
 				step=4;
 			if(number==3 && step==3 && next_paths==null)
 				step=5;
+		}
 	}
 	
 	public DessinCarte dessinCarte(){
@@ -670,7 +696,7 @@ public Queue<Integer> caseToOrder(Case current, int dir, Case next){
 		}
 		return liste;
 	}
-	
+
 	
 	public void MAJTabIsBusy(InitPC init){
 		for(int i=0;i<3;i++){

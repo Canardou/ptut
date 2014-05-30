@@ -15,7 +15,7 @@ import labyrinth.*;
 @SuppressWarnings("serial")
 public class DessinCarte extends JPanel implements ActionListener {
 	
-	private static final int speed=5;
+	private static final int rafraichissement=20;
 	/**
 	 * 
 	 */
@@ -75,8 +75,8 @@ public class DessinCarte extends JPanel implements ActionListener {
 	 */
 	
 	public void launch(){
-		timer=new Timer(speed,this);
-		timer.setInitialDelay(speed);
+		timer=new Timer(rafraichissement,this);
+		timer.setInitialDelay(rafraichissement);
 		timer.start();
 	}
 	
