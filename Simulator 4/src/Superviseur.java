@@ -27,8 +27,9 @@ public class Superviseur {
 	private Gui application;
 	private int simulation;
 	private  Chemin [] current_paths_4ever;
-	private int currentDir ;
+	private int [] currentDir ;
 	private boolean ready;
+	private boolean [] tabIsBusy ;
 	
 	private int number;
 	private boolean continuer;
@@ -43,11 +44,12 @@ public class Superviseur {
 		this.carte=carte;
 		this.dessin=new DessinCarte(carte);
 		this.dessin.launch();
-		
+		this.currentDir=new int[3];
 		application = new Gui(this);
 		application.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		application.pack();
 		application.setVisible(true);
+		this.tabIsBusy = new boolean[3];
 		
 		
 	}
@@ -136,7 +138,7 @@ public class Superviseur {
 
 
 		// -------------------------------------- INITIALISATION DES ROBOTS -----------------------
-		this.currentDir=0;
+		
 		this.ready = false;
 		for(int i=0;i<3;i++){
 			try{
@@ -159,7 +161,7 @@ public class Superviseur {
 			comPCNXT.getThreadComm(i).setOrdres(ordres);
 		}
 
-		System.out.println("Superviseur : Initialisations envoy�es");
+		System.out.println("Superviseur : Initialisations envoyees");
 
 		// On vide le buffer d'ordre
 		ordres.clear();
@@ -172,23 +174,25 @@ public class Superviseur {
 			while (!caseVerifier) {
 				try {
 					while (!comPCNXT.getThreadComm(i).getEnvoye()) {}
-					System.out.println("Superviseur : info init termin�e pour le robot "+i);
+					System.out.println("Superviseur : info init terminee pour le robot "+i);
 					caseVerifier = true;
 				}
 				catch (Exception e) {}
 			}
 			caseVerifier=false;
 		}
-		System.out.println("Superviseur : Initialisation des robots termin�e");
+		System.out.println("Superviseur : Initialisation des robots terminee");
 		
 		
 		for(int i=0;i<3;i++){
 			current_paths[i]=new Chemin(this.carte.getCase(this.dessin.getRobot(i).getX(), this.dessin.getRobot(i).getY()));
 			current_paths[i].setValue(i);
+			this.currentDir[i]=this.dessin.getRobot(i).getDir();
 		}
 
 		// -------------------------------------- DEBUT DE L'EXPLORATION --------------------------
 		continuer=true;
+		
 		this.dessin.lock.unlock();
 		while(continuer){
 			this.dessin.lock.lock();
@@ -209,16 +213,18 @@ public class Superviseur {
 				this.cooperation();
 
 				for(int i=0;i<3;i++){
+					ordres.clear();
 					//...pour chaque case du chemin qu'il doit parcourir...
-					if(!comPCNXT.getThreadComm(i).getEnMouvement()){
+					if(!comPCNXT.getThreadComm(i).getEnMouvement() && comPCNXT.getThreadComm(i).getQueue().isEmpty()){
 						for(int j=0;j<current_paths_4ever[i].size()-1;j++){
 							//...on convertit le chemin en ordres
-							((LinkedList<Integer>)ordres).addAll(0,this.caseToOrder(current_paths_4ever[i].get(j), this.currentDir, current_paths_4ever[i].get(j+1)));
-							this.currentDir = current_paths_4ever[i].get(j).getDir(current_paths_4ever[i].get(j+1));
+							((LinkedList<Integer>)ordres).addAll(0,this.caseToOrder(current_paths_4ever[i].get(j), this.currentDir[i], current_paths_4ever[i].get(j+1)));
+							this.currentDir[i] = current_paths_4ever[i].get(j).getDir(current_paths_4ever[i].get(j+1));
 							if(j==current_paths_4ever[i].size()-2){
 
 								//On envoie les ordres de déplacement aux 3 robots et on reset la queue d'ordre
-
+								System.out.println("Robot "+ i +" path: "+current_paths_4ever[i]);
+								System.out.println("Robot "+ i +" suite ordres: "+ordres.toString());
 								comPCNXT.getThreadComm(i).setOrdres(ordres);
 								ordres.clear();
 							}
@@ -663,5 +669,12 @@ public Queue<Integer> caseToOrder(Case current, int dir, Case next){
 			}
 		}
 		return liste;
+	}
+	
+	
+	public void MAJTabIsBusy(InitPC init){
+		for(int i=0;i<3;i++){
+			this.tabIsBusy[i]=init.getThreadComm(i).getEnMouvement();
+		}
 	}
 }
