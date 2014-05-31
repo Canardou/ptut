@@ -645,4 +645,14 @@ public class Carte {
 			this.map[this.width-1][i].close(Case.RIGHT);
 		}
 	}
+
+	public boolean isWholeRevealed() {
+		for(int i=0;i<this.width;i++){
+			for(int j=0;j<this.height;j++){
+				if(this.map[i][j].isRevealed()!=true)
+					return false;
+			}
+		}
+		return true;
+	}
 }
