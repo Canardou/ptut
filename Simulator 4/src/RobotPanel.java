@@ -34,11 +34,13 @@ public class RobotPanel extends JPanel implements ActionListener {
 	
 	private DessinCarte carte;
 	private int id;
+	private int logNumber;
 	
 	private String []logline;
 
 	RobotPanel(DessinCarte carte, int id){
 		super();
+		this.logNumber=0;
 		logline = new String[2];
 		this.carte=carte;
 		this.id=id;
@@ -111,14 +113,16 @@ public class RobotPanel extends JPanel implements ActionListener {
 	
 	public void putLog(String log){
 		this.logline[1]=this.logline[0];
-		this.logline[0]=log;
+		this.logline[0]=this.logNumber+":"+log;
 		this.log.setText(logline[1]+"\n"+logline[0]);
+		this.logNumber++;
 	}
 	
 	public void resetLog(){
 		this.logline[0]="";
 		this.logline[1]="";
 		this.log.setText(logline[1]+"\n"+logline[0]);
+		this.logNumber=0;
 	}
 	
 	public void freeze(){
