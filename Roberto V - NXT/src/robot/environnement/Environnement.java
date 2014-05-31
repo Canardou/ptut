@@ -40,7 +40,7 @@ public class Environnement {
 	 * Valeur renvoyé par le capteur de lumière a partir de laquelle on
 	 * considère qu'il y a la cible.
 	 */
-	public static final double CIBLE_LUMIERE = 525;
+	public static final double CIBLE_LUMIERE = 545;
 	
 	// ------------------------------------- ATTRIBUTS --------------------------------------------
 

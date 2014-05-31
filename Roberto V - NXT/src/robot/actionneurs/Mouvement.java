@@ -614,7 +614,7 @@ public class Mouvement {
 				}
 
 				// Calcul de l'erreur angulaire
-				tPrincipale.getCapteurs().getBoussole().rafraichir();
+				tPrincipale.getCapteurs().miseAJour(tPrincipale);
 				err = desiredAngle - tPrincipale.getCapteurs().getBoussole().getMoyData();
 				if (err < -180) {
 					err = err + 360;
@@ -622,7 +622,6 @@ public class Mouvement {
 					err = err - 360;
 				}
 			}
-			
 			// On arrete les moteurs pour arreter le rotate lorsqu'on à atteint l'angle
 			this.stop();
 

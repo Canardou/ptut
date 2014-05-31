@@ -51,7 +51,7 @@ public class ComBluetooth{
 	
 	/**
 	 * Appel à la méthode envoyer
-	 * @param trame, envoie d'une trame
+	 * @param trame envoie d'une trame
 	 */
 	public void send(Trame2 trame) {
 		
@@ -80,7 +80,7 @@ public class ComBluetooth{
 	
 	/**
 	 * Reception d'une trame
-	 * @return
+	 * @return trame recue
 	 * @throws Exception
 	 */
 	public Trame2 ecouter()throws Exception{

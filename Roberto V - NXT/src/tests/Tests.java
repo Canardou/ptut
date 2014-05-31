@@ -56,6 +56,8 @@ public class Tests {
 			this.test15();
 		} else if (test == 16) {
 			this.test16();
+		} else if (test == 17) {
+			this.test17();
 		}
 	}
 
@@ -313,5 +315,16 @@ public class Tests {
 		tPrincipale.getOrdre().choisirOrdre(this.tPrincipale);
 		tPrincipale.getOrdre().executerOrdre(this.tPrincipale);
 		while (!Button.ESCAPE.isDown()) {}
+	}
+	
+	public void test17() {
+		System.out.println("test17:demarrage");
+		while (!Button.ESCAPE.isDown()) {
+			this.tPrincipale.getCapteurs().tournerSonarDevant(this.tPrincipale);
+			this.tPrincipale.getOrdre().pauseTemps(2000);
+			this.tPrincipale.getCapteurs().tournerSonarAGauche(this.tPrincipale);
+			this.tPrincipale.getOrdre().pauseTemps(2000);
+			
+		}
 	}
 }

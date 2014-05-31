@@ -30,12 +30,6 @@ public class Trame2 {
 	 */
 	
 	public static final int typeOrdre=5;
-	/**
-	 * Constante permettant d'indientifer le type de la trame: </br>
-	 * Trame contenant une information sur l'état du robot : occupé ou non.
-	 */
-	
-	public static final int typeBusy=9;
 	
 	/**
 	 * Constante permettant d'indientifer le type de la trame: </br>
@@ -68,8 +62,6 @@ public class Trame2 {
 	 * TypeTrame = typeCaseInit / typeOrdre / typeBusy / typeListCase
 	 */
 	private int typeTrame;
-	
-	private int isBusy;
 	
 	/**
 	 * Coordonnées d'une case
@@ -112,10 +104,8 @@ public class Trame2 {
 	/**
 	 * Trame la liste de cases explorées
 	 * @param ID
-	 * @param ordre
-	 */
-	
-	
+	 * @param listCase
+	 */	
 	public Trame2(byte ID, ListCase listCase ){
 
 		ArrayList<Case> pile;
@@ -146,10 +136,9 @@ public class Trame2 {
 	/**
 	 * Trame qui contient la position initiale du robot : case initiale et orientation.
 	 * @param ID
-	 * @param message
-	 * @param typeMessage
-	 */
-	
+	 * @param firstCase
+	 * @param direction
+	 */	
 	public Trame2(byte ID, Case firstCase, int direction){
 		this.ID=ID;
 		this.direction=direction;

@@ -93,7 +93,7 @@ public class EntiteeBT{
 	
 	/**
 	 * 
-	 * @param out, set du flux de sortie.
+	 * @param out set du flux de sortie.
 	 */
 	public void setOutput(DataOutputStream out){
 		this.output=out;

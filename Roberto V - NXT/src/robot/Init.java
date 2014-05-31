@@ -1,10 +1,10 @@
 package robot;
 
 import lejos.nxt.Sound;
-//import tests.*;
 import robot.actionneurs.Mouvement;
 import robot.evenements.Ordre;
 import robot.taches.*;
+import tests.Tests;
 
 /**
  * Cette classe permet de demarrer le programme du robot.
@@ -18,7 +18,7 @@ public class Init {
 	/**
 	 * Volume sonore du robot. De 0 à 100
 	 */
-	public static final int VOLUME = 40; 
+	public static final int VOLUME = 80; 
 	
 	// ------------------------------------- CONSTRUCTEUR -----------------------------------------
 
@@ -29,7 +29,7 @@ public class Init {
 		TachePrincipale tPrincipale = new TachePrincipale();
 		TacheCom tCom = new TacheCom(tPrincipale);
 		this.init(tPrincipale);
-		//this.initTest(tPrincipale); // A DEGAGER //////////////////////////////////////////////////////////////////////////////////////////
+		//this.initTest(tPrincipale); // a faire via la com
 		tPrincipale.start();
 		tCom.start();
 	}
