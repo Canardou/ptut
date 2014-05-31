@@ -103,7 +103,6 @@ public class TacheCom extends Thread {
 						if (trame.getOrdre() == Ordre.VIDER_ORDRES) {
 							this.tPrincipale.getOrdre().vider();
 						} else if(trame.getOrdre() == Ordre.ENVOYER_CASE) {
-							System.out.println("tcom-E:Cases");
 							this.com.send(new Trame2((byte) this.idRobot,this.tPrincipale.getEnv().getListCase()));
 							this.tPrincipale.getEnv().getListCase().vider();
 						} else if(trame.getOrdre() == Ordre.ENVOYER_ISBUSY) {

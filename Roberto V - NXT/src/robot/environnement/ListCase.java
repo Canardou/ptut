@@ -135,7 +135,7 @@ public class ListCase {
 					caseTemp.close(Case.LEFT);
 				}
 			}
-			//System.out.println(caseTemp);
+			System.out.println(caseTemp);
 			if (this.list.add(caseTemp)) {
 				return 0;
 			} else {
