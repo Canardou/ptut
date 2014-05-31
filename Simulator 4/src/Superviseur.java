@@ -212,7 +212,7 @@ public class Superviseur {
 				x=(int)positions[numero].getX();
 				y=(int)positions[numero].getY();
 				
-				//	this.dessin.getRobot(numero).moveTo(x, y);
+				//this.dessin.getRobot(numero).moveTo(x, y);
 				}
 				if(this.carte.getCase(x, y)!=null){
 					if(!this.carte.getCase(x, y).isRevealed())
@@ -234,19 +234,21 @@ public class Superviseur {
 			for(int i=0;i<3;i++){
 				ordres.clear();
 				//...pour chaque case du chemin qu'il doit parcourir...
-				if(!comPCNXT.getThreadComm(i).getEnMouvement() && comPCNXT.getThreadComm(i).getCaseRecue().getX()==current_paths_4ever[i].getX(0) && comPCNXT.getThreadComm(i).getCaseRecue().getY()==current_paths_4ever[i].getY(0) && comPCNXT.getThreadComm(i).getQueue().isEmpty()){
-					for(int j=0;j<current_paths_4ever[i].size()-1;j++){
-						//...on convertit le chemin en ordres
-						((LinkedList<Integer>)ordres).addAll(0,this.caseToOrder(current_paths_4ever[i].get(j), this.currentDir[i], current_paths_4ever[i].get(j+1)));
-						this.currentDir[i] = current_paths_4ever[i].get(j).getDir(current_paths_4ever[i].get(j+1));
-						if(j==current_paths_4ever[i].size()-2){
-
-							//On envoie les ordres de déplacement aux 3 robots et on reset la queue d'ordre
-							System.out.println("Robot "+ i +" path: "+current_paths_4ever[i]);
-							System.out.println("Robot "+ i +" suite ordres: "+ordres.toString());
-							comPCNXT.getThreadComm(i).setOrdres(ordres);
-							current_paths_4ever[i].setValue(-1);
-							ordres.clear();
+				if(current_paths_4ever[i]!=null) {
+					if(!comPCNXT.getThreadComm(i).getEnMouvement() && comPCNXT.getThreadComm(i).getCaseRecue().getX()==current_paths_4ever[i].getX(0) && comPCNXT.getThreadComm(i).getCaseRecue().getY()==current_paths_4ever[i].getY(0) && comPCNXT.getThreadComm(i).getQueue().isEmpty()){
+						for(int j=0;j<current_paths_4ever[i].size()-1;j++){
+							//...on convertit le chemin en ordres
+							((LinkedList<Integer>)ordres).addAll(0,this.caseToOrder(current_paths_4ever[i].get(j), this.currentDir[i], current_paths_4ever[i].get(j+1)));
+							this.currentDir[i] = current_paths_4ever[i].get(j).getDir(current_paths_4ever[i].get(j+1));
+							if(j==current_paths_4ever[i].size()-2){
+	
+								//On envoie les ordres de déplacement aux 3 robots et on reset la queue d'ordre
+								System.out.println("Robot "+ i +" path: "+current_paths_4ever[i]);
+								System.out.println("Robot "+ i +" suite ordres: "+ordres.toString());
+								comPCNXT.getThreadComm(i).setOrdres(ordres);
+								current_paths_4ever[i].setValue(-1);
+								ordres.clear();
+							}
 						}
 					}
 				}
