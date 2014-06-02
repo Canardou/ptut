@@ -1,6 +1,12 @@
 package drawing;
 import java.awt.image.BufferedImage;
 
+/**
+ * Permet la gestion des animations des robots :
+ * @author Olivier Hachette
+ *
+ */
+
 public class AnimationRobot {
 	/*
 	 * Attributs
@@ -8,7 +14,7 @@ public class AnimationRobot {
 	
 	public static final SpriteSheet robotSheet=new SpriteSheet("So_more_doge.png",32,32);
 	
-	public int type;
+	private int type;
 	private int step;
 	private int step_max;
 	private int row;
@@ -19,6 +25,9 @@ public class AnimationRobot {
 	 * Constructeur
 	 */
 	
+	/**
+	 * @param type Type du robot initialise
+	 */
 	public AnimationRobot(int type){
 		this.step=0;
 		this.step_max=0;
@@ -32,10 +41,17 @@ public class AnimationRobot {
 	 * Méthodes
 	 */
 	
+	/**
+	 * @return L'image courante du robot
+	 */
 	public BufferedImage getImage(){
 		return robotSheet.getImage(step,row);
 	}
 	
+	/**
+	 * Avance d'une image l'animation du robot
+	 * @return L'image courante du robot
+	 */
 	public BufferedImage nextImage(){
 		if(this.step<this.col+this.step_max-1)
 			this.step++;
@@ -51,14 +67,47 @@ public class AnimationRobot {
 		return this.getImage();
 	}
 	
+	/**
+	 * Les differentes animations possibles sont
+	 * <ul>
+	 * <li>down</li>
+	 * <li>up</li>
+	 * <li>left</li>
+	 * <li>right</li>
+	 * <li>icone</li>
+	 * <li>stand</li>
+	 * <li>stand_up</li>
+	 * <li>stand_down</li>
+	 * <li>stand_left</li>
+	 * <li>stand_right</li>
+	 * </ul>
+	 * @param animation La sequence voulue
+	 */
 	public void setSequence(String animation){
 		this.setSequence(animation,this.type);
 	}
 	
+	/**
+	 * Met a jour le type du robot pour l'animation<br/>
+	 * Les differents types sont
+	 * <ul>
+	 * <li>0,1,2 - Robot</li>
+	 * <li>3 - Robot avec balle</li>
+	 * <li>4 - Doge sans collier</li>
+	 * <li>5 - Doge avec collier vert</li>
+	 * <li>6 - Doge avec collier violet</li>
+	 * </ul>
+	 * @param type Nouveau type du robot
+	 */
 	public void changeType(int type){
 		this.setSequence(this.animation,type);
 	}
 	
+	/**
+	 * Permet de regler à la fois le type et l'animation
+	 * @param animation see {@link #setSequence(String)}
+	 * @param type see {@link #changeType(int)}
+	 */
 	public void setSequence(String animation, int type){
 		if(!(this.animation.compareTo(animation)==0) || this.type!=type){
 			this.type=type;

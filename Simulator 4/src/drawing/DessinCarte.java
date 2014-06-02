@@ -12,17 +12,22 @@ import javax.swing.Timer;
 
 import labyrinth.*;
 
+/**
+ * 
+ * @author Olivier Hachette
+ *
+ */
+
 @SuppressWarnings("serial")
 public class DessinCarte extends JPanel implements ActionListener {
 	
 	private static final int rafraichissement=20;
-	/**
-	 * 
-	 */
+
 	private static final int largeur=42;
 	private static final int hauteur=42;
 	private static final int min_width=336;
 	private static final int min_height=336;
+	
 	public final Lock lock = new ReentrantLock();
 	public final Condition step  = lock.newCondition(); 
 	private static final SpriteSheet wallSheet=new SpriteSheet("So_wall.png",25,25);
@@ -52,6 +57,9 @@ public class DessinCarte extends JPanel implements ActionListener {
 	 * Constructeur
 	 */
 	
+	/**
+	 * @param carte La carte a utiliser pour le dessin
+	 */
 	public DessinCarte(Carte carte){
 		super();
 		this.carte=carte;
@@ -74,24 +82,40 @@ public class DessinCarte extends JPanel implements ActionListener {
 	 * Methodes
 	 */
 	
+	/**
+	 * Lance l'animation de la carte
+	 */
 	public void launch(){
 		timer=new Timer(rafraichissement,this);
 		timer.setInitialDelay(rafraichissement);
 		timer.start();
 	}
 	
+	/**
+	 * Relance l'animation de la carte
+	 */
 	public void restart(){
 		timer.restart();
 	}
 	
+	/**
+	 * Arrete l'animation de la carte
+	 */
 	public void stop(){
 		timer.stop();
 	}
 	
+	/**
+	 * Permet de verifier que la carte est en mode doge
+	 * @return Retourne vrai si la carte est en mode Doge
+	 */
 	public boolean getDoge(){
 		return this.dogeMode;
 	}
 	
+	/**
+	 * Alterne l'affichage en mode Doge ou Classique de la carte
+	 */
 	public void toggleDoge(){
 		if(this.dogeMode)
 			this.dogeMode=false;
@@ -105,18 +129,37 @@ public class DessinCarte extends JPanel implements ActionListener {
 			}
 	}
 	
+	/**
+	 * Permet de recuperer un robot virtuel sur le dessin de la carte
+	 * @param k Le numero du robot a recuperer entre 0 et 3
+	 * @return Le robot ou null
+	 */
 	public VirtualRobots getRobot(int k){
-		return this.robots[k];
+		if(k>=0 && k<3){
+			return this.robots[k];
+		}
+		else
+			return null;
 	}
 	
+	/**
+	 * Permet de regler l'affichage de la marque sur le labyrinth
+	 * @param mark Mettre a vrai pour afficher la marque
+	 */
 	public void showMark(boolean mark){
 		this.showMark=mark;
 	}
 	
+	/**
+	 * @return La taille du labyrinth en largeur
+	 */
 	public int labyX(){
 		return x;
 	}
 	
+	/**
+	 * @return La taille du labyrinth en longueur
+	 */
 	public int labyY(){
 		return y;
 	}

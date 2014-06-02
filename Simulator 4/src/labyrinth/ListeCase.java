@@ -1,10 +1,8 @@
 package labyrinth;
 
 /**
- * Liste chaine d'abord
  * Cette classe permet de gerer des listes de Cases et de comparer leur taille pour les differents algorithmes de pathfinding
- * Ensuite lors du rassemblement des codes une Arraylist s'est sauvagement attache... pourquoi ? :(
- *
+ * @author Olivier Hachette
  */
 
 @SuppressWarnings({ "rawtypes" })
@@ -22,8 +20,6 @@ public class ListeCase implements java.lang.Comparable {
 	/*
 	 * Constructeurs
 	 */
-	
-	
 	
 	/**
 	 * Cree une nouvelle liste de case en definissant ses parametres
@@ -43,25 +39,39 @@ public class ListeCase implements java.lang.Comparable {
 	 * Methodes
 	 */
 	
-	
-	
-	
+	/**
+	 * @return Retourne la case courante
+	 */
 	public Case current(){
 		return this.current;
 	}
 	
+	/**
+	 * @return Retourne le cout
+	 */
 	public int getCout(){
 		return this.cout;
 	}
 	
+	/**
+	 * @return Retourne la direction entre cette case et la precedente
+	 */
 	public int getDir(){
 		return this.dir;
 	}
 	
+	/**
+	 * Permet de mettre a jour le cout
+	 * @param cout Nouveau cout
+	 */
 	public void setCout(int cout){
 		this.cout=cout;
 	}
 	
+	/**
+	 * Renvoit la case parent
+	 * @return listeCase precedante contenant la case parent
+	 */
 	public ListeCase previous(){
 		return this.previous;
 	}

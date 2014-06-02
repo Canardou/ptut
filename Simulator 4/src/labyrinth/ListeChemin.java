@@ -2,8 +2,9 @@ package labyrinth;
 import java.lang.Comparable;
 
 /**
- * 
- * @author canard
+ * Cette classe permet de gérer une liste chaînee de chemins
+ * @see ListeCase
+ * @author Olivier Hachette
  *
  */
 
