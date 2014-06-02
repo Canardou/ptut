@@ -257,6 +257,14 @@ public class Superviseur {
 			this.application.updatePanel();
 			laPremiereFois=false;
 		}
+		ordres.clear();
+		((LinkedList<Integer>)ordres).addFirst(12);
+
+		// Envoie des ordres d'initialisation aux taches de com des robots
+		for(int i=0;i<3;i++){
+			comPCNXT.getThreadComm(i).setOrdres(ordres);
+		}
+		
 	if(this.dessin.getDoge())
 		Dialogue.SuccessDoge("Such success ! Ouaf !");
 	else
