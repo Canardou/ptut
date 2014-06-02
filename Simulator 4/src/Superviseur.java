@@ -224,8 +224,9 @@ public class Superviseur {
 			this.MAJTabIsBusy(comPCNXT);
 			this.dessin.lock.lock();
 			try{
-				if(!enMouvementGeneral || laPremiereFois)
-					this.cooperation();
+				System.out.println("Avant coop");
+				this.cooperation();
+				System.out.println("Apres coop");
 				this.dessin.step.await();
 			}finally{
 				this.dessin.lock.unlock();
@@ -377,6 +378,7 @@ public Queue<Integer> caseToOrder(Case current, int dir, Case next){
 	
 	public void cooperation() {
 		if(!(this.tabIsBusy[0] && this.tabIsBusy[1] && this.tabIsBusy[2])){
+			System.out.print("0");
 			number=0;
 			Integer x [] = new Integer[3];
 			Integer y [] = new Integer[3];
