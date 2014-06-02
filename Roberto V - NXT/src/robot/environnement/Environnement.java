@@ -22,25 +22,25 @@ public class Environnement {
 	 * Limite en dessous de laquelle on considère qu'il y a un mur à gauche. En
 	 * cm.
 	 */
-	public static final double DISTANCE_MUR_GAUCHE = 21;
+	public static final double DISTANCE_MUR_GAUCHE = 20;
 
 	/**
 	 * Limite en dessous de laquelle on considère qu'il y a un mur à droite. En
 	 * cm.
 	 */
-	public static final double DISTANCE_MUR_DROIT = 21;
+	public static final double DISTANCE_MUR_DROIT = 20;
 	
 	/**
 	 * Limite en dessous de laquelle on considère qu'il y a un mur en face. En
 	 * cm.
 	 */
-	public static final double DISTANCE_MUR_AVANT = 21;
+	public static final double DISTANCE_MUR_AVANT = 20;
 	
 	/**
 	 * Valeur renvoyé par le capteur de lumière a partir de laquelle on
 	 * considère qu'il y a la cible.
 	 */
-	public static final double CIBLE_LUMIERE = 545;
+	public static final double CIBLE_LUMIERE = 535;
 	
 	// ------------------------------------- ATTRIBUTS --------------------------------------------
 
@@ -361,9 +361,17 @@ public class Environnement {
 				this.cibleTrouvee = true;
 				this.cibleIci = true;
 				Sound.beepSequenceUp();
+				System.out.println("Cible !");
 			}		
 		}
 	}	
+	
+	/**
+	 * Remet le robot en condition de trouver la cible.
+	 */
+	public void resetCibleTrouvee() {
+		this.cibleTrouvee = false;
+	}
 	
 	// ------------------------------------- GETTERS ----------------------------------------------
 	

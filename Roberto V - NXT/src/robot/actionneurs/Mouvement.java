@@ -102,13 +102,13 @@ public class Mouvement {
 	 * prend pas en compte au dela de cette valeur. Utilisé lorsque le robot
 	 * avance. En degrés.
 	 */
-	public static final double ERR_REF_ANGLE_MAX = 30;
+	public static final double ERR_REF_ANGLE_MAX = 35;
 	
 	/**
 	 * Valeur en dessus de laquelle on considère qu'il n'y a pas d'erreur.
 	 * Utilisé lorsque le robot avance. En degrés.
 	 */
-	public static final double ERR_REF_ANGLE_MIN = 6 ;
+	public static final double ERR_REF_ANGLE_MIN = 12 ;
 
 	/**
 	 * Distance a partir de laquelle le robot prend des mesures pour calculer
@@ -134,7 +134,7 @@ public class Mouvement {
 	 * lorsque le robot avance, en fin de mouvement s'il n'y a pas de mur devant
 	 * et des murs manquant sur le coté.
 	 */
-	public static final double REG_DISTANCE_APRES_MUR = 10 ;
+	public static final double REG_DISTANCE_APRES_MUR = 11 ;
 	
 	/**
 	 * Distance maximale parcouru où il est admissible de detecter la perte d'un
@@ -621,6 +621,10 @@ public class Mouvement {
 				} else if (err > 180) {
 					err = err - 360;
 				}
+				
+
+				tPrincipale.getCapteurs().getCapteurLumiere().rafraichir();
+				tPrincipale.getEnv().setCibleIci(tPrincipale.getCapteurs().getCapteurLumiere().getMoyData());
 			}
 			// On arrete les moteurs pour arreter le rotate lorsqu'on à atteint l'angle
 			this.stop();

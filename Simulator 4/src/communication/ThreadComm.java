@@ -139,7 +139,8 @@ public class ThreadComm extends Thread {
 								|| typeOrdre == Order.CLEARLISTORDER
 								|| typeOrdre == Order.WAITBUTTON
 								|| typeOrdre == Order.WAIT1SEC
-								|| typeOrdre == Order.CASETOSEND) {
+								|| typeOrdre == Order.CASETOSEND
+								|| typeOrdre == Order.MISSION_TERMINATE) {
 							
 							Trame2 orderToSend = new Trame2((byte)  this.recepteur.getID(), (byte) typeOrdre);
 							System.out.println("Robot "+this.recepteur.getID()+" : Emission de l'ordre "+Order.printOrdre(typeOrdre));

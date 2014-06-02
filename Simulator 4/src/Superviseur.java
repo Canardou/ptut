@@ -200,7 +200,6 @@ public class Superviseur {
 		this.MAJTabIsBusy(comPCNXT);
 		
 		while(continuer){
-			boolean enMouvementGeneral = false;
 			for(int numero=0; numero<3; numero++){
 				
 				int x=(int)positions[numero].getX();
@@ -208,13 +207,12 @@ public class Superviseur {
 				
 				
 				if(!comPCNXT.getThreadComm(numero).getEnMouvement() && (comPCNXT.getThreadComm(numero).getCaseRecue().getX()!=x  || comPCNXT.getThreadComm(numero).getCaseRecue().getY()!=y)){
-					enMouvementGeneral = true;
 					positions[numero].setLocation(comPCNXT.getThreadComm(numero).getCaseRecue().getX(), comPCNXT.getThreadComm(numero).getCaseRecue().getY());
-				System.out.println(positions[numero]);
-				x=(int)positions[numero].getX();
-				y=(int)positions[numero].getY();
-				
-				//this.dessin.getRobot(numero).moveTo(x, y);
+					System.out.println(positions[numero]);
+					x=(int)positions[numero].getX();
+					y=(int)positions[numero].getY();
+
+					//this.dessin.getRobot(numero).moveTo(x, y);
 				}
 				if(this.carte.getCase(x, y)!=null){
 					if(!this.carte.getCase(x, y).isRevealed())

@@ -64,7 +64,7 @@ public class TacheCom extends Thread {
 			this.idRobot=2;
 		} else {
 			System.out.println("tCom:errId");
-		}	
+		}
 		EntiteeBT entitee;
 		entitee = new EntiteeBT(Bluetooth.getFriendlyName(), (byte) this.idRobot, Bluetooth.getLocalAddress());
 		
@@ -107,6 +107,10 @@ public class TacheCom extends Thread {
 							this.tPrincipale.getEnv().getListCase().vider();
 						} else if(trame.getOrdre() == Ordre.ENVOYER_ISBUSY) {
 							this.com.send(new Trame2((byte) this.idRobot,(byte)this.tPrincipale.getOrdre().getIsBusy()));
+						} else if (trame.getOrdre() == Ordre.MISSION_TERMINEE) {
+							this.tPrincipale.getOrdre().ajouterOrdre(trame.getOrdre());
+							this.com.fermer();
+							this.connected=false;
 						} else {
 							this.tPrincipale.getOrdre().ajouterOrdre(trame.getOrdre());							
 						}

@@ -1,5 +1,6 @@
 package robot.communication;
 import java.io.*;
+
 import robot.environnement.Case;
 import lejos.nxt.comm.BTConnection;
 import lejos.nxt.comm.Bluetooth;
@@ -136,10 +137,13 @@ public class ComBluetooth{
 	 * Fermeture de la connexion
 	 * @throws Exception
 	 */
-	public void fermer() throws Exception{
-	
-		this.entitee.getInput().close();
-		this.entitee.getOutput().close();
+	public void fermer(){
+		try {
+			this.entitee.getInput().close();
+			this.entitee.getOutput().close();
+		} catch (IOException e) {
+			System.out.println("fermer:exception");
+		}
 	}
 	
 }

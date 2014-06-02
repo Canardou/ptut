@@ -12,32 +12,31 @@ import tests.Tests;
  * @author Thomas
  */
 public class Init {
-	
+
 	// ------------------------------------- CONSTANTES -------------------------------------------
-	
+
 	/**
 	 * Volume sonore du robot. De 0 à 100
 	 */
-	public static final int VOLUME = 80; 
-	
+	public static final int VOLUME = 100; 
+
 	// ------------------------------------- CONSTRUCTEUR -----------------------------------------
 
 	/**
-	 * Constructeur de Init
+	 * Constructeur de Init.
 	 */
 	public Init() {
 		TachePrincipale tPrincipale = new TachePrincipale();
 		TacheCom tCom = new TacheCom(tPrincipale);
 		this.init(tPrincipale);
-		//this.initTest(tPrincipale); // a faire via la com
 		tPrincipale.start();
 		tCom.start();
 	}
-	
+
 	// ------------------------------------- MAIN -------------------------------------------------
 
 	/**
-	 * Main
+	 * Main.
 	 * @param args
 	 */
 	public static void main(String[] args) {
