@@ -78,6 +78,9 @@ public class Order {
 	 * immédiatement à sa reception.
 	 */
 	public static final int SENDBUSY = 16;
+	
+	public static final int MISSION_TERMINATE = 17 ;
+	
 	/**
 	 * Attribut reprï¿½sentant l'ordre actuel du robot
 	 * 

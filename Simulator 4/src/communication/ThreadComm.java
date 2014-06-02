@@ -127,6 +127,17 @@ public class ThreadComm extends Thread {
 							System.out.println("Robot "+this.recepteur.getID()+" : Lecture de l'ordre a envoyer : "+Order.printOrdre(typeOrdre));
 						}
 						
+						// Regarder si on a envoyé un ordre de mouvement
+						if(typeOrdre == Order.STOP
+								|| typeOrdre == Order.FORWARD
+								|| typeOrdre == Order.TURNL
+								|| typeOrdre == Order.TURNR
+								|| typeOrdre == Order.TURNB
+								|| typeOrdre == Order.CHECKFIRSTCASE) {
+							this.enMouvement=true;
+							System.out.println("Robot "+this.recepteur.getID()+" : Debut de mouvement");
+						}
+						
 						// Emission de l'ordre
 						if(typeOrdre == Order.STOP
 								|| typeOrdre == Order.FORWARD
@@ -139,7 +150,8 @@ public class ThreadComm extends Thread {
 								|| typeOrdre == Order.CLEARLISTORDER
 								|| typeOrdre == Order.WAITBUTTON
 								|| typeOrdre == Order.WAIT1SEC
-								|| typeOrdre == Order.CASETOSEND) {
+								|| typeOrdre == Order.CASETOSEND
+								|| typeOrdre == Order.MISSION_TERMINATE) {
 							
 							Trame2 orderToSend = new Trame2((byte)  this.recepteur.getID(), (byte) typeOrdre);
 							System.out.println("Robot "+this.recepteur.getID()+" : Emission de l'ordre "+Order.printOrdre(typeOrdre));
@@ -152,16 +164,7 @@ public class ThreadComm extends Thread {
 								waitReceive=true;
 							}
 							
-							// Regarder si on a envoyé un ordre de mouvement
-							if(typeOrdre == Order.STOP
-									|| typeOrdre == Order.FORWARD
-									|| typeOrdre == Order.TURNL
-									|| typeOrdre == Order.TURNR
-									|| typeOrdre == Order.TURNB
-									|| typeOrdre == Order.CHECKFIRSTCASE) {
-								this.enMouvement=true;
-								System.out.println("Robot "+this.recepteur.getID()+" : Debut de mouvement");
-							}
+						
 							
 						} else if(typeOrdre == Order.SETPOSITION) {
 							Trame2 orderToSend = new Trame2((byte) this.recepteur.getID(), this.caseInit, this.orientation);
