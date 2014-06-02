@@ -7,20 +7,71 @@ import java.util.Queue;
 import communication.ProblemeConnexion;
 import labyrinth.Case;
 
+/**
+ * 
+ * Cette classe est un thread qui gère la communication côté PC
+ *
+ */
 public class ThreadComm extends Thread {
 
+	// ------------------------------------- ATTRIBUTS--------------------------------------------
+	/**
+	 * Entitée de type robot.
+	 */
 	EntiteeBT recepteur;
+	/**
+	 *Etat de connexion.
+	 *Etat du robot.
+	 */
 	private volatile boolean connected, enMouvement;
+	
+	/**
+	 * Attribut représentant la communication.
+	 */
 	private BluetoothCommPC2 com;
+	
+	/**
+	 * Coordonnées et direction initiales du robot.
+	 */
 	private Case caseInit;
+	
+	/**
+	 * Cases explorées par le robot.
+	 */
 	private volatile Case caseRecue;
+	
+	/**
+	 * Condition à vrai quand on a fini d'envoyer tous les ordres d'initialisation .
+	 */
 	private volatile boolean envoye;
+	
+	/**
+	 * Condition à vrai quand une trame doit être reçue.
+	 */
 	private volatile boolean reception;
+	/**
+	 * Direction des robots.
+	 */
 	private volatile int orientation;
+	
+	/** 
+	 * Queue énumérant les ordres.
+	 */
 	private volatile Queue<Integer> queueOrdres;
+	
+	/**
+	 * Etat robot.
+	 * Orde.
+	 */
 	private int Busy, typeOrdre;
 
-	// constructeur
+	// ------------------------------------- CONSTRUCTEURS--------------------------------------------
+	/**
+	 * Constructeur de ThreadComm.
+	 * @param robot
+	 * @param caseinit
+	 * @param orientation
+	 */
 	public ThreadComm(EntiteeBT robot, Case caseinit, int orientation) {
 		this.recepteur = robot;
 		InfoEntitee IE = new InfoEntitee();
@@ -37,13 +88,20 @@ public class ThreadComm extends Thread {
 
 	}
 
-	// methode
+	// ------------------------------------- METHODES--------------------------------------------
 
+	/**
+	 * Mise à jour de la queue d'ordres.
+	 * @param ordres
+	 */
 	public synchronized void setOrdres(Queue<Integer> ordres) {
 
 		((LinkedList<Integer>) this.queueOrdres).addAll(0,ordres);
 	}
 
+	/**
+	 * Tache de communication.
+	 */
 	@Override
 	public synchronized void run() {
 		
@@ -180,10 +238,13 @@ public class ThreadComm extends Thread {
 			}
 		}
 	}
+	/**
+	 * Récupérer le dernier ordre dans la queue et le supprimer.
+	 * @return int
+	 */
 
 	public synchronized int lireOrdre() {
 		int i;
-		// synchronized(this){
 		try {
 			i = ((LinkedList<Integer>) this.queueOrdres).getLast();
 			((LinkedList<Integer>) this.queueOrdres).removeLast();
@@ -191,44 +252,67 @@ public class ThreadComm extends Thread {
 		} catch (NoSuchElementException e) {
 			return -1;
 		}
-		// }
 
 	}
 
+	/**
+	 * Récupérer case.
+	 * @return Case
+	 */
 	public synchronized Case getCaseRecue() {
-		// synchronized(this){
-		return this.caseRecue;// }
+		return this.caseRecue;
 	}
 
+	/**
+	 * Récupérer la queue d'ordres.
+	 * @return queue<Integer>
+	 */
 	public synchronized Queue<Integer> getQueue() {
-		// synchronized(this){
-		return this.queueOrdres;// }
+		return this.queueOrdres;
 	}
 
+	/**
+	 * Récupérer la vairiable envoye.
+	 * @return boolean
+	 */
 	public synchronized boolean getEnvoye() {
-		// synchronized(this){
 		boolean b = this.envoye;
 		this.envoye = false;
-		return b;// }
+		return b;
 	}
-
+	/**
+	 * Récupérer la vairiable reception.
+	 * @return boolean
+	 */
 	public synchronized boolean getReception() {
 		// synchronized(this){
 		boolean b = this.reception;
 		this.reception = false;
 		return b;// }
 	}
-
+	/**
+	 * Récupérer l'état de la connexion.
+	 * @return boolean
+	 */
 	public synchronized boolean getConnected() {
-		// synchronized(this){
-		return this.connected;// }
-
+		
+		return this.connected;
 	}
 	
+	/**
+	 * Récupérer l'état du robot.
+	 * @return boolean
+	 */
 	public synchronized boolean getEnMouvement() {
 		return this.enMouvement;
 	}
 
+	/**
+	 * Récupérer la position initiale du robot.
+	 * @param x
+	 * @param y
+	 * @param dir
+	 */
 	public void setCaseInit(int x, int y, int dir) {
 		this.caseInit = new Case(x, y);
 		this.orientation = dir;
