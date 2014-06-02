@@ -4,7 +4,7 @@ import java.awt.Font;
 import java.awt.FontFormatException;
 import java.io.*;
 
-import Dialogue.Dialogue;
+import dialogue.Dialogue;
 
 public class FontImport {
 	

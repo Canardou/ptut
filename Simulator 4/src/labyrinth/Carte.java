@@ -5,8 +5,8 @@ import java.util.Stack;
 import java.util.Collections;
 
 /**
- * 
- * @author canard
+ * La classe carte gere une carte pouvant contenir une sortie et une marque
+ * @author Olivier Hachette
  * 
  */
 
@@ -22,12 +22,20 @@ public class Carte {
 	private Case marque;
 	private Case exit;
 	
+	/**
+	 * Random utilise pour randomMaze principalement ou des questions de determinisme dans les simulations
+	 */
 	public Random rand = new Random(100);
 	
 	/*
 	 * Constructeurs
 	 */
 	
+	/**
+	 * Constructeur de class en specifiant la largeur et longueur
+	 * @param width Largeur de la carte
+	 * @param height Longueur de la carte
+	 */
 	public Carte(int width, int height){
 		this.marque=null;
 		this.exit=null;
@@ -49,47 +57,79 @@ public class Carte {
 		}
 	}
 	
+	/**
+	 * Constructeur de class en specifiant la longueur des cotes
+	 * @param side Taille des cotes de la carte
+	 */
 	public Carte(int side){
 		this(side,side);
 	}
 	
 	/*
-	 * Mï¿½thodes
+	 * Methodes
 	 */
 	
+	/**
+	 * Permet de verifier qu'un couple de coordonnes est bien compris sur la carte
+	 * @param x Coordonnee x sur la carte
+	 * @param y Coordonnee y sur la carte
+	 * @return Retourne vrai si les coordonnes sont valides
+	 */
 	private boolean checkCoord(int x, int y){
 		return !(x<0 || x>=this.width || y<0 || y>=this.height);
 	}
 	
 	/**
-	 * @method bound/close
-	 * @param {int} coordonne x
-	 * @param {int} coordonne y
-	 * @return {bool} true si changement effectue
-	 * @desc permet de notifier la prï¿½sence de murs ou non aux bords de la case.
-	 * 
+	 * Ouvre un cote d'une case dans une certaine direction
+	 * @param x Coordonnee x sur la carte
+	 * @param y Coordonnee y sur la carte
+	 * @return Retourne vrai si l'action a ete effectuee
 	 */
-	
 	public boolean boundUp(int x, int y){
 		this.bound(x, y-1, Case.DOWN);
 		return this.bound(x, y, Case.UP);
 	}
 	
+	/**
+	 * Ouvre un cote d'une case dans une certaine direction
+	 * @param x Coordonnee x sur la carte
+	 * @param y Coordonnee y sur la carte
+	 * @return Retourne vrai si l'action a ete effectuee
+	 */
 	public boolean boundDown(int x, int y){
 		this.bound(x, y+1, Case.UP);
 		return this.bound(x, y, Case.DOWN);
 	}
 	
+	/**
+	 * Ouvre un cote d'une case dans une certaine direction
+	 * @param x Coordonnee x sur la carte
+	 * @param y Coordonnee y sur la carte
+	 * @return Retourne vrai si l'action a ete effectuee
+	 */
 	public boolean boundLeft(int x, int y){
 		this.bound(x-1, y, Case.RIGHT);
 		return this.bound(x, y, Case.LEFT);
 	}
 	
+	/**
+	 * Ouvre un cote d'une case dans une certaine direction
+	 * @param x Coordonnee x sur la carte
+	 * @param y Coordonnee y sur la carte
+	 * @return Retourne vrai si l'action a ete effectuee
+	 */
 	public boolean boundRight(int x, int y){
 		this.bound(x+1, y, Case.LEFT);
 		return this.bound(x, y, Case.RIGHT);
 	}
 	
+	/**
+	 * Ouvre un cote d'une case dans une certaine direction
+	 * @param x Coordonnee x sur la carte
+	 * @param y Coordonnee y sur la carte
+	 * @param dir Direction vers laquelle ouvrir
+	 * @return Retourne vrai si l'action a ete effectuee
+	 */
 	private boolean bound(int x, int y, int dir){
 		if(checkCoord(x,y)){
 			return this.map[x][y].bound(dir);
@@ -98,26 +138,57 @@ public class Carte {
 			return false;
 	}
 	
+	/**
+	 * Ferme un cote d'une case dans une certaine direction
+	 * @param x Coordonnee x sur la carte
+	 * @param y Coordonnee y sur la carte
+	 * @return Retourne vrai si l'action a ete effectuee
+	 */
 	public boolean closeUp(int x, int y){
 		this.close(x, y-1, Case.DOWN);
 		return this.close(x, y, Case.UP);
 	}
 	
+	/**
+	 * Ferme un cote d'une case dans une certaine direction
+	 * @param x Coordonnee x sur la carte
+	 * @param y Coordonnee y sur la carte
+	 * @return Retourne vrai si l'action a ete effectuee
+	 */
 	public boolean closeDown(int x, int y){
 		this.close(x, y+1, Case.UP);
 		return this.close(x, y, Case.DOWN);
 	}
 	
+	/**
+	 * Ferme un cote d'une case dans une certaine direction
+	 * @param x Coordonnee x sur la carte
+	 * @param y Coordonnee y sur la carte
+	 * @return Retourne vrai si l'action a ete effectuee
+	 */
 	public boolean closeLeft(int x, int y){
 		this.close(x-1, y, Case.RIGHT);
 		return this.close(x, y, Case.LEFT);
 	}
 	
+	/**
+	 * Ferme un cote d'une case dans une certaine direction
+	 * @param x Coordonnee x sur la carte
+	 * @param y Coordonnee y sur la carte
+	 * @return Retourne vrai si l'action a ete effectuee
+	 */
 	public boolean closeRight(int x, int y){
 		this.close(x+1, y, Case.LEFT);
 		return this.close(x, y, Case.RIGHT);
 	}
 	
+	/**
+	 * Ferme un cote d'une case dans une certaine direction
+	 * @param x Coordonnee x sur la carte
+	 * @param y Coordonnee y sur la carte
+	 * @param dir Direction vers laquelle fermer
+	 * @return Retourne vrai si l'action a ete effectuee
+	 */
 	private boolean close(int x, int y, int dir){
 		if(checkCoord(x,y)){
 			return this.map[x][y].close(dir);
@@ -127,26 +198,21 @@ public class Carte {
 	}
 	
 	/**
-	 * @method reveal
-	 * @param {int} x
-	 * @param {int} y
-	 * @desc declare une case visitee
-	 * 
+	 * Declare une case comme revelee
+	 * @param x Coordonnee x sur la carte
+	 * @param y Coordonnee y sur la carte
 	 */
-	
 	public void reveal(int x, int y){
 		if(checkCoord(x,y))
 			this.map[x][y].setReveal();
 	}
 	
 	/**
-	 * @method isRevealed
-	 * @param {int} x
-	 * @param {int} y
-	 * @desc retourne si une case est visitee ou non
-	 * 
+	 * Verifie qu'une case est bien revelee
+	 * @param x Coordonnee x sur la carte
+	 * @param y Coordonnee y sur la carte
+	 * @return Retourne vrai si la case est revelee, faux sinon ou si les coordonnes sont fausses
 	 */
-
 	public boolean isRevealed(int x, int y){
 		if(checkCoord(x,y))
 			return this.map[x][y].isRevealed();
@@ -155,15 +221,11 @@ public class Carte {
 	}
 	
 	/**
-	 * 
-	 * @method mark
-	 * @param {int} coordonne x
-	 * @param {int} coordonne y
-	 * @param {bool} true si emplacement placï¿½/replacï¿½
-	 * @desc definie l'emplacement du marqueur
-	 * 
+	 * Definie l'emplacement du marqueur sur la carte
+	 * @param x Coordonnee x sur la carte
+	 * @param y Coordonnee y sur la carte
+	 * @return Retourne vrai si les coordonnee etaient bonne et que la marque a ete posee
 	 */
-	
 	public boolean mark(int x, int y){
 		if(checkCoord(x,y)){
 			this.marque=this.map[x][y];
@@ -174,20 +236,17 @@ public class Carte {
 	}
 	
 	/**
-	 * @method getMark
-	 * @return {Case} emplacement de la marque ou null
+	 * Renvoit la derniere marque specifiee
+	 * @return La case du labyrinth ou se trouve la marque
 	 */
-	
 	public Case getMark(){
 		return this.marque;
 	}
 	
 	/**
-	 * @method setExit
-	 * @return {Case} exit
-	 * @desc Cherche/Retourne automatiquement la sortie
+	 * La fonction met a jour la sortie et renvoie la sortie ainsi trouvee
+	 * @return La sortie si elle a ete trouvee et existe, sinon null
 	 */
-	
 	public Case setExit(){
 		if(this.exit==null){
 			for(int i=0;i<this.width;i++){
@@ -211,14 +270,9 @@ public class Carte {
 	}
 	
 	/**
-	 * @method pathToExit
-	 * @param {int} position de dï¿½part x
-	 * @param {int} position de dï¿½part y
-	 * @return {Chemin} chemin
-	 * @desc retourne un chemin entre la position et la sortie si existante, sinon null
-	 * 
+	 * Verifie que la sortie existe
+	 * @return Retourne vrai si la sortie existe
 	 */
-	
 	public boolean exit(){
 		if(this.exit!=null)
 			return true;
@@ -226,6 +280,12 @@ public class Carte {
 			return false;
 	}
 	
+	/**
+	 * Cree un chemin entre la case de depart specifiee et la sortie si elle existe
+	 * @param dx Coordonnee de depart x
+	 * @param dy Coordonnee de depart y
+	 * @return Le chemin resultant, peut être null si la sortie n'existe pas ou si le chemin n'est pas possible
+	 */
 	public Chemin pathToExit(int dx, int dy){
 		if(checkCoord(dx,dy)){
 			if(setExit()!=null){
@@ -236,14 +296,9 @@ public class Carte {
 	}
 	
 	/**
-	 * @method pathToMark
-	 * @param {int} position de dï¿½part x
-	 * @param {int} position de dï¿½part y
-	 * @return {Chemin} chemin
-	 * @desc retourne un chemin entre la position et le marqueur si existant, sinon null
-	 * 
+	 * Verifie que la marque existe
+	 * @return Retourne vrai si la marque existe
 	 */
-	
 	public boolean mark(){
 		if(this.marque!=null)
 			return true;
@@ -251,6 +306,12 @@ public class Carte {
 			return false;
 	}
 	
+	/**
+	 * Cree un chemin vers la marque depuis une position de depart
+	 * @param dx Coordonnee de depart x
+	 * @param dy Coordonnee de depart y
+	 * @return Le chemin, peut etre null si il n'existe pas ou si la marque na pas deja ete trouvee
+	 */
 	public Chemin pathToMark(int dx, int dy){
 		if(checkCoord(dx,dy)){
 			if(this.mark()){
@@ -261,17 +322,13 @@ public class Carte {
 	}
 	
 	/**
-	 * 
-	 * @method createPath
-	 * @param {int} position de dï¿½part x
-	 * @param {int} position de dï¿½part y
-	 * @param {int} position d'arrivee x
-	 * @param {int} position d'arrivee y
-	 * @return {Chemin} chemin
-	 * @desc retourne un chemin entre deux emplacements
-	 * 
+	 * Cree un chemin entre deux positions de depart et d'arrivee
+	 * @param dx Coordonnee de depart x
+	 * @param dy Coordonnee de depart y
+	 * @param ax Coordonnee d'arrivee x
+	 * @param ay Coordonnee d'arrivee y
+	 * @return Le chemin, peut renvoyer un chemin null si les coordonnees ne sont pas bonnes ou le chemin impossible
 	 */
-	
 	public Chemin createPath(int dx, int dy, int ax, int ay){
 		if(checkCoord(dx,dy) && checkCoord(ax,ay))
 			return createPath(this.map[dx][dy],this.map[ax][ay],null);
@@ -279,6 +336,15 @@ public class Carte {
 			return null;
 	}
 	
+	/**
+	 * Cree un chemin entre deux positions de depart et d'arrivee
+	 * @param dx Coordonnee de depart x
+	 * @param dy Coordonnee de depart y
+	 * @param ax Coordonnee d'arrivee x
+	 * @param ay Coordonnee d'arrivee y
+	 * @param blocked Liste de cases, stockees sous forme d'un chemin considerees comme impassables
+	 * @return Le chemin, peut renvoyer null si les coordonnes ne sont pas bonnes ou le chemin impossible
+	 */
 	public Chemin createPath(int dx, int dy, int ax, int ay, Chemin blocked){
 		if(checkCoord(dx,dy) && checkCoord(ax,ay)){
 			return createPath(this.map[dx][dy],this.map[ax][ay],blocked);
@@ -288,15 +354,12 @@ public class Carte {
 	}
 	
 	/**
-	 * 
-	 * @method createPath
-	 * @param {Case} case de dï¿½part
-	 * @param {Case} case d'arrivee
-	 * @return {Chemin} chemin
-	 * @desc retourne un chemin entre deux emplacements
-	 * 
+	 * Cree un chemin entre deux cases de depart et d'arrivee
+	 * @param depart Case de depart
+	 * @param arrivee Case d'arrivee
+	 * @param blocked Liste de cases, stockees sous forme d'un chemin considerees comme impassables
+	 * @return Le chemin, peut renvoyer null si les coordonnes ne sont pas bonnes ou le chemin impossible
 	 */
-	
 	@SuppressWarnings("unchecked")
 	public Chemin createPath(Case depart, Case arrivee, Chemin blocked){
 		Chemin path = new Chemin();
@@ -360,7 +423,13 @@ public class Carte {
 		}
 	}
 	
-	
+	/**
+	 * Cherche la n-eme case la plus proche non visitee
+	 * @param dx Coordonnee de depart x
+	 * @param dy Coordonnee de depart y
+	 * @param number Le nombre de case n a visiter avant de s'arreter, 1 pour visiter la premiere
+	 * @return Le chemin, peut renvoyer null si les coordonnes ne sont pas bonnes ou le chemin impossible
+	 */
 	public Chemin closestDiscover(int dx, int dy, int number){
 		if(checkCoord(dx,dy) && number>=0)
 			return closestDiscover(this.map[dx][dy], number, null, null, false);
@@ -368,6 +437,16 @@ public class Carte {
 			return null;
 	}
 	
+	/**
+	 * Cherche la n-eme case la plus proche non visitee et en dehors des cases a eviter
+	 * @param dx Coordonnee de depart x
+	 * @param dy Coordonnee de depart y
+	 * @param number Le nombre de case n a visiter avant de s'arreter, 1 pour visiter la premiere
+	 * @param avoid Liste de cases, stockees sous forme d'un chemin considerees comme à eviter
+	 * @param blocked Liste de cases, stockees sous forme d'un chemin considerees comme impassables
+	 * @param exit Autoriser les robots à sortir du labyrinth pour valider les conditions sur vrai
+	 * @return Le chemin, peut renvoyer null si les coordonnes ne sont pas bonnes ou le chemin impossible
+	 */
 	public Chemin closestDiscover(int dx, int dy, int number, Chemin avoid, Chemin blocked, boolean exit){
 		if(checkCoord(dx,dy) && number>=0)
 			return closestDiscover(this.map[dx][dy], number, avoid, blocked, exit);
@@ -375,6 +454,15 @@ public class Carte {
 			return null;
 	}
 	
+	/**
+	 * Cherche la n-eme case la plus proche non visitee et en dehors des cases a eviter
+	 * @param depart Case de depart
+	 * @param number Le nombre de case n a visiter avant de s'arreter, 1 pour visiter la premiere
+	 * @param avoid Liste de cases, stockees sous forme d'un chemin considerees comme à eviter
+	 * @param blocked Liste de cases, stockees sous forme d'un chemin considerees comme impassables
+	 * @param canExit Autoriser les robots à sortir du labyrinth pour valider les conditions sur vrai
+	 * @return Le chemin, peut renvoyer null si les coordonnes ne sont pas bonnes ou le chemin impossible
+	 */
 	@SuppressWarnings("unchecked")
 	public Chemin closestDiscover(Case depart, int number, Chemin avoid, Chemin blocked, boolean canExit){
 		Chemin path = new Chemin();
@@ -458,12 +546,11 @@ public class Carte {
 	}
 	
 	/**
-	 * @method getCase
-	 * @param {int} x
-	 * @param {int} y
-	 * @return {Case} case
+	 * Renvoit la case aux coordonnees specifiees
+	 * @param x Coordonnee x sur la carte
+	 * @param y Coordonnee y sur la carte
+	 * @return La case ou null si les coordonnees ne sont pas valides
 	 */
-	
 	public Case getCase(int x, int y){
 		if(checkCoord(x,y))
 			return this.map[x][y];
@@ -472,30 +559,52 @@ public class Carte {
 	}
 	
 	/**
-	 * 
-	 * @method isCrossable
-	 * @param {int} x
-	 * @param {int} y
-	 * @return {boolean} possible
-	 * @desc retourne si un chemin existe vers une direction depuis la case
+	 * Verifie qu'une case est ouverte vers une certaine direction
+	 * @param x Coordonnee x sur la carte
+	 * @param y Coordonnee y sur la carte
+	 * @return Vrai si la case est ouverte vers cette direction
 	 */
-	
 	public boolean isCrossableUp(int x, int y){
 		return isCrossable(x,y,Case.UP);
 	}
 	
+	/**
+	 * Verifie qu'une case est ouverte vers une certaine direction
+	 * @param x Coordonnee x sur la carte
+	 * @param y Coordonnee y sur la carte
+	 * @return Vrai si la case est ouverte vers cette direction
+	 */
 	public boolean isCrossableDown(int x, int y){
 		return isCrossable(x,y,Case.DOWN);
 	}
 	
+	/**
+	 * Verifie qu'une case est ouverte vers une certaine direction
+	 * @param x Coordonnee x sur la carte
+	 * @param y Coordonnee y sur la carte
+	 * @return Vrai si la case est ouverte vers cette direction
+	 */
 	public boolean isCrossableLeft(int x, int y){
 		return isCrossable(x,y,Case.LEFT);
 	}
 	
+	/**
+	 * Verifie qu'une case est ouverte vers une certaine direction
+	 * @param x Coordonnee x sur la carte
+	 * @param y Coordonnee y sur la carte
+	 * @return Vrai si la case est ouverte vers cette direction
+	 */
 	public boolean isCrossableRight(int x, int y){
 		return isCrossable(x,y,Case.RIGHT);
 	}
 	
+	/**
+	 * Verifie qu'une case est ouverte vers une certaine direction
+	 * @param x Coordonnee x sur la carte
+	 * @param y Coordonnee y sur la carte
+	 * @param direction - Direction a tester
+	 * @return Vrai si la case est ouverte vers cette direction
+	 */
 	private boolean isCrossable(int x, int y, int direction){
 		if(checkCoord(x,y))
 			return this.map[x][y].isCrossable(direction);
@@ -504,25 +613,26 @@ public class Carte {
 	}
 	
 	/**
-	 * 
-	 * @method getWidth/Height
-	 * @return {int} width/height
+	 * Recupere la largeur de la carte
+	 * @return La largeur
 	 */
-	
 	public int getWidth(){
 		return this.width;
 	}
 	
+	/**
+	 * Recupere la longueur de la carte
+	 * @return La longueur
+	 */
 	public int getHeight(){
 		return this.height;
 	}
 	
 	/**
-	 * @method randomMaze
-	 * @param {double} probabilite
-	 * @desc Permet de gï¿½nï¿½rer un labyrinthe alï¿½atoire, disposant d'une sortie, ï¿½ des fins de tests. La probabilitï¿½ augmente le nombre probable de murs enlevï¿½s au delï¿½ du minimum.
+	 * Genere aleatoirement un labyrinth entierement visite
+	 * @param wall Probabilites d'avoir plusieurs chemins possibles en ouvrant plusieurs fois les murs sur plusieurs cases.
+	 * wall doit être compris entre 0 inclus et 1 exclus. Plus wall est proche de 1 plus le labyrinth a de chance d'etre vide.
 	 */
-	
 	public void randomMaze(double wall){
 		Stack<Case> stack = new Stack<Case>();
 		ArrayList<Case> recherche=new ArrayList<Case>();
@@ -583,6 +693,10 @@ public class Carte {
 		this.getMark().setMark();
 	}
 	
+	/**
+	 * Exporte la carte sous forme d'un tableau de bytes
+	 * @return Le tableau de bytes
+	 */
 	public byte[] export(){
 		byte [] tableau = new byte[this.width*this.height+2];
 		if(this.getMark()!=null){
@@ -601,6 +715,10 @@ public class Carte {
 		return tableau;
 	}
 	
+	/**
+	 * Importe une carte depuis un tableau de bytes
+	 * @param importation - Le tableau de bytes issu de l'exportation
+	 */
 	public void update(byte[] importation){
 		for(int i=0;i<this.width;i++){
 			for(int j=0;j<this.height;j++){
@@ -613,6 +731,12 @@ public class Carte {
 		this.setExit();
 	}
 	
+	/**
+	 * Met a jour une case de la carte a partir de sa composition
+	 * @param x Coordonnee x sur la carte
+	 * @param y Coordonnee y sur la carte
+	 * @param importation - Composition d'une case sous forme d'un bytes
+	 */
 	public void update(int x, int y, byte importation){
 		if(checkCoord(x,y)){
 			this.map[x][y].update(importation);
@@ -627,6 +751,9 @@ public class Carte {
 		}
 	}
 	
+	/**
+	 * Permet de reinitialiser une carte a son etat initial
+	 */
 	public void reset(){
 		this.marque=null;
 		this.exit=null;
@@ -646,6 +773,10 @@ public class Carte {
 		}
 	}
 
+	/**
+	 * Regarde si la carte entiere a deja ete visitee
+	 * @return Retourne vrai si la carte est entierement visitee
+	 */
 	public boolean isWholeRevealed() {
 		for(int i=0;i<this.width;i++){
 			for(int j=0;j<this.height;j++){

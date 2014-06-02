@@ -1,5 +1,10 @@
 package labyrinth;
 
+/**
+ * Cette classe permet la gestion des cases du labyrinth
+ * @author Olivier Hachette
+ *
+ */
 public class Case {
 	/*
 	 * Constantes
@@ -16,9 +21,7 @@ public class Case {
 	 * Attributs
 	 */
 	
-	//murs & decouverte
 	private byte composition;
-	//Possibilit�e d'utiliser un mask
 	private int x;
 	private int y;
 	
@@ -26,6 +29,11 @@ public class Case {
 	 * Constructeurs
 	 */
 	
+	/**
+	 * Permet d'intialiser une case a certaines coordonnees
+	 * @param x
+	 * @param y
+	 */
 	public Case(int x, int y){
 		this.x=x;
 		this.y=y;
@@ -33,16 +41,15 @@ public class Case {
 	}
 	
 	/*
-	 * M�thodes
+	 * Methodes
 	 */
 	
 	/**
-	 * @method changeState
-	 * @param {int} direction
-	 * @param {int} state
-	 * @return {boolean} true si l'action est effectuee
+	 * Change l'etat du mur dans une certaine direction
+	 * @param direction La direction a modifier
+	 * @param state L'etat du mur, vrai pour ferme, faux pour ouvert
+	 * @return Vrai si la modification a bien eu lieu
 	 */
-	
 	private boolean changeState(int direction, boolean state){
 		if(direction>=0 && direction<4){
 			if(state)
@@ -57,31 +64,28 @@ public class Case {
 	}
 	
 	/**
-	 * @method close
-	 * @param {int} direction
-	 * @return {boolean} true si action effectuee
+	 * Ferme un mur dans une certaine direction
+	 * @param direction La direction vers laquelle fermer
+	 * @return Vrai si la modification a bien eu lieu
 	 */
-	
 	public boolean close(int direction){
 		return changeState(direction,true);
 	}
 	
 	/**
-	 * @method bound
-	 * @param {int} direction
-	 * @return {boolean} true si action effectuee
+	 * ouvre un mur dans une certaine direction
+	 * @param direction La direction vers laquelle ouvrir
+	 * @return Vrai si la modification a bien eu lieu
 	 */
-	
 	public boolean bound(int direction){
 		return changeState(direction,false);
 	}
 	
 	/**
-	 * @method isCrossable
-	 * @param {int} direction
-	 * @return {boolean} true si absence de mur
+	 * Verifie qu'un mur est ouvert ou ferme dans une direction
+	 * @param direction La direction vers laquelle verifier
+	 * @return Vrai si le mur est ouvert
 	 */
-	
 	public boolean isCrossable(int direction){
 		if(direction>=0 && direction<4){
 			return !((byte)(composition&(1<<direction))!=0);
@@ -91,39 +95,33 @@ public class Case {
 	}
 	
 	/**
-	 * @method setreveal
-	 * @desc declare la case visitee
+	 * Declare une case comme deja visitee
 	 */
-	
 	public void setReveal(){
 		this.composition=(byte)(this.composition|(1<<decouverte));
 	}
 	
 	/**
-	 * @method isRevealed
-	 * @return {boolean}
-	 * @desc retourne si la case est visitee
+	 * Verifie qu'une case est deja visitee
+	 * @return Retourne vrai si la case est deja visitee
 	 */
-	
 	public boolean isRevealed(){
 		return ((byte)(composition&(1<<decouverte))!=0);
 	}
 	
 	/**
-	 * @method getX
-	 * @return {int} coordonne x de la case
+	 * Recupere la coordonnee x
+	 * @return La coordonnee x de la case
 	 */
-	
 	public int getX(){
 		return this.x;
 	}
 	
 	/**
-	 * @method getX
-	 * @param {int} direction
-	 * @return {int} coordonne x de la case dans la direction
+	 * Recupere la coordonnee x dans une certaine direction
+	 * @param direction
+	 * @return coordonne x de la case dans la direction
 	 */
-	
 	public int getX(int direction){
 		if(direction==Case.LEFT)
 			return this.x-1;
@@ -134,20 +132,18 @@ public class Case {
 	}
 	
 	/**
-	 * @method getY
-	 * @return {int} coordonne y de la case
+	 * Recupere la coordonnee y
+	 * @return La coordonnee y de la case
 	 */
-	
 	public int getY(){
 		return this.y;
 	}
 	
 	/**
-	 * @method getY
-	 * @param {int} direction
-	 * @return {int} coordonne y de la case dans la direction
+	 * Recupere la coordonnee y dans une certaine direction
+	 * @param direction
+	 * @return coordonne y de la case dans la direction
 	 */
-	
 	public int getY(int direction){
 		if(direction==Case.UP)
 			return this.y-1;
@@ -157,6 +153,12 @@ public class Case {
 			return this.y;
 	}
 	
+	/**
+	 * Donne la direction entre cette case et les coordonnees d'une autre case adjacente
+	 * @param x Coordonnee en x de l'autre case
+	 * @param y Coordonnee en y de l'autre case
+	 * @return Retourne la direction ou -1 si les coordonnees ne sont pas adjacents
+	 */
 	public int getDir(int x, int y){
 		if(this.x-x==1 && this.y-y==0)
 			return Case.LEFT;
@@ -170,8 +172,17 @@ public class Case {
 			return -1;
 	}
 	
+	/**
+	 * Donne la direction entre cette case et une autre case
+	 * @param autre L'autre case
+	 * @return Retourne la direction ou -1 si l'autre case n'est pas adjacente
+	 */
 	public int getDir(Case autre){
-		return this.getDir(autre.getX(),autre.getY());
+		if(autre!=null){
+			return this.getDir(autre.getX(),autre.getY());
+		}
+		else
+			return -1;
 	}
 	
 	@Override
@@ -180,34 +191,44 @@ public class Case {
 	}
 	
 	/**
-	 * @method setmark
-	 * @desc declare la case visitee
+	 * Met a jour la composition de la case en lui mettant la marque
 	 */
-	
 	public void setMark(){
 		this.composition=(byte)(this.composition|(1<<marque));
 	}
 	
 	/**
-	 * @method ismark
-	 * @return {boolean}
-	 * @desc retourne si la case est visitee
+	 * Verifie que la case contient la marque
+	 * @return Retourne vrai si la case contient la marque
 	 */
-	
 	public boolean isMark(){
 		return ((byte)(composition&(1<<marque))!=0);
 	}
 	
+	/**
+	 * Recupere la composition de la case
+	 * @return La composition de la case sous forme d'un byte
+	 */
 	public byte getCompo(){
 		return this.composition;
 	}
 	
+	/**
+	 * Met a jour la composition d'une case et ses coordonnees
+	 * @param x Nouvelle coordonnee x
+	 * @param y Nouvelle coordonnee y
+	 * @param composition Nouvelle composition sous forme d'un byte
+	 */
 	public void update(int x, int y, byte composition){
 		this.x=x;
 		this.y=y;
 		this.composition=composition;
 	}
 	
+	/**
+	 * Met a jour seulement la compositino d'une case
+	 * @param composition Nouvelle composition sous forme d'un byte
+	 */
 	public void update(byte composition){
 		this.composition=composition;
 	}

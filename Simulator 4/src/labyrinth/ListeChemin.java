@@ -1,6 +1,12 @@
 package labyrinth;
 import java.lang.Comparable;
 
+/**
+ * 
+ * @author canard
+ *
+ */
+
 @SuppressWarnings("rawtypes")
 public class ListeChemin implements Comparable {
 	private ListeChemin previous;

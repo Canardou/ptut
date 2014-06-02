@@ -9,8 +9,8 @@ import javax.swing.JFrame;
 
 import communication.InitPC;
 import communication.Order;
-import Dialogue.Dialogue;
 import labyrinth.*;
+import dialogue.Dialogue;
 import drawing.*;
 
 public class Superviseur {

@@ -9,10 +9,9 @@ import javax.swing.JButton;
 import javax.swing.JTextField;
 import javax.swing.SwingWorker;
 
-import Dialogue.Dialogue;
-
 import java.awt.BorderLayout;
 
+import dialogue.Dialogue;
 import drawing.DessinCarte;
 import drawing.FontImport;
 

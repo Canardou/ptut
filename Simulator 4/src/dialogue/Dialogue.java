@@ -1,4 +1,4 @@
-package Dialogue;
+package dialogue;
 import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
 

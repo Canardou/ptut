@@ -15,7 +15,7 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.border.TitledBorder;
 
-import Dialogue.Dialogue;
+import dialogue.Dialogue;
 import drawing.DessinCarte;
 import drawing.FontImport;
 

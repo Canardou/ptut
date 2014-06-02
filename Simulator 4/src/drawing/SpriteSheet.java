@@ -4,7 +4,7 @@ import java.io.*;
 
 import javax.imageio.* ;
 
-import Dialogue.Dialogue;
+import dialogue.Dialogue;
 
 public class SpriteSheet {
 	
