@@ -126,6 +126,8 @@ public class Chemin {
 					if(temp!=null){
 						if(autre.route.contains(temp) && temp.isCrossable(temp.getDir(this.get(i))) && this.get(i).isCrossable(this.get(i).getDir(temp))){
 							if(ecart)
+								retour=i-1;
+							else
 								retour=i;
 						}
 					}
