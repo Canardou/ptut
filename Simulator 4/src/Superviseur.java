@@ -378,7 +378,7 @@ public Queue<Integer> caseToOrder(Case current, int dir, Case next){
 	
 	public void cooperation() {
 		if(!(this.tabIsBusy[0] && this.tabIsBusy[1] && this.tabIsBusy[2])){
-			System.out.print("0");
+			System.out.print(step);
 			number=0;
 			Integer x [] = new Integer[3];
 			Integer y [] = new Integer[3];
