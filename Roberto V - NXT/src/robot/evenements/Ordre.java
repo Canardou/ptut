@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Random;
 
 import lejos.nxt.Button;
+import lejos.nxt.Sound;
 import robot.taches.*;
 
 /**
@@ -61,6 +62,12 @@ public class Ordre {
 	 * Ordre : fixer les coordonnées du robot.
 	 */
 	public static final int SETPOSITION = 8;
+	
+	/**
+	 * Ordre : Vider la liste d'ordres.</br> Attention cette ordre est executé
+	 * immédiatement à sa reception.
+	 */
+	public static final int VIDER_ORDRES = 9;
 
 	/**
 	 * Ordre : attendre que l'utilisateur appuie sur le bouton ENTER du robot.
@@ -73,9 +80,10 @@ public class Ordre {
 	public static final int ATTENDRE_1SEC = 11;
 	
 	/**
-	 * Ordre : met le robot en mode rapide.
+	 * Ordre : Envoyer la liste de cases.</br> Attention cette ordre est executé
+	 * immédiatement à sa reception.
 	 */
-	public static final int FASTMODE = 15;
+	public static final int ENVOYER_CASE = 12;
 	
 	/**
 	 * Ordre : met le robot en mode normal d'exploration (mode par défaut).
@@ -83,22 +91,20 @@ public class Ordre {
 	public static final int NORMALMODE = 13;
 	
 	/**
-	 * Ordre : Vider la liste d'ordres.</br> Attention cette ordre est executé
-	 * immédiatement à sa reception.
+	 * Ordre : met le robot en mode rapide.
 	 */
-	public static final int VIDER_ORDRES = 9;
+	public static final int FASTMODE = 15;
 	
-	/**
-	 * Ordre : Envoyer la liste de cases.</br> Attention cette ordre est executé
-	 * immédiatement à sa reception.
-	 */
-	public static final int ENVOYER_CASE = 12;
-		
 	/**
 	 * Ordre : Envoyer l'état du robot.</br> Attention cette ordre est executé
 	 * immédiatement à sa reception.
 	 */
 	public static final int ENVOYER_ISBUSY = 16;
+	
+	/**
+	 * Ordre : indique que la mission est terminée.
+	 */
+	public static final int MISSION_TERMINEE = 17 ;
 	
 	// ------------------------------------- ATTRIBUTS --------------------------------------------
 	
@@ -148,7 +154,8 @@ public class Ordre {
 				|| o == CALIBRER_BOUSSOLE || o == ENREGISTRER_ANGLE_REF
 				|| o == EXPLORER_PREMIERE_CASE || o == ATTENDRE_1SEC 
 				|| o == ATTENDRE_BOUTON || o == FASTMODE 
-				|| o == NORMALMODE || o == SETPOSITION) {
+				|| o == NORMALMODE || o == SETPOSITION
+				|| o == MISSION_TERMINEE) {
 			this.isBusy=1;
 			this.list.add(o);
 			return 0;
@@ -186,11 +193,7 @@ public class Ordre {
 	 * @return true si la liste est vide.
 	 */
 	public synchronized boolean estVide() {
-		if (this.list.isEmpty()) {
-			return true;
-		} else {
-			return false;
-		}
+		return this.list.isEmpty() ;
 	}
 	
 	/**
@@ -292,6 +295,8 @@ public class Ordre {
 			this.pauseBouton();
 		} else if (this.ordreActuel == ATTENDRE_1SEC) {
 			this.pauseTemps(1000);
+		} else if (this.ordreActuel == MISSION_TERMINEE) {
+			this.finMission(tPrincipale);			
 		} else if (this.ordreActuel == FASTMODE) {
 			tPrincipale.getMouv().setFastMode(true);
 		} else if (this.ordreActuel == NORMALMODE) {
@@ -332,6 +337,8 @@ public class Ordre {
 			this.pauseBouton();
 		} else if (ordre == ATTENDRE_1SEC) {
 			this.pauseTemps(1000);
+		} else if (this.ordreActuel == MISSION_TERMINEE) {
+			this.finMission(tPrincipale);			
 		} else if (ordre == FASTMODE) {
 			tPrincipale.getMouv().setFastMode(true);
 		} else if (ordre == NORMALMODE) {
@@ -372,6 +379,8 @@ public class Ordre {
 			return "wait bouton";
 		} else if (o == ATTENDRE_1SEC) {
 			return "wait 1sec";
+		} else if (o == MISSION_TERMINEE) {
+			return "fin ! :D";
 		} else if (o == FASTMODE) {
 			return "fast mode";
 		} else if (o == NORMALMODE) {
@@ -385,6 +394,11 @@ public class Ordre {
 		} else {
 			return String.valueOf(o);
 		}
+	}
+	
+	public void finMission(TachePrincipale tPrincipale) {
+		Sound.beepSequenceUp();
+		tPrincipale.getEnv().resetCibleTrouvee();
 	}
 	
 	/**

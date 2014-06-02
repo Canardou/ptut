@@ -40,7 +40,7 @@ public class Environnement {
 	 * Valeur renvoyé par le capteur de lumière a partir de laquelle on
 	 * considère qu'il y a la cible.
 	 */
-	public static final double CIBLE_LUMIERE = 545;
+	public static final double CIBLE_LUMIERE = 548;
 	
 	// ------------------------------------- ATTRIBUTS --------------------------------------------
 
@@ -361,9 +361,17 @@ public class Environnement {
 				this.cibleTrouvee = true;
 				this.cibleIci = true;
 				Sound.beepSequenceUp();
+				System.out.println("Cible !");
 			}		
 		}
 	}	
+	
+	/**
+	 * Remet le robot en condition de trouver la cible.
+	 */
+	public void resetCibleTrouvee() {
+		this.cibleTrouvee = false;
+	}
 	
 	// ------------------------------------- GETTERS ----------------------------------------------
 	
