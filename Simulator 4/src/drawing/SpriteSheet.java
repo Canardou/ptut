@@ -6,6 +6,12 @@ import javax.imageio.* ;
 
 import dialogue.Dialogue;
 
+/**
+ * Permet la gestion des feuilles d'animations
+ * @author Olivier Hachette
+ *
+ */
+
 public class SpriteSheet {
 	
 	/*
@@ -20,6 +26,12 @@ public class SpriteSheet {
 	 * Constructeur
 	 */
 	
+	/**
+	 * 
+	 * @param sheet Le chemin vers l'image de sprites
+	 * @param width La largeur du sprite
+	 * @param heigth La longueur du sprite
+	 */
 	public SpriteSheet(String sheet, int width, int heigth){
 		this.WIDTH=width;
 		this.HEIGHT=heigth;
@@ -31,6 +43,10 @@ public class SpriteSheet {
 		}
 	}
 	
+	/**
+	 * La longueur et la largeur seront celle de l'image entiere, permet d'importer facilement des images vers java
+	 * @param sheet Le chemin vers l'image
+	 */
 	public SpriteSheet(String sheet){
 		try {
 			image = ImageIO.read(new File(sheet));

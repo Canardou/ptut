@@ -36,6 +36,10 @@ public class Superviseur {
 
 	private Point [] positions;
 	
+	/**
+	 * 
+	 * @param carte Une carte servant de support a l'exploration, vide intialement
+	 */
 	public Superviseur(Carte carte){
 		this.current_paths=new Chemin[agent];
 		this.current_paths_4ever=new Chemin[agent];
@@ -55,6 +59,11 @@ public class Superviseur {
 		
 	}
 	
+	/**
+	 * Lance une simulation deterministe en fonction d'une graine de hasard
+	 * @param seed Graine de hasard a utiliser
+	 * @throws InterruptedException
+	 */
 	public void simulation(int seed) throws InterruptedException {
 		Dialogue.Warning("Lancement d'une simulation");
 		
@@ -115,6 +124,10 @@ public class Superviseur {
 			Dialogue.Success("Simulation résolue ! Bilip !");
 	}
 	
+	/**
+	 * Permet de resoudre un cas reel
+	 * @throws InterruptedException
+	 */
 	public void destin() throws InterruptedException {
 
 		//Affiche une jolie fenêtre de début 
@@ -279,100 +292,114 @@ public class Superviseur {
 		Dialogue.Success("Mission accomplie ô maître ! Bilip !");
 	}
 
-public Queue<Integer> caseToOrder(Case current, int dir, Case next){
-		
+	/**
+	 * Transforme une liste de cases en ordres
+	 * @param current
+	 * @param dir
+	 * @param next
+	 * @return
+	 */
+	public Queue<Integer> caseToOrder(Case current, int dir, Case next){
+
 		Queue<Integer> ordre = new LinkedList<Integer>();
-		
+
 		if (current.isRevealed()){
 			if(next.getX()!=current.getX() || next.getY() != current.getY()){
 				if (next.getX()>current.getX() && next.getY() == current.getY()){
 					switch(dir){
-						case Case.UP:
-							((LinkedList<Integer>)ordre).addFirst(Order.TURNR);
-							((LinkedList<Integer>)ordre).addFirst(Order.FORWARD);
+					case Case.UP:
+						((LinkedList<Integer>)ordre).addFirst(Order.TURNR);
+						((LinkedList<Integer>)ordre).addFirst(Order.FORWARD);
 						break;
-						case Case.DOWN:
-							((LinkedList<Integer>)ordre).addFirst(Order.TURNL);
-							((LinkedList<Integer>)ordre).addFirst(Order.FORWARD);
+					case Case.DOWN:
+						((LinkedList<Integer>)ordre).addFirst(Order.TURNL);
+						((LinkedList<Integer>)ordre).addFirst(Order.FORWARD);
 						break;
-						case Case.RIGHT:
-							((LinkedList<Integer>)ordre).addFirst(Order.FORWARD);
+					case Case.RIGHT:
+						((LinkedList<Integer>)ordre).addFirst(Order.FORWARD);
 						break;
-						case Case.LEFT:
-							((LinkedList<Integer>)ordre).addFirst(Order.TURNB);
-							((LinkedList<Integer>)ordre).addFirst(Order.FORWARD);
+					case Case.LEFT:
+						((LinkedList<Integer>)ordre).addFirst(Order.TURNB);
+						((LinkedList<Integer>)ordre).addFirst(Order.FORWARD);
 						break;
 					}
 				}
-					if (next.getX()<current.getX() && next.getY() == current.getY()){
-						switch(dir){
-							case Case.UP:
-								((LinkedList<Integer>)ordre).addFirst(Order.TURNL);
-								((LinkedList<Integer>)ordre).addFirst(Order.FORWARD);
-							break;
-							case Case.DOWN:
-								((LinkedList<Integer>)ordre).addFirst(Order.TURNR);
-								((LinkedList<Integer>)ordre).addFirst(Order.FORWARD);
-							break;
-							case Case.LEFT:
-								((LinkedList<Integer>)ordre).addFirst(Order.FORWARD);
-							break;
-							case Case.RIGHT:
-								((LinkedList<Integer>)ordre).addFirst(Order.TURNB);
-								((LinkedList<Integer>)ordre).addFirst(Order.FORWARD);
-							break;
-						}
-					}
-				
-					if (next.getY()<current.getY() && next.getX() == current.getX()){
-						switch(dir){
-							case Case.UP:
-								((LinkedList<Integer>)ordre).addFirst(Order.FORWARD);
-							break;
-							case Case.DOWN:
-								((LinkedList<Integer>)ordre).addFirst(Order.TURNB);
-								((LinkedList<Integer>)ordre).addFirst(Order.FORWARD);
-							break;
-							case Case.LEFT:
-								((LinkedList<Integer>)ordre).addFirst(Order.TURNR);
-								((LinkedList<Integer>)ordre).addFirst(Order.FORWARD);
-							break;
-							case Case.RIGHT:
-								((LinkedList<Integer>)ordre).addFirst(Order.TURNL);
-								((LinkedList<Integer>)ordre).addFirst(Order.FORWARD);
-							break;
-						}
-					}
-					if (next.getY()>current.getY() && next.getX() == current.getX()){
-						switch(dir){
-							case Case.UP:
-								((LinkedList<Integer>)ordre).addFirst(Order.TURNB);
-								((LinkedList<Integer>)ordre).addFirst(Order.FORWARD);
-							break;
-							case Case.DOWN:
-								((LinkedList<Integer>)ordre).addFirst(Order.FORWARD);
-							break;
-							case Case.LEFT:
-								((LinkedList<Integer>)ordre).addFirst(Order.TURNL);
-								((LinkedList<Integer>)ordre).addFirst(Order.FORWARD);
-							break;
-							case Case.RIGHT:
-								((LinkedList<Integer>)ordre).addFirst(Order.TURNR);
-								((LinkedList<Integer>)ordre).addFirst(Order.FORWARD);
-							break;
-						}
+				if (next.getX()<current.getX() && next.getY() == current.getY()){
+					switch(dir){
+					case Case.UP:
+						((LinkedList<Integer>)ordre).addFirst(Order.TURNL);
+						((LinkedList<Integer>)ordre).addFirst(Order.FORWARD);
+						break;
+					case Case.DOWN:
+						((LinkedList<Integer>)ordre).addFirst(Order.TURNR);
+						((LinkedList<Integer>)ordre).addFirst(Order.FORWARD);
+						break;
+					case Case.LEFT:
+						((LinkedList<Integer>)ordre).addFirst(Order.FORWARD);
+						break;
+					case Case.RIGHT:
+						((LinkedList<Integer>)ordre).addFirst(Order.TURNB);
+						((LinkedList<Integer>)ordre).addFirst(Order.FORWARD);
+						break;
 					}
 				}
-				else {((LinkedList<Integer>)ordre).addFirst(Order.STOP);}
+
+				if (next.getY()<current.getY() && next.getX() == current.getX()){
+					switch(dir){
+					case Case.UP:
+						((LinkedList<Integer>)ordre).addFirst(Order.FORWARD);
+						break;
+					case Case.DOWN:
+						((LinkedList<Integer>)ordre).addFirst(Order.TURNB);
+						((LinkedList<Integer>)ordre).addFirst(Order.FORWARD);
+						break;
+					case Case.LEFT:
+						((LinkedList<Integer>)ordre).addFirst(Order.TURNR);
+						((LinkedList<Integer>)ordre).addFirst(Order.FORWARD);
+						break;
+					case Case.RIGHT:
+						((LinkedList<Integer>)ordre).addFirst(Order.TURNL);
+						((LinkedList<Integer>)ordre).addFirst(Order.FORWARD);
+						break;
+					}
+				}
+				if (next.getY()>current.getY() && next.getX() == current.getX()){
+					switch(dir){
+					case Case.UP:
+						((LinkedList<Integer>)ordre).addFirst(Order.TURNB);
+						((LinkedList<Integer>)ordre).addFirst(Order.FORWARD);
+						break;
+					case Case.DOWN:
+						((LinkedList<Integer>)ordre).addFirst(Order.FORWARD);
+						break;
+					case Case.LEFT:
+						((LinkedList<Integer>)ordre).addFirst(Order.TURNL);
+						((LinkedList<Integer>)ordre).addFirst(Order.FORWARD);
+						break;
+					case Case.RIGHT:
+						((LinkedList<Integer>)ordre).addFirst(Order.TURNR);
+						((LinkedList<Integer>)ordre).addFirst(Order.FORWARD);
+						break;
+					}
+				}
 			}
-			else {((LinkedList<Integer>)ordre).addFirst(Order.STOP);}		
+			else {((LinkedList<Integer>)ordre).addFirst(Order.STOP);}
+		}
+		else {((LinkedList<Integer>)ordre).addFirst(Order.STOP);}		
 		return ordre;	
 	}
-	
+
+	/**
+	 * Fonction d'initialisation pour permettre la resolution d'un labyrinth
+	 */
 	public void initialisation(){
 		this.initialisation(100);
 	}
 
+	/**
+	 * Fonction d'initialisation pour permettre la resolution d'un labyrinth
+	 * @param seed Grain de hasard à utiliser
+	 */
 	public void initialisation(int seed){
 		this.carte.rand.setSeed(seed);
 		//Remet la carte � 0
@@ -391,7 +418,10 @@ public Queue<Integer> caseToOrder(Case current, int dir, Case next){
 			positions[i]=new Point();
 		this.number=0;
 	}
-	
+
+	/**
+	 * Resolution du labyrinth a proprement parler. Cette fonction choisit les chemins que les robots doivent parcourir en fonction de l'avancement de l'exploration.
+	 */
 	public void cooperation() {
 		if(!(this.tabIsBusy[0] && this.tabIsBusy[1] && this.tabIsBusy[2])){
 			System.out.print(step);
@@ -588,10 +618,27 @@ public Queue<Integer> caseToOrder(Case current, int dir, Case next){
 		}
 	}
 	
+	/**
+	 * Retourne le dessin de carte sur lequel repose la simulation.
+	 * @return
+	 */
 	public DessinCarte dessinCarte(){
 		return this.dessin;
 	}
 	
+	/**
+	 * Resolution recursive pour le deplacement de plusieurs robots
+	 * @param k Un entier initialement mis a 0 pour eviter la recursivite infini dans certains cas
+	 * @param liste La liste des chemins, initialement a null
+	 * @param cur1 Le chemin courant du robot 1
+	 * @param cur2 Le chemin courant du robot 2
+	 * @param cur3 Le chemin courant du robot 3
+	 * @param obj1 L'objectif du robot 1
+	 * @param obj2 Peu importe
+	 * @param obj3 Peu importe
+	 * @param exit Mettre a vrai si les robots peuvent se pousser en utilisant la sortie
+	 * @return Une liste de chemin qui peut être null ou contenir des chemins faux (leur depart ne correspondra pas aux positions des robots) dans le cas ou la recursivite s'arrete dans un cas infini
+	 */
 	@SuppressWarnings("unchecked")
 	public ListeChemin resolution(int k, ListeChemin liste, Chemin cur1, Chemin cur2, Chemin cur3, Case obj1, Case obj2, Case obj3, boolean exit){
 		if(k<30){

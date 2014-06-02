@@ -19,6 +19,11 @@ import dialogue.Dialogue;
 import drawing.DessinCarte;
 import drawing.FontImport;
 
+/**
+ * Affichage des informations des robots dans la Gui
+ * @author Olivier Hachette
+ *
+ */
 
 @SuppressWarnings("serial")
 public class RobotPanel extends JPanel implements ActionListener {
@@ -38,7 +43,12 @@ public class RobotPanel extends JPanel implements ActionListener {
 	
 	private String []logline;
 
-	RobotPanel(DessinCarte carte, int id){
+	/**
+	 * 
+	 * @param carte Le dessin a laquelle le robot est relie
+	 * @param id L'identifiant du robot
+	 */
+	public RobotPanel(DessinCarte carte, int id){
 		super();
 		this.logNumber=0;
 		logline = new String[2];
@@ -105,12 +115,22 @@ public class RobotPanel extends JPanel implements ActionListener {
 		
 	}
 	
+	/**
+	 * Change les coordonnees et la direction affichees dans la gui
+	 * @param x Nouvelle coordonnees x
+	 * @param y Nouvelle coordonnees y
+	 * @param direction Nouvelle direction
+	 */
 	public void setPanel(int x, int y, int direction){
 		this.x.setText(Integer.toString(x));
 		this.y.setText(Integer.toString(y));
 		this.direction.setSelectedIndex(direction);
 	}
 	
+	/**
+	 * Rajoute une ligne de log pour ce robot
+	 * @param log La ligne a rajouter
+	 */
 	public void putLog(String log){
 		this.logline[1]=this.logline[0];
 		this.logline[0]=this.logNumber+":"+log;
@@ -118,6 +138,9 @@ public class RobotPanel extends JPanel implements ActionListener {
 		this.logNumber++;
 	}
 	
+	/**
+	 * Remet a zero l'historique des logs pour ce robot
+	 */
 	public void resetLog(){
 		this.logline[0]="";
 		this.logline[1]="";
@@ -125,6 +148,9 @@ public class RobotPanel extends JPanel implements ActionListener {
 		this.logNumber=0;
 	}
 	
+	/**
+	 * Empêche la modification des informations de ce robot sur la gui
+	 */
 	public void freeze(){
 		this.x.setEditable(false);
 		this.y.setEditable(false);
@@ -133,6 +159,9 @@ public class RobotPanel extends JPanel implements ActionListener {
 		this.log.setVisible(true);
 	}
 	
+	/**
+	 * Autorise la modification des informations de ce robot sur la gui
+	 */
 	public void unfreeze(){
 		this.x.setEditable(true);
 		this.y.setEditable(true);

@@ -31,8 +31,8 @@ public class Case {
 	
 	/**
 	 * Permet d'intialiser une case a certaines coordonnees
-	 * @param x
-	 * @param y
+	 * @param x Coordonnee x
+	 * @param y Coordonnee y
 	 */
 	public Case(int x, int y){
 		this.x=x;

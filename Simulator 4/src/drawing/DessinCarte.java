@@ -13,7 +13,7 @@ import javax.swing.Timer;
 import labyrinth.*;
 
 /**
- * 
+ * Permet la gestion de l'affichage d'une carte
  * @author Olivier Hachette
  *
  */
@@ -164,22 +164,36 @@ public class DessinCarte extends JPanel implements ActionListener {
 		return y;
 	}
 	
-	//@override
 	@Override
 	protected void paintComponent(Graphics g) {
         super.paintComponent(g);
         g.drawImage(img, Math.max(min_width-this.width,0)/2, Math.max(min_height-this.height,0)/2, null);
     }
 	
+	/**
+	 * Permet d'afficher une image plus facilement sur le quadrillage du labyrinth
+	 * @param image Image a afficher
+	 * @param x Coordonnee x du labyrinth
+	 * @param y Coordonnee y du labyrinth
+	 */
 	private void drawImageAt(BufferedImage image, int x, int y) {
 		this.gr.drawImage(image, (x+1)*DessinCarte.largeur+(-image.getWidth())/2, (y+1)*DessinCarte.hauteur+(-image.getHeight())/2, this) ;
     }
 	
+	/**
+	 * Permet d'afficher une image plus facilement sur le quadrillage du labyrinth
+	 * @param image Image a afficher
+	 * @param x Coordonnee x du labyrinth
+	 * @param y Coordonnee y du labyrinth
+	 */
 	private void drawImageAt(BufferedImage image, double x, double y) {
 		this.gr.drawImage(image, (int)((x+1)*DessinCarte.largeur+(-image.getWidth())/2), (int)((y+1)*DessinCarte.hauteur+(-image.getHeight())/2), this) ;
     }
 	
-	public void update(){
+	/**
+	 * Met a jour l'affichage du layrinth
+	 */
+	private void update(){
 		this.lock.lock();
 		try{
 		if(this.dogeMode){

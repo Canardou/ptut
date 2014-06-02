@@ -4,6 +4,12 @@ import java.awt.image.* ;
 
 import javax.swing.JPanel;
 
+/**
+ * Permet la gestion de l'icone des robots
+ * @author Olivier Hachette
+ *
+ */
+
 @SuppressWarnings("serial")
 public class RobotIcone extends JPanel {
 	
@@ -19,7 +25,9 @@ public class RobotIcone extends JPanel {
 	/*
 	 * Constructeur
 	 */
-	
+	/**
+	 * @param type Le type du robots affiche
+	 */
 	public RobotIcone(int type){
 		this.sheet=new AnimationRobot(type);
 		this.sheet.setSequence("icone");
@@ -34,6 +42,9 @@ public class RobotIcone extends JPanel {
 	 * Methodes
 	 */
 	
+	/**
+	 * @param type @see AnimationRobot
+	 */
 	public void changeType(int type){
 		this.sheet.setSequence("icone", type);
 	}
@@ -45,6 +56,9 @@ public class RobotIcone extends JPanel {
         g.drawImage(img, 0, 0, null);
     }
 	
+	/**
+	 * Prend l'image suivant dans l'animation du robot
+	 */
 	public void update(){
 		this.sheet.nextImage();
 		this.gr.clearRect(0, 0, this.img.getWidth(), this.img.getHeight());

@@ -96,6 +96,7 @@ public class AnimationRobot {
 	 * <li>4 - Doge sans collier</li>
 	 * <li>5 - Doge avec collier vert</li>
 	 * <li>6 - Doge avec collier violet</li>
+	 * <li>7 - Doge avec balle</li>
 	 * </ul>
 	 * @param type Nouveau type du robot
 	 */

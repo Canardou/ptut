@@ -18,6 +18,12 @@ import drawing.FontImport;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+/**
+ * Affichage de la fenetre du programme
+ * @author Olivier Hachette & Platon Clement
+ *
+ */
+
 @SuppressWarnings("serial")
 public class Gui extends JFrame implements ActionListener {
 
@@ -48,7 +54,7 @@ public class Gui extends JFrame implements ActionListener {
 		JPanel panel = new JPanel();
 		this.getContentPane().add(panel, BorderLayout.EAST);
 		
-			//Aligne verticalement les boites robots
+		//Aligne verticalement les boites robots
 		Box tempBox = Box.createVerticalBox();
 		tempBox.setEnabled(false);
 		panel.add(tempBox);
@@ -101,23 +107,48 @@ public class Gui extends JFrame implements ActionListener {
 		this.setVisible(true);
 	}
 	
+	/**
+	 * Met a jour l'affichage des coordonnees des robots par rapport au dessin
+	 */
 	public void updatePanel(){
 		for(int i=0;i<3;i++){
 			robots[i].setPanel(laby.getRobot(i).getX(), laby.getRobot(i).getY(), laby.getRobot(i).getDir());
 		}
 	}
 	
-	public void putLog(int i, String s){
-		robots[i].putLog(s);
+	/**
+	 * Met a jour l'affichage pour un robot par rapport aux arguements rentres
+	 * @param x Nouvelle coordonnee x
+	 * @param y Nouvelle coordonnee y
+	 * @param dir Nouvelle direction
+	 * @param id Identifiant du robot a mettre a jour
+	 */
+	public void updatePanel(int id, int x, int y, int dir){
+		robots[id].setPanel(x, y, dir);
 	}
 	
+	/**
+	 * Rajoute une ligne de log pour un robot
+	 * @param id Identifiant du robot
+	 * @param s Log a afficher
+	 */
+	public void putLog(int id, String s){
+		robots[id].putLog(s);
+	}
+	
+	/**
+	 * Remet a zero le log des robots
+	 */
 	public void reset(){
 		for(int i=0;i<3;i++){
 			robots[i].resetLog();
 		}
 	}
 	
-	public void arreter(){
+	/**
+	 * Remise de la gui a l'etat principal lors de l'arret d'une simulation ou resolution reelle
+	 */
+	private void arreter(){
 		//this.superviseur.end();
 		this.thread.cancel(true);
 		for(int i=0;i<3;i++){
@@ -140,7 +171,7 @@ public class Gui extends JFrame implements ActionListener {
 			for(int i=0;i<3;i++){
 				robots[i].freeze();
 			}
-			class YOLO extends SwingWorker<String, Object> {//I HAVE NO IDEA WHAT IM DOING RIGHT NOW
+			class ThreadTemporaire extends SwingWorker<String, Object> {
 				@Override
 				public String doInBackground() {
 					try{
@@ -159,8 +190,7 @@ public class Gui extends JFrame implements ActionListener {
 					Gui.this.arreter();
 				}
 			}
-			(thread=new YOLO()).execute();
-			//this.superviseur.simulate();
+			(thread=new ThreadTemporaire()).execute();
 		}
 		if(e.getActionCommand().compareTo("Arreter")==0){
 			this.arreter();
@@ -173,7 +203,7 @@ public class Gui extends JFrame implements ActionListener {
 			for(int i=0;i<3;i++){
 				robots[i].freeze();
 			}
-			class YOLO extends SwingWorker<String, Object> {//I HAVE NO IDEA WHAT IM DOING RIGHT NOW
+			class ThreadTemporaire extends SwingWorker<String, Object> {
 				@Override
 				public String doInBackground() {
 					try{
@@ -191,7 +221,7 @@ public class Gui extends JFrame implements ActionListener {
 					Gui.this.arreter();
 				}
 			}
-			(thread=new YOLO()).execute();
+			(thread=new ThreadTemporaire()).execute();
 		}
 		if(e.getActionCommand().compareTo("Doge")==0){
 			this.laby.toggleDoge();
