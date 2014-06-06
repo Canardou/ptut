@@ -135,7 +135,7 @@ public class DessinCarte extends JPanel implements ActionListener {
 	 * @return Le robot ou null
 	 */
 	public VirtualRobots getRobot(int k){
-		if(k>=0 && k<3){
+		if(k>=0 && k<this.robots.length){
 			return this.robots[k];
 		}
 		else
